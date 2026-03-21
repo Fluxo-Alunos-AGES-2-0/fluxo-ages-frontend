@@ -1,0 +1,179 @@
+import { useState } from "react";
+import { useNavigate } from "react-router";
+import {
+  User,
+  Lock,
+  Calendar,
+  MessageSquare,
+  Globe,
+  GitBranch,
+  BookOpen,
+  Zap,
+} from "lucide-react";
+import { InputField } from "./ui/InputField";
+import { Button } from "./ui/Button";
+import { QuickAccessButton } from "./ui/QuickAccessButton";
+
+interface LoginCardProps {
+  onOpenCronograma: () => void;
+}
+
+export function LoginCard({ onOpenCronograma }: LoginCardProps) {
+  const [usuario, setUsuario] = useState("");
+  const [senha, setSenha] = useState("");
+  const [errors, setErrors] = useState<{ usuario?: string; senha?: string }>({});
+  const navigate = useNavigate();
+
+  const clearError = (field: "usuario" | "senha") => {
+    setErrors((prev) => ({ ...prev, [field]: undefined }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const newErrors: { usuario?: string; senha?: string } = {};
+
+    if (!usuario.trim()) newErrors.usuario = "Informe seu usuário";
+    if (!senha.trim()) newErrors.senha = "Informe sua senha";
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    navigate("/dashboard");
+  };
+
+  return (
+    <div
+      className="w-full bg-white rounded-[12px] flex flex-col overflow-hidden"
+      style={{ boxShadow: "0 8px 30px rgba(0,0,0,0.12)" }}
+    >
+      {/* Top accent bar */}
+      <div className="h-1 w-full bg-gradient-to-r from-[#3B5CCC] via-[#5B7AE8] to-[#F47B20]" />
+
+      <div className="px-6 py-4 flex flex-col gap-4">
+        {/* Logo & Title */}
+        <div className="flex flex-col items-center gap-1">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-[10px] bg-[#3B5CCC] flex items-center justify-center shadow-sm">
+              <Zap className="w-4.5 h-4.5 text-white" fill="rgba(255,255,255,0.9)" />
+            </div>
+            <div className="flex items-baseline gap-0">
+              <span
+                className="text-[#3B5CCC] text-[24px] tracking-tight"
+                style={{ fontWeight: 700 }}
+              >
+                Fluxo
+              </span>
+              <span
+                className="text-[#F47B20] text-[24px] tracking-tight"
+                style={{ fontWeight: 700 }}
+              >
+                AGES
+              </span>
+            </div>
+          </div>
+          <p className="text-xs text-[#6B7280] tracking-wide uppercase">
+            Acesse sua conta
+          </p>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-3">
+          <InputField
+            id="usuario"
+            label="Usuário"
+            type="text"
+            placeholder="Digite seu usuário"
+            icon={<User className="w-4 h-4" />}
+            value={usuario}
+            onChange={(v) => {
+              setUsuario(v);
+              clearError("usuario");
+            }}
+            error={errors.usuario}
+            autoComplete="username"
+          />
+
+          <InputField
+            id="senha"
+            label="Senha"
+            type="password"
+            placeholder="Digite sua senha"
+            icon={<Lock className="w-4 h-4" />}
+            value={senha}
+            onChange={(v) => {
+              setSenha(v);
+              clearError("senha");
+            }}
+            error={errors.senha}
+            autoComplete="current-password"
+          />
+
+          <Button
+            type="submit"
+            fullWidth
+            className="py-2.5 text-sm"
+            style={{ fontWeight: 600 }}
+          >
+            Entrar
+          </Button>
+
+          <div className="flex justify-center">
+            <button
+              type="button"
+              className="text-sm text-[#3B5CCC] hover:text-[#2d4db3] hover:underline underline-offset-2 transition-colors cursor-pointer"
+            >
+              Esqueci a senha
+            </button>
+          </div>
+        </form>
+
+        {/* Divider */}
+        <div className="flex items-center gap-3">
+          <div className="flex-1 h-px bg-[#E5E7EB]" />
+          <span className="text-[11px] text-[#9CA3AF] uppercase tracking-wider whitespace-nowrap">
+            Acesso rápido
+          </span>
+          <div className="flex-1 h-px bg-[#E5E7EB]" />
+        </div>
+
+        {/* Quick Access */}
+        <div className="flex flex-col gap-1.5">
+          <QuickAccessButton
+            icon={<Calendar className="w-4 h-4" />}
+            label="Ver Cronograma AGES"
+            onClick={onOpenCronograma}
+            highlighted
+          />
+          <QuickAccessButton
+            icon={<MessageSquare className="w-4 h-4" />}
+            label="Discord da AGES"
+            href="https://discord.gg/ages"
+          />
+          <QuickAccessButton
+            icon={<Globe className="w-4 h-4" />}
+            label="Site AGES"
+            href="https://ages.pucrs.br"
+          />
+          <QuickAccessButton
+            icon={<GitBranch className="w-4 h-4" />}
+            label="Gitlab Oficial da AGES - Tools"
+            href="https://tools.ages.pucrs.br"
+          />
+          <QuickAccessButton
+            icon={<BookOpen className="w-4 h-4" />}
+            label="Wiki AGES"
+            href="https://wiki.ages.pucrs.br"
+          />
+        </div>
+
+        {/* Footer */}
+        <p className="text-center text-[11px] text-[#9CA3AF]">
+          © {new Date().getFullYear()} FluxoAGES · PUCRS · Todos os direitos
+          reservados
+        </p>
+      </div>
+    </div>
+  );
+}
