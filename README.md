@@ -55,4 +55,5 @@ A nossa branch principal de desenvolvimento é a **`dev`**. A branch `main` est�
 3. Faça suas alterações e seus commits.
 4. Envie sua branch para o GitHub: `git push origin feature/nome-da-sua-tela`
 5. Abra um **Pull Request (PR)** apontando para a branch `dev`.
-6. Aguarde o Code Review da equipe de Infraestrutura (AGES III) para aprovação e merge.  
+6. Aguarde o Code Review da equipe de Infraestrutura (AGES III) para aprovação e merge.
+7. teste-front
