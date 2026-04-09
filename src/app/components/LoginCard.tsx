@@ -9,6 +9,8 @@ import {
   GitBranch,
   BookOpen,
   Zap,
+  KeyRound,
+  Mail,
 } from "lucide-react";
 import { InputField } from "./ui/InputField";
 import { Button } from "./ui/Button";
@@ -21,10 +23,18 @@ interface LoginCardProps {
 export function LoginCard({ onOpenCronograma }: LoginCardProps) {
   const [usuario, setUsuario] = useState("");
   const [senha, setSenha] = useState("");
-  const [errors, setErrors] = useState<{ usuario?: string; senha?: string }>({});
+  const [errors, setErrors] = useState<{
+    usuario?: string;
+    senha?: string;
+    recoveryEmail?: string;
+  }>({});
+  const [successMessage, setSuccessMessage] = useState("");
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [recoveryEmail, setRecoveryEmail] = useState("");
+
   const navigate = useNavigate();
 
-  const clearError = (field: "usuario" | "senha") => {
+  const clearError = (field: "usuario" | "senha" | "recoveryEmail") => {
     setErrors((prev) => ({ ...prev, [field]: undefined }));
   };
 
@@ -33,6 +43,7 @@ export function LoginCard({ onOpenCronograma }: LoginCardProps) {
     const newErrors: { usuario?: string; senha?: string } = {};
 
     if (!usuario.trim()) newErrors.usuario = "Informe seu usuário";
+    
     if (!senha.trim()) newErrors.senha = "Informe sua senha";
 
     if (Object.keys(newErrors).length > 0) {
@@ -43,6 +54,34 @@ export function LoginCard({ onOpenCronograma }: LoginCardProps) {
     navigate("/dashboard");
   };
 
+  const handleForgotPassword = () => {
+    setShowForgotPassword((prev) => !prev);
+
+    if (showForgotPassword) {
+      setRecoveryEmail("");
+      setErrors((prev) => ({ ...prev, recoveryEmail: undefined }));
+    }
+  };
+
+  const handleRecoverySubmit = () => {
+    const newErrors: { recoveryEmail?: string } = {};
+
+    setSuccessMessage("");
+
+    if (!recoveryEmail.trim()) {
+      newErrors.recoveryEmail = "Informe seu email";
+    } else if (!/\S+@\S+\.\S+/.test(recoveryEmail)) {
+      newErrors.recoveryEmail = "Informe um e-mail válido";
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors((prev) => ({ ...prev, ...newErrors }));
+      return;
+    }
+    setErrors((prev) => ({ ...prev, recoveryEmail: undefined }));
+    setSuccessMessage("Sucesso! Email para troca de senha enviado.");
+  };
+
   return (
     <div
       className="w-full bg-white rounded-[12px] flex flex-col overflow-hidden"
@@ -51,12 +90,20 @@ export function LoginCard({ onOpenCronograma }: LoginCardProps) {
       {/* Top accent bar */}
       <div className="h-1 w-full bg-gradient-to-r from-[#3B5CCC] via-[#5B7AE8] to-[#F47B20]" />
 
-      <div className="px-6 py-4 flex flex-col gap-4">
-        {/* Logo & Title */}
+      <div
+        className={`px-6 py-4 flex flex-col gap-4 transition-all duration-300 ${
+          showForgotPassword
+            ? "overflow-y-auto max-h-[90vh]"
+            : "overflow-hidden"
+        }`}
+      >
         <div className="flex flex-col items-center gap-1">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-[10px] bg-[#3B5CCC] flex items-center justify-center shadow-sm">
-              <Zap className="w-4.5 h-4.5 text-white" fill="rgba(255,255,255,0.9)" />
+              <Zap
+                className="w-4.5 h-4.5 text-white"
+                fill="rgba(255,255,255,0.9)"
+              />
             </div>
             <div className="flex items-baseline gap-0">
               <span
@@ -79,7 +126,11 @@ export function LoginCard({ onOpenCronograma }: LoginCardProps) {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-3">
+        <form
+          onSubmit={handleSubmit}
+          noValidate
+          className="flex flex-col gap-3"
+        >
           <InputField
             id="usuario"
             label="Usuário"
@@ -122,10 +173,55 @@ export function LoginCard({ onOpenCronograma }: LoginCardProps) {
           <div className="flex justify-center">
             <button
               type="button"
-              className="text-sm text-[#3B5CCC] hover:text-[#2d4db3] hover:underline underline-offset-2 transition-colors cursor-pointer"
+              onClick={handleForgotPassword}
+              className="flex items-center justify-center gap-2 text-sm text-[#3B5CCC] hover:text-[#2d4db3] hover:underline underline-offset-2 transition-colors cursor-pointer"
             >
-              Esqueci a senha
+              <KeyRound className="w-4 h-4 shrink-0" />
+              <span>
+                {showForgotPassword ? "Ocultar recuperação" : "Esqueci a senha"}
+              </span>
             </button>
+          </div>
+          <div
+            className={`grid transition-all duration-300 ease-in-out ${
+              showForgotPassword
+                ? "grid-rows-[1fr] opacity-100 mt-2"
+                : "grid-rows-[0fr] opacity-0"
+            }`}
+          >
+            <div className="overflow-hidden">
+              <div className="flex flex-col gap-3 pt-1">
+                <InputField
+                  id="recoveryEmail"
+                  label="E-mail"
+                  type="email"
+                  placeholder="Insira seu e-mail"
+                  icon={<Mail className="w-4 h-4" />}
+                  value={recoveryEmail}
+                  onChange={(v) => {
+                    setRecoveryEmail(v);
+                    clearError("recoveryEmail");
+                  }}
+                  error={errors.recoveryEmail}
+                  autoComplete="email"
+                />
+
+                <Button
+                  type="button"
+                  fullWidth
+                  className="py-2.5 text-sm bg-[#2d4db3] text-white hover:bg-[#243f94] transition-all duration-200"
+                  style={{ fontWeight: 600 }}
+                  onClick={handleRecoverySubmit}
+                >
+                  Confirmar
+                </Button>
+                {successMessage && (
+                  <p className="text-sm text-green-600 text-center">
+                    {successMessage}
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
         </form>
 
@@ -149,7 +245,7 @@ export function LoginCard({ onOpenCronograma }: LoginCardProps) {
           <QuickAccessButton
             icon={<MessageSquare className="w-4 h-4" />}
             label="Discord da AGES"
-            href="https://discord.gg/ages"
+            href="https://discord.com/invite/wVtRNuqZUq"
           />
           <QuickAccessButton
             icon={<Globe className="w-4 h-4" />}
@@ -164,7 +260,7 @@ export function LoginCard({ onOpenCronograma }: LoginCardProps) {
           <QuickAccessButton
             icon={<BookOpen className="w-4 h-4" />}
             label="Wiki AGES"
-            href="https://wiki.ages.pucrs.br"
+            href="https://tools.ages.pucrs.br/modelos/estudos/tutorialFluxoAges/-/wikis/home"
           />
         </div>
 
