@@ -1,0 +1,31 @@
+.mainContainer {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 2rem;
+  background-color: #f8fafc;
+}
+
+.contentCard {
+  width: 100%;
+  max-width: 40rem;
+  padding: 2rem;
+  border-radius: 1rem;
+  background-color: #ffffff;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+
+.title {
+  margin-top: 0;
+}
+
+.description {
+  margin-bottom: 2rem;
+  color: #64748b;
+}
+
+.inputList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
