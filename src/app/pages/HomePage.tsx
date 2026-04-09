@@ -11,9 +11,9 @@ export default function HomePage() {
   return (
     <main className={styles.mainContainer}>
       <section className={styles.contentCard}>
-        <h1 className={styles.title}>Frontend resetado</h1>
+        <h1 className={styles.title}>[Frontend] - Componente InputField</h1>
         <p className={styles.description}>
-          Abaixo estão os cenários do componente InputField validados conforme a US001.
+          Abaixo estão os cenários do componente InputField conforme a US001.
         </p>
 
 
