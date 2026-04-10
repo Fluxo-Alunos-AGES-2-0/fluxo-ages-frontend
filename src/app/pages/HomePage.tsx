@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { User, Lock, Mail } from "lucide-react";
 import { InputField } from "../components/ui/InputField/InputField"; 
-import styles from "./HomePage.module.css";
 
 export default function HomePage() {
   const [usuario, setUsuario] = useState("");
@@ -9,16 +8,17 @@ export default function HomePage() {
   const [emailErro, setEmailErro] = useState("usuario@errado.com");
 
   return (
-    <main className={styles.mainContainer}>
-      <section className={styles.contentCard}>
-        <h1 className={styles.title}>[Frontend] - Componente InputField</h1>
-        <p className={styles.description}>
+    <main className="min-h-screen grid place-items-center p-8 bg-slate-50">
+      <section className="w-full max-w-2xl p-8 rounded-2xl bg-white shadow-[0_10px_30px_rgba(15,23,42,0.08)]">
+        <h1 className="mt-0 text-2xl font-bold text-slate-800 mb-2">
+          [Frontend] - Componente InputField
+        </h1>
+        
+        <p className="mb-8 text-slate-500">
           Abaixo estão os cenários do componente InputField conforme a US001.
         </p>
 
-
-        <div className={styles.inputList}>
-          
+        <div className="flex flex-col gap-6">
           <InputField 
             label="Usuário" 
             placeholder="Digite seu usuário" 
@@ -51,7 +51,6 @@ export default function HomePage() {
             value="admin_sistema"
             onChange={() => {}}
           />
-
         </div>
       </section>
     </main>
