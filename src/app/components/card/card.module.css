@@ -12,6 +12,10 @@
   height: 100%;
 }
 
+.noHeader .cardContent {
+  padding: 32px; /* Ou o valor que preferir para o estilo 'modal' */
+}
+
 .cardHeader {
   display: flex;
   justify-content: space-between;
