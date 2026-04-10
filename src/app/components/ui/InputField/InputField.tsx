@@ -1,10 +1,11 @@
 import React, { useState, InputHTMLAttributes } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 
-interface InputFieldProps extends InputHTMLAttributes<HTMLInputElement> {
+interface InputFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
   label: string;
   icon?: React.ReactNode;
   error?: string;
+  onChange?: (value: string) => void;
 }
 
 export const InputField: React.FC<InputFieldProps> = ({
@@ -14,6 +15,7 @@ export const InputField: React.FC<InputFieldProps> = ({
   type = 'text',
   disabled,
   className = '',
+  onChange,
   ...props
 }) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -53,6 +55,7 @@ export const InputField: React.FC<InputFieldProps> = ({
           type={inputType}
           disabled={disabled}
           className="flex-1 border-none outline-none bg-transparent text-sm text-slate-700 w-full disabled:cursor-not-allowed"
+          onChange={(e) => onChange?.(e.target.value)}
           onFocus={(e) => {
             setIsFocused(true);
             if (props.onFocus) props.onFocus(e);

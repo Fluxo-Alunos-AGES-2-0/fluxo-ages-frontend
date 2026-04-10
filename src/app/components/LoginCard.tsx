@@ -12,9 +12,9 @@ import {
   KeyRound,
   Mail,
 } from "lucide-react";
-import { InputField } from "./ui/InputField";
-import { Button } from "./ui/Button";
-import { QuickAccessButton } from "./ui/QuickAccessButton";
+import { InputField } from "./ui/InputField/InputField";
+import { Button } from "./ui/Button/Button";
+import { QuickAccessButton } from "./ui/QuickAccessButton/QuickAccessButton";
 
 interface LoginCardProps {
   onOpenCronograma: () => void;
