@@ -1,3 +1,5 @@
+import Card from "../components/card/card.component";
+
 export default function HomePage() {
   return (
     <main

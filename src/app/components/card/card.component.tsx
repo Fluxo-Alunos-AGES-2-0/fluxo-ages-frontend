@@ -13,7 +13,7 @@ interface CardProps {
 }
 
 const Card: React.FC<CardProps> = ({ title, icon, headerAction, children, className }) => {
-  const hasHeader = !!(title || headerAction); // Força um booleano
+  const hasHeader = !!title;
 
   return (
     <div className={`
