@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import { User, Lock, Mail } from "lucide-react";
 import { InputField } from "../components/ui/InputField/InputField"; 
 import styles from "./HomePage.module.css";
+import Modal from "../components/ui/Modal/Modal";
 
 export default function HomePage() {
   const [usuario, setUsuario] = useState("");
   const [senha, setSenha] = useState("");
   const [emailErro, setEmailErro] = useState("usuario@errado.com");
+  const [open, setOpen] = useState(false);
 
   return (
     <main className={styles.mainContainer}>
@@ -52,8 +54,19 @@ export default function HomePage() {
             onChange={() => {}}
           />
 
+          <button onClick={() => setOpen(true)}>
+            Abrir Modal
+          </button>
+
         </div>
       </section>
+      <Modal
+          isOpen={open}
+          onClose={() => setOpen(false)}
+          title="Meu modal"
+        >
+          <p>Teste de conteúdo</p>
+      </Modal>
     </main>
   );
 }
