@@ -3,3 +3,28 @@
   --color-primary-dark: #4f6ef7;
   --color-accent: #f47b20;
 }
+
+:root {
+  --background: #ffffff;
+  --border-light: #e5e7eb;
+  --title-light: #1f2937;
+  --blue: #3b5ccc;
+  --grey: #6b7280;
+  --linear-blue: linear-gradient(
+    135deg,
+    #3b5ccc 0%,
+    #3d5ece 7.69%,
+    #4061d0 15.38%,
+    #4263d2 23.08%,
+    #4565d5 30.77%,
+    #4768d7 38.46%,
+    #4a6ad9 46.15%,
+    #4c6cdb 53.85%,
+    #4f6edd 61.54%,
+    #5171df 69.23%,
+    #5373e2 76.92%,
+    #5675e4 84.62%,
+    #5878e6 92.31%,
+    #5b7ae8 100%
+  );
+}
