@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { User, Lock, Mail } from "lucide-react";
 import { InputField } from "../components/ui/InputField/InputField"; 
-import styles from "./HomePage.module.css";
 import Modal from "../components/ui/Modal/Modal";
+import styles from "./HomePage.module.css";
+// import Card from "../components/card/card.component"; 
 
 export default function HomePage() {
   const [usuario, setUsuario] = useState("");
@@ -11,61 +12,67 @@ export default function HomePage() {
   const [open, setOpen] = useState(false);
 
   return (
-    <main className={styles.mainContainer}>
-      <section className={styles.contentCard}>
-        <h1 className={styles.title}>[Frontend] - Componente InputField</h1>
-        <p className={styles.description}>
-          Abaixo estão os cenários do componente InputField conforme a US001.
+    <main
+      style={{
+        minHeight: "100vh",
+        display: "grid",
+        placeItems: "center",
+        padding: "2rem",
+      }}
+    >
+      <section
+        style={{
+          width: "100%",
+          maxWidth: "40rem",
+          padding: "2rem",
+          borderRadius: "1rem",
+          backgroundColor: "#ffffff",
+          boxShadow: "0 10px 30px rgba(15, 23, 42, 0.08)",
+        }}
+      >
+        <h1 style={{ marginTop: 0 }}>Frontend resetado</h1>
+        <p style={{ marginBottom: 0 }}>
+          A estrutura base do React foi mantida para o grupo começar a implementar.
         </p>
 
+         <div className={styles.inputList}>
+          <div>
+            <InputField 
+              label="Usuário" 
+              icon={<User size={18} />}
+              value={usuario}
+              onChange={(e) => setUsuario(e.target.value)}
+            />
 
-        <div className={styles.inputList}>
-          
-          <InputField 
-            label="Usuário" 
-            placeholder="Digite seu usuário" 
-            icon={<User size={18} />}
-            value={usuario}
-            onChange={(e) => setUsuario(e.target.value)}
-          />
+            <InputField 
+              label="Senha" 
+              type="password"
+              icon={<Lock size={18} />}
+              value={senha}
+              onChange={(e) => setSenha(e.target.value)}
+            />
 
-          <InputField 
-            label="Senha" 
-            type="password" 
-            placeholder="Digite sua senha" 
-            icon={<Lock size={18} />}
-            value={senha}
-            onChange={(e) => setSenha(e.target.value)}
-          />
+            <InputField 
+              label="E-mail"
+              icon={<Mail size={18} />}
+              error="Usuário ou senha incorretos."
+              value={emailErro}
+              onChange={(e) => setEmailErro(e.target.value)}
+            />
 
-          <InputField 
-            label="E-mail (Validação de Erro)" 
-            icon={<Mail size={18} />} 
-            error="Usuário ou senha incorretos."
-            value={emailErro}
-            onChange={(e) => setEmailErro(e.target.value)}
-          />
-
-          <InputField 
-            label="Usuário (Desabilitado)" 
-            icon={<User size={18} />} 
-            disabled 
-            value="admin_sistema"
-            onChange={() => {}}
-          />
-
-          <button onClick={() => setOpen(true)}>
-            Abrir Modal
-          </button>
-
+            <button onClick={() => setOpen(true)}>
+              Abrir Modal
+            </button>
+          </div>
         </div>
       </section>
+
       <Modal
-          isOpen={open}
-          onClose={() => setOpen(false)}
-          title="Meu modal"
-        >
-          <p>Teste de conteúdo</p>
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        title="Meu modal"
+      >
+        <p>Teste de conteúdo</p>
       </Modal>
     </main>
   );
