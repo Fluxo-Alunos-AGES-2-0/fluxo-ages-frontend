@@ -1,0 +1,48 @@
+.hoursTrackerContent {
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 50px;
+  position: relative;
+}
+
+.hourSection {
+  width: 100%;
+  height: 100%;
+  border-right: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.hourSection:last-child {
+  border-right: 0;
+}
+
+.hourCount {
+  color: var(--title-light);
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 32px; /* 133.333% */
+}
+
+.orange {
+  color: var(--orange);
+}
+
+.blue {
+  color: var(--blue);
+}
+
+.hourCountTitle {
+  color: var(--grey);
+  text-align: center;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16.5px; /* 150% */
+}
