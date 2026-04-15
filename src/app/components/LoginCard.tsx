@@ -15,6 +15,7 @@ import {
 import { InputField } from "./ui/InputField/InputField";
 import { Button } from "./ui/Button/Button";
 import { QuickAccessButton } from "./ui/QuickAccessButton/QuickAccessButton";
+import logoFluxoAges from "../assets/images/login/logo_fluxo_ages.webp";
 
 interface LoginCardProps {
   onOpenCronograma: () => void;
@@ -43,7 +44,7 @@ export function LoginCard({ onOpenCronograma }: LoginCardProps) {
     const newErrors: { usuario?: string; senha?: string } = {};
 
     if (!usuario.trim()) newErrors.usuario = "Informe seu usuário";
-    
+
     if (!senha.trim()) newErrors.senha = "Informe sua senha";
 
     if (Object.keys(newErrors).length > 0) {
@@ -99,25 +100,13 @@ export function LoginCard({ onOpenCronograma }: LoginCardProps) {
       >
         <div className="flex flex-col items-center gap-1">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-[10px] bg-[#3B5CCC] flex items-center justify-center shadow-sm">
-              <Zap
-                className="w-4.5 h-4.5 text-white"
-                fill="rgba(255,255,255,0.9)"
+            
+            <div className="flex items-center justify-center">
+              <img
+                src={logoFluxoAges}
+                alt="Fluxo AGES"
+                className="h-10 w-auto object-contain"
               />
-            </div>
-            <div className="flex items-baseline gap-0">
-              <span
-                className="text-[#3B5CCC] text-[24px] tracking-tight"
-                style={{ fontWeight: 700 }}
-              >
-                Fluxo
-              </span>
-              <span
-                className="text-[#F47B20] text-[24px] tracking-tight"
-                style={{ fontWeight: 700 }}
-              >
-                AGES
-              </span>
             </div>
           </div>
           <p className="text-xs text-[#6B7280] tracking-wide uppercase">
