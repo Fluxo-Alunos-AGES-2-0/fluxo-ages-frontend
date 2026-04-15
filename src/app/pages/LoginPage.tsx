@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
-import { LoginCard } from "../components/LoginCard";
-import { CronogramaPanel } from "../components/CronogramaPanel/CronogramaPanel";
+import { LoginCard } from "@/app/components/LoginCard";
+import { CronogramaPanel } from "@/app/components/CronogramaPanel/CronogramaPanel";
 
-import bg01 from "../assets/images/login/bg/bg-01.webp";
-import bg02 from "../assets/images/login/bg/bg-02.webp";
-import bg03 from "../assets/images/login/bg/bg-03.webp";
-import bg04 from "../assets/images/login/bg/bg-04.webp";
+import bg01 from "@/app/assets/images/login/bg/bg-01.webp";
+import bg02 from "@/app/assets/images/login/bg/bg-02.webp";
+import bg03 from "@/app/assets/images/login/bg/bg-03.webp";
+import bg04 from "@/app/assets/images/login/bg/bg-04.webp";
 
 const BG_IMAGES = [bg01, bg02, bg03, bg04];
-
 
 function getImageByHour() {
   const currentHour = new Date().getHours();
@@ -48,7 +47,6 @@ export default function LoginPage() {
 
   return (
     <div className="relative h-screen w-full flex items-center justify-center overflow-hidden">
-      {/* Background image */}
       <div
         className="fixed inset-0 z-0 bg-cover bg-center scale-110"
         style={{
@@ -57,10 +55,8 @@ export default function LoginPage() {
         }}
       />
 
-      {/* Dark overlay */}
       <div className="fixed inset-0 z-0 bg-gradient-to-br from-[#0f1c3f]/75 via-[#1a2e5c]/65 to-[#0f1c3f]/70" />
 
-      {/* Noise texture */}
       <div
         className="fixed inset-0 z-0 opacity-[0.03]"
         style={{
@@ -68,11 +64,9 @@ export default function LoginPage() {
         }}
       />
 
-      {/* Decorative blurs */}
       <div className="fixed top-1/4 left-1/4 w-64 h-64 rounded-full bg-[#3B5CCC]/20 blur-3xl pointer-events-none z-0" />
       <div className="fixed bottom-1/4 right-1/4 w-80 h-80 rounded-full bg-[#F47B20]/15 blur-3xl pointer-events-none z-0" />
 
-      {/* Main card */}
       <div className="relative z-10 w-full max-w-[440px] px-4">
         <LoginCard onOpenCronograma={() => setCronogramaOpen(true)} />
       </div>

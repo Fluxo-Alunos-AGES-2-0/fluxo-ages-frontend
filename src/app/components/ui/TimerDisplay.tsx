@@ -1,11 +1,13 @@
-import React from 'react';
-import { useTimer } from '../../context/TimerContext';
+import React from "react";
+import { useTimer } from "@/app/context/TimerContext";
 
 interface TimerDisplayProps {
-  color?: string; 
+  color?: string;
 }
 
-export const TimerDisplay: React.FC<TimerDisplayProps> = ({ color = 'text-slate-800' }) => {
+export const TimerDisplay: React.FC<TimerDisplayProps> = ({
+  color = "text-slate-800",
+}) => {
   const { elapsedTime } = useTimer();
 
   const totalSeconds = Math.floor(elapsedTime / 1000);
@@ -13,10 +15,10 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({ color = 'text-slate-
   const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = totalSeconds % 60;
 
-  const formatTime = (time: number) => time.toString().padStart(2, '0');
+  const formatTime = (time: number) => time.toString().padStart(2, "0");
 
-  const isTailwindClass = color.startsWith('text-');
-  const textColorClass = isTailwindClass ? color : '';
+  const isTailwindClass = color.startsWith("text-");
+  const textColorClass = isTailwindClass ? color : "";
   const inlineStyle = !isTailwindClass ? { color } : undefined;
 
   const TimeBlock = ({ value, label }: { value: string; label: string }) => (

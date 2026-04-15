@@ -12,10 +12,10 @@ import {
   KeyRound,
   Mail,
 } from "lucide-react";
-import { InputField } from "./ui/InputField/InputField";
-import { Button } from "./ui/Button/Button";
-import { QuickAccessButton } from "./ui/QuickAccessButton/QuickAccessButton";
-import logoFluxoAges from "../assets/images/login/logo_fluxo_ages.webp";
+import { InputField } from "@/app/components/ui/InputField/InputField";
+import { Button } from "@/app/components/ui/Button/Button";
+import { QuickAccessButton } from "@/app/components/ui/QuickAccessButton/QuickAccessButton";
+import logoFluxoAges from "@/app/assets/images/login/logo_fluxo_ages.webp";
 
 interface LoginCardProps {
   onOpenCronograma: () => void;

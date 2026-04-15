@@ -1,8 +1,5 @@
-import style from "./loader.module.css"
-
-const Loader = () => {
+export const Loader = () => {
   return (
-    <div className={style.loader}></div>
+    <div className="w-9 h-9 border-4 border-[#e5e7eb] border-l-transparent rounded-full animate-spin" />
   );
-}
-export default Loader;
+};
