@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import { ChevronRight } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 interface NavItemProps {
@@ -25,7 +26,8 @@ export default function NavItem({
       ].join(" ")}
     >
       <Icon size={20} />
-      {label}
+      <span className="flex-1">{label}</span>
+      {active && <ChevronRight size={18} />}
     </Link>
   );
 }

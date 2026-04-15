@@ -1,4 +1,4 @@
-import { Zap, Clock, BarChart3, Map } from "lucide-react";
+import { Zap, Clock, BarChart3, Map, CalendarDays } from "lucide-react";
 import { useLocation } from "react-router";
 import { mockSchedule } from "../../data/mockSchedule";
 import NavItem from "./NavItem";
@@ -18,7 +18,9 @@ export default function Sidebar() {
   return (
     <aside className={styles.sidebar}>
       <div className={styles.logo}>
-        <Zap size={24} className={styles.logoIcon} />
+        <div className={styles.logoIconWrapper}>
+          <Zap size={22} color="white" fill="white" />
+        </div>
         <span className={styles.logoText}>FluxoAGES</span>
       </div>
 
@@ -34,7 +36,10 @@ export default function Sidebar() {
           />
         ))}
 
-        <p className={styles.sectionLabel}>Cronograma da Turma</p>
+        <p className={styles.sectionLabel}>
+          <CalendarDays size={14} className={styles.sectionIcon} />
+          Cronograma da Turma
+        </p>
         {mockSchedule.map((event) => (
           <ScheduleItem key={event.id} event={event} />
         ))}

@@ -11,16 +11,23 @@
 .logo {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 20px 24px;
+  gap: 12px;
+  padding: 24px 24px 20px;
 }
 
-.logoIcon {
-  color: var(--blue);
+.logoIconWrapper {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--linear-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .logoText {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
   color: var(--blue);
 }
@@ -28,7 +35,7 @@
 .nav {
   flex: 1;
   overflow-y: auto;
-  padding: 8px 12px;
+  padding: 4px 16px;
 }
 
 .sectionLabel {
@@ -37,6 +44,13 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: var(--grey);
-  padding: 12px 12px 6px;
-  margin-top: 4px;
+  padding: 16px 8px 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sectionIcon {
+  color: var(--grey);
+  flex-shrink: 0;
 }

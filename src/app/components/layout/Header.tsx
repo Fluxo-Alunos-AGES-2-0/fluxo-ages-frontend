@@ -1,6 +1,5 @@
-import { Info } from "lucide-react";
+import { Info, Sun } from "lucide-react";
 import { useLocation } from "react-router";
-import ThemeToggle from "./ThemeToggle";
 import styles from "./header.module.css";
 
 const pageTitles: Record<string, string> = {
@@ -24,13 +23,16 @@ export default function Header() {
       </div>
 
       <div className={styles.right}>
-        <button
-          className="p-2 rounded-lg text-[var(--grey)] hover:bg-[var(--border-light)] transition-colors cursor-pointer"
-          aria-label="Informações"
-        >
+        <button className={styles.iconBtn} aria-label="Informações">
           <Info size={20} />
         </button>
-        <ThemeToggle />
+        <div className={styles.themeToggle}>
+          <div className={styles.toggleTrack}>
+            <div className={styles.toggleThumb}>
+              <Sun size={14} />
+            </div>
+          </div>
+        </div>
       </div>
     </header>
   );
