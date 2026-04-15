@@ -115,7 +115,7 @@ export function Sidebar() {
   const { pathname } = useLocation();
 
   return (
-    <aside className="flex flex-col h-screen bg-white border-r border-[#e5e7eb] sticky top-0">
+    <aside className="flex flex-col h-full overflow-y-auto bg-white border-r border-[#e5e7eb]">
       {/* Logo */}
       <div className="flex items-center justify-center px-6 py-5 border-b border-[#e5e7eb]">
         <img

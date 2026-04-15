@@ -11,10 +11,10 @@ export function AppLayout() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <div className="grid grid-cols-[272px_1fr] min-h-screen">
-          <Sidebar />
-          <div className="grid grid-rows-[64px_1fr] min-h-screen">
-            <TopBar />
+        <div className="grid grid-rows-[64px_1fr] min-h-screen">
+          <TopBar />
+          <div className="grid grid-cols-[272px_1fr]">
+            <Sidebar />
             <div className="p-6 overflow-y-auto bg-[#f3f4f6]">
               <Outlet />
             </div>
