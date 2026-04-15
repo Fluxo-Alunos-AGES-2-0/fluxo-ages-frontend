@@ -19,15 +19,17 @@ export default function NavItem({
     <Link
       to={path}
       className={[
-        "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors no-underline",
+        "flex items-center gap-3 px-3 py-2.5 rounded-lg text-[14px] font-medium transition-colors no-underline",
         active
           ? "bg-[var(--nav-active-bg)] text-[var(--nav-active-text)]"
-          : "text-[var(--text-secondary)] hover:bg-[var(--nav-active-bg)]",
+          : "text-[var(--text-secondary)] hover:bg-gray-50",
       ].join(" ")}
     >
-      <Icon size={20} />
+      <Icon size={18} strokeWidth={active ? 2.2 : 1.8} />
       <span className="flex-1">{label}</span>
-      {active && <ChevronRight size={18} />}
+      {active && (
+        <ChevronRight size={16} className="text-[var(--nav-active-text)]" />
+      )}
     </Link>
   );
 }
