@@ -1,0 +1,17 @@
+.shell {
+  display: grid;
+  grid-template-columns: 272px 1fr;
+  min-height: 100vh;
+}
+
+.main {
+  display: grid;
+  grid-template-rows: 64px 1fr;
+  min-height: 100vh;
+}
+
+.content {
+  padding: 24px;
+  overflow-y: auto;
+  background-color: var(--content-bg);
+}
