@@ -12,7 +12,7 @@ export function TopBar() {
   const title = pageTitles[pathname] || "Dashboard";
 
   return (
-    <header className="flex items-center justify-between px-7 h-16 bg-white border-t border-b border-[#e5e7eb]">
+    <header className="flex items-center justify-between px-7 h-[72px] shrink-0 bg-white border-b border-[#e5e7eb]">
       <div className="flex-1">
         <h1 className="text-[16px] font-semibold text-[#1f2937] m-0">
           {title}

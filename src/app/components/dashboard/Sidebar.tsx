@@ -115,9 +115,9 @@ export function Sidebar() {
   const { pathname } = useLocation();
 
   return (
-    <aside className="flex flex-col h-full overflow-y-auto bg-white border-r border-[#e5e7eb]">
-      {/* Logo */}
-      <div className="flex items-center justify-center px-6 py-5 border-b border-[#e5e7eb]">
+    <aside className="flex flex-col h-screen sticky top-0 bg-white border-r border-[#e5e7eb]">
+      {/* Logo - h-[72px] to match TopBar height */}
+      <div className="h-[72px] flex items-center justify-center px-6 shrink-0 border-b border-[#e5e7eb]">
         <img
           src={logoFluxoAges}
           alt="FluxoAGES"
