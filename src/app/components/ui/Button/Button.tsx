@@ -1,6 +1,6 @@
-import { ButtonHTMLAttributes } from 'react';
+import { ButtonHTMLAttributes } from "react";
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost';
+type ButtonVariant = "primary" | "secondary" | "ghost";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
@@ -9,38 +9,36 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantClasses: Record<ButtonVariant, string> = {
-  primary:
-    'bg-[#3B5CCC] text-white hover:bg-[#2d4db3] active:bg-[#243f94]',
+  primary: "bg-primary text-white hover:bg-primary/90 active:bg-primary/80",
   secondary:
-    'border border-[#3B5CCC] text-[#3B5CCC] bg-transparent hover:bg-[#3B5CCC]/10 active:bg-[#3B5CCC]/15',
-  ghost:
-    'bg-transparent text-[#3B5CCC] hover:underline px-1',
+    "border border-primary text-primary bg-transparent hover:bg-primary/10 active:bg-primary/15",
+  ghost: "bg-transparent text-primary hover:underline px-1",
 };
 
 export function Button({
-  variant = 'primary',
+  variant = "primary",
   loading = false,
   fullWidth = false,
   disabled,
-  className = '',
+  className = "",
   children,
   ...props
 }: ButtonProps) {
   return (
     <button
       className={[
-        'inline-flex items-center justify-center gap-2',
-        'px-5 py-2.5 rounded-lg',
-        'text-[0.9375rem] font-semibold leading-tight',
-        'cursor-pointer transition-colors outline-none',
-        'focus-visible:ring-2 focus-visible:ring-[#3B5CCC]/35',
-        'disabled:opacity-50 disabled:cursor-not-allowed',
+        "inline-flex items-center justify-center gap-2",
+        "px-5 py-2.5 rounded-lg",
+        "text-[0.9375rem] font-semibold leading-tight",
+        "cursor-pointer transition-colors outline-none",
+        "focus-visible:ring-2 focus-visible:ring-primary/35",
+        "disabled:opacity-50 disabled:cursor-not-allowed",
         variantClasses[variant],
-        fullWidth ? 'w-full' : '',
+        fullWidth ? "w-full" : "",
         className,
       ]
         .filter(Boolean)
-        .join(' ')}
+        .join(" ")}
       disabled={disabled || loading}
       {...props}
     >
