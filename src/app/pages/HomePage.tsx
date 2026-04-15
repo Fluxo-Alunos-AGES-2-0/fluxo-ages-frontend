@@ -1,10 +1,9 @@
-import Card from "../components/card/card.component";
-
 export default function HomePage() {
   return (
     <main
       style={{
-        minHeight: "100vh",
+        width: "80%",
+        height: "40vh",
         display: "grid",
         placeItems: "center",
         padding: "2rem",
