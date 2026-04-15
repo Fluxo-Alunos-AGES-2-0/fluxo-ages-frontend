@@ -1,6 +1,3 @@
-import Card from "../components/card/card.component";
-import HoursTracker from "../components/hoursTracker/hoursTracker.component";
-
 export default function HomePage() {
   return (
     <main
@@ -12,7 +9,6 @@ export default function HomePage() {
         padding: "2rem",
       }}
     >
-      {/*
       <section
         style={{
           width: "100%",
@@ -28,8 +24,6 @@ export default function HomePage() {
           A estrutura base do React foi mantida para o grupo começar a implementar.
         </p>
       </section>
-      */}
-      <HoursTracker />
     </main>
   );
 }

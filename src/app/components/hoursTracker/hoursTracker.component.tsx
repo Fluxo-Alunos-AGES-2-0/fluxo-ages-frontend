@@ -1,7 +1,9 @@
+import { useEffect, useState } from 'react';
+
 import style from './hoursTracker.module.css'
+
 import Card from "../card/card.component";
 import CircularProgress from '../circularProgress/circularProgress.component';
-import { useEffect, useState } from 'react';
 import Loader from '../loader/loader.component';
 
 const HoursTracker = () => {
