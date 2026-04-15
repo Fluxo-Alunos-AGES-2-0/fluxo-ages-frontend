@@ -1,5 +1,4 @@
 import {
-  Zap,
   Clock,
   BarChart3,
   Map,
@@ -10,6 +9,7 @@ import {
 import { Link, useLocation } from "react-router";
 import { useAuth } from "@/app/context/AuthContext";
 import { mockSchedule, type ScheduleEvent } from "@/app/data/mockSchedule";
+import logoFluxoAges from "@/app/assets/images/login/logo_fluxo_ages.webp";
 
 const menuItems = [
   { label: "Controle de Horas", icon: Clock, path: "/dashboard" },
@@ -117,11 +117,12 @@ export function Sidebar() {
   return (
     <aside className="flex flex-col h-screen bg-white border-r border-[#e5e7eb] sticky top-0">
       {/* Logo */}
-      <div className="flex items-center gap-3 px-6 py-6 pb-5 border-b border-[#e5e7eb]">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#3b5ccc] to-[#5b7ae8] flex items-center justify-center shrink-0">
-          <Zap size={22} color="white" fill="white" />
-        </div>
-        <span className="text-[20px] font-bold text-[#3b5ccc]">FluxoAGES</span>
+      <div className="flex items-center justify-center px-6 py-5 border-b border-[#e5e7eb]">
+        <img
+          src={logoFluxoAges}
+          alt="FluxoAGES"
+          className="h-10 w-auto object-contain"
+        />
       </div>
 
       {/* Nav + Schedule */}
