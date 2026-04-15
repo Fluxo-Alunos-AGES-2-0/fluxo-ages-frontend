@@ -10,9 +10,10 @@ interface CardProps {
   headerAction?: ReactNode;
   children: ReactNode;
   className?: string;
+  classContent?: string;
 }
 
-const Card: React.FC<CardProps> = ({ title, icon, headerAction, children, className }) => {
+const Card: React.FC<CardProps> = ({ title, icon, headerAction, children, className, classContent }) => {
   const hasHeader = !!title;
 
   return (
@@ -39,7 +40,7 @@ const Card: React.FC<CardProps> = ({ title, icon, headerAction, children, classN
         </div>
       )}
 
-      <div className={styles.cardContent}>
+      <div className={`${styles.cardContent} ${classContent || ''}`}>
         {children}
       </div>
     </div>

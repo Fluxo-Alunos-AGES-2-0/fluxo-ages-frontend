@@ -1,0 +1,29 @@
+.hoursTrackerContent {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.hourSection {
+  width: fit-content;
+  height: 100%;
+  border: 5px solid #30436b;
+}
+
+.hourCount {
+  color: var(--title-light);
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 32px; /* 133.333% */
+}
+
+.orange {
+  color: var(--orange);
+}
+
+.blue {
+  color: var(--blue);
+}

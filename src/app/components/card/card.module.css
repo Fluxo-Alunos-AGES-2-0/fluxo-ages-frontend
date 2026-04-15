@@ -41,7 +41,9 @@
 
 .cardContent {
   padding: 20px;
-  flex: 1;
+  width: fill;
+  height: fill;
+  display: flex;
 }
 
 .action {
