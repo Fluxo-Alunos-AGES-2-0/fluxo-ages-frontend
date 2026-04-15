@@ -52,6 +52,7 @@ export function LoginCard({ onOpenCronograma }: LoginCardProps) {
       return;
     }
 
+    localStorage.setItem("token", "mock-token");
     navigate("/dashboard");
   };
 
@@ -100,7 +101,6 @@ export function LoginCard({ onOpenCronograma }: LoginCardProps) {
       >
         <div className="flex flex-col items-center gap-1">
           <div className="flex items-center gap-2.5">
-            
             <div className="flex items-center justify-center">
               <img
                 src={logoFluxoAges}

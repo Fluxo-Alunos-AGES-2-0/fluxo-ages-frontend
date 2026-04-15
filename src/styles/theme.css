@@ -11,6 +11,14 @@
   --blue: #3b5ccc;
   --grey: #6b7280;
   --orange: #f47b20;
+  --sidebar-bg: #ffffff;
+  --header-bg: #ffffff;
+  --content-bg: #f3f4f6;
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --nav-active-bg: #eef1fb;
+  --nav-active-text: #3b5ccc;
+  --schedule-today-bg: #eef1fb;
   --linear-blue: linear-gradient(
     135deg,
     #3b5ccc 0%,
