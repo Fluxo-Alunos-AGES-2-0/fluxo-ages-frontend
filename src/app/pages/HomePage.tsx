@@ -29,7 +29,7 @@ export default function HomePage() {
         </p>
       </section>
       */}
-      <HoursTracker hours={{done: "42:00:00", total: "60:00:00", todo: "18:00:00"}}></HoursTracker>
+      <HoursTracker />
     </main>
   );
 }

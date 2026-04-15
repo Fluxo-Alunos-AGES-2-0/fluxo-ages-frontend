@@ -1,29 +1,59 @@
 import style from './hoursTracker.module.css'
 import Card from "../card/card.component";
+import CircularProgress from '../circularProgress/circularProgress.component';
+import { useEffect, useState } from 'react';
+import Loader from '../loader/loader.component';
 
-interface HoursTrackerProps {
-  hours: {
-    total: string,
-    done: string,
-    todo: string
+const HoursTracker = () => {
+  const [hours, setHours] = useState({
+    total: "",
+    done: "",
+    todo: ""
+  });
+  const [loading, isLoading] = useState(true);
+
+  const fetchHoursData = () => {
+    setTimeout(() => {
+      console.log("Fingindo que estamos esperando dados do backend");
+      setHours({
+        total: "60:00:00",
+        done: "42:00:00",
+        todo: "18:00:00"
+      });
+
+      isLoading(false);
+    }, 3000);
   }
-}
 
-const HoursTracker: React.FC<HoursTrackerProps> = ({ hours }) => {
+  useEffect(() => {
+    fetchHoursData();
+  }, []);
+
   return(
     <Card title="Controle de Horas" icon="arrow" className="fullWidth" classContent={style.hoursTrackerContent}>
+    {
+      loading ? (
+        <Loader />
+      ) : (
+        <>
         <div className={style.hourSection}>
           <span className={`${style.hourCount} ${style.blue}`}>{hours.done}</span>
-          <p>Concluídas</p>
+          <p className={style.hourCountTitle}>Concluídas</p>
           </div>
         <div className={style.hourSection}>
           <span className={`${style.hourCount} ${style.orange}`}>{hours.todo}</span>
-          <p>A cumprir</p>
+          <p className={style.hourCountTitle}>A cumprir</p>
         </div>
         <div className={style.hourSection}>
           <span className={style.hourCount}>{hours.total}</span>
-          <p>Total</p>
+          <p className={style.hourCountTitle}>Total</p>
         </div>
+        <div className={style.hourSection}>
+          <CircularProgress percentage={65}/>
+        </div>
+        </>
+        )
+      }
     </Card>
   )
 }
