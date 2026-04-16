@@ -25,14 +25,14 @@ export const Card: React.FC<CardProps> = ({
   return (
     <div
       className={[
-        "bg-white shadow-[0_1px_3px_rgba(0,0,0,0.05)] rounded-xl flex flex-col min-h-0 min-w-[280px] relative overflow-hidden w-full h-full",
+        "bg-white shadow-[0_1px_3px_rgba(0,0,0,0.05)] rounded-xl flex flex-col min-h-0 min-w-[280px] max-h-[550px] relative overflow-scroll no-scrollbar :hidden w-full h-full",
         className || "",
       ].join(" ")}
     >
       <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#3b5ccc] to-[#5b7ae8] z-10 rounded-t-xl" />
 
       {hasHeader && (
-        <div className="flex justify-between items-center px-5 py-4 border-b border-[#e5e7eb] w-full h-[50px]">
+        <div className="sticky z-1 flex justify-between items-center px-5 py-4 border-b border-[#e5e7eb] w-full h-[50px]">
           <div className="flex items-center gap-2.5">
             {icon === "clock" && <img src={clockIcon} alt="Clock icon" />}
             {icon === "arrow" && (
