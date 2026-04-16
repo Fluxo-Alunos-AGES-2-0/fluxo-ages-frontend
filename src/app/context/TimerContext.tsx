@@ -1,9 +1,15 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
 
 interface TimerContextType {
   isRunning: boolean;
   startTime: number | null;
-  elapsedTime: number; 
+  elapsedTime: number;
   startTimer: () => void;
   stopTimer: () => void;
   resetTimer: () => void;
@@ -49,7 +55,16 @@ export const TimerProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <TimerContext.Provider value={{ isRunning, startTime, elapsedTime, startTimer, stopTimer, resetTimer }}>
+    <TimerContext.Provider
+      value={{
+        isRunning,
+        startTime,
+        elapsedTime,
+        startTimer,
+        stopTimer,
+        resetTimer,
+      }}
+    >
       {children}
     </TimerContext.Provider>
   );
@@ -58,7 +73,7 @@ export const TimerProvider = ({ children }: { children: ReactNode }) => {
 export const useTimer = () => {
   const context = useContext(TimerContext);
   if (context === undefined) {
-    throw new Error('useTimer deve ser usado dentro de um TimerProvider');
+    throw new Error("useTimer deve ser usado dentro de um TimerProvider");
   }
   return context;
 };
