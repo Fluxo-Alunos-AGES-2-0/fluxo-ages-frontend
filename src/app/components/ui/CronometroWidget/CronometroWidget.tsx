@@ -1,7 +1,11 @@
 import React from "react";
 import { useTimer } from "../../../context/TimerContext";
 
-export const CronometroWidget: React.FC = () => {
+interface CronometroWidgetProps {
+  color?: string;
+}
+
+export const CronometroWidget: React.FC<CronometroWidgetProps> = ({ color = "#f47b20" }) => {
   const { isRunning, elapsedTime } = useTimer();
 
   if (!isRunning) return null;
@@ -12,9 +16,7 @@ export const CronometroWidget: React.FC = () => {
   const seconds = totalSeconds % 60;
   const fmt = (n: number) => n.toString().padStart(2, "0");
 
-  const handleClick = () => {
-    // Modal de confirmação para encerrar o ponto — a ser implementado em task posterior
-  };
+  const handleClick = () => {};
 
   return (
     <button
@@ -22,13 +24,15 @@ export const CronometroWidget: React.FC = () => {
       className="flex items-center gap-2 px-4 py-1.5 rounded-full border border-orange-200 bg-orange-50 hover:bg-orange-100 transition-colors cursor-pointer select-none"
       aria-label="Cronômetro em execução — clique para encerrar o ponto"
     >
-
       <span className="relative flex h-2.5 w-2.5">
         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75" />
         <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-orange-500" />
       </span>
 
-      <span className="font-mono text-[15px] font-semibold text-[#f47b20] tracking-widest">
+      <span 
+        className="font-mono text-[15px] font-semibold tracking-widest"
+        style={{ color: color }}
+      >
         {fmt(hours)}:{fmt(minutes)}:{fmt(seconds)}
       </span>
     </button>
