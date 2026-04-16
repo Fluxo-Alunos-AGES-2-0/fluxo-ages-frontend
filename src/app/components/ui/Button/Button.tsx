@@ -1,30 +1,28 @@
+import { ButtonHTMLAttributes } from "react";
+
 type ButtonVariant = "primary" | "secondary" | "ghost";
 
-interface ButtonProps {
-  label: string;
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
   loading?: boolean;
-  disabled?: boolean;
   fullWidth?: boolean;
-  onClick?: () => void;
 }
 
 const variantClasses: Record<ButtonVariant, string> = {
-  primary:
-    "bg-primary text-white hover:bg-primary/90 active:bg-primary/80",
+  primary: "bg-primary text-white hover:bg-primary/90 active:bg-primary/80",
   secondary:
     "border border-primary text-primary bg-transparent hover:bg-primary/10 active:bg-primary/15",
-  ghost:
-    "bg-transparent text-primary hover:underline px-1",
+  ghost: "bg-transparent text-primary hover:underline px-1",
 };
 
 export function Button({
-  label,
   variant = "primary",
   loading = false,
-  disabled = false,
   fullWidth = false,
-  onClick,
+  disabled,
+  className = "",
+  children,
+  ...props
 }: ButtonProps) {
   return (
     <button
@@ -37,12 +35,12 @@ export function Button({
         "disabled:opacity-50 disabled:cursor-not-allowed",
         variantClasses[variant],
         fullWidth ? "w-full" : "",
+        className,
       ]
         .filter(Boolean)
         .join(" ")}
       disabled={disabled || loading}
-      onClick={onClick}
-      type="button"
+      {...props}
     >
       {loading && (
         <span
@@ -50,7 +48,7 @@ export function Button({
           aria-hidden="true"
         />
       )}
-      {label}
+      {children}
     </button>
   );
 }

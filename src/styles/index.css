@@ -11,8 +11,8 @@
     sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  color: #111827;
-  background: #f3f4f6;
+  color: var(--text-primary);
+  background: var(--content-bg);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
