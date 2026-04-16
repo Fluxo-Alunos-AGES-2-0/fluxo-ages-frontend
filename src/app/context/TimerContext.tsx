@@ -12,9 +12,17 @@ interface TimerContextType {
 const TimerContext = createContext<TimerContextType | undefined>(undefined);
 
 export const TimerProvider = ({ children }: { children: ReactNode }) => {
-  const [isRunning, setIsRunning] = useState(false);
-  const [startTime, setStartTime] = useState<number | null>(null);
-  const [elapsedTime, setElapsedTime] = useState(0);
+  
+  // ========================================================
+  // MOCK TEMPORÁRIO PARA TESTE DA TASK
+  const DUAS_HORAS_EM_MS = 2 * 60 * 60 * 1000;
+  const QUINZE_MIN_EM_MS = 15 * 60 * 1000;
+  const mockStartTime = Date.now() - (DUAS_HORAS_EM_MS + QUINZE_MIN_EM_MS);
+  // ========================================================
+
+  const [isRunning, setIsRunning] = useState(true); 
+  const [startTime, setStartTime] = useState<number | null>(mockStartTime);
+  const [elapsedTime, setElapsedTime] = useState(Date.now() - mockStartTime);
 
   useEffect(() => {
     let intervalId: ReturnType<typeof setInterval>;
