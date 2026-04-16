@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { Card } from "@/app/components/card/card.component";
-import { CircularProgress } from "@/app/components/circularProgress/circularProgress.component";
-import { Loader } from "@/app/components/loader/loader.component";
+import { Card } from "@/app/components/Card/Card";
+import { CircularProgress } from "@/app/components/CircularProgress/CircularProgress";
+import { Loader } from "@/app/components/Loader/Loader";
 
 export const HoursTracker = () => {
   const [hours, setHours] = useState({
@@ -30,7 +30,7 @@ export const HoursTracker = () => {
     <Card
       title="Controle de Horas"
       icon="arrow"
-      className="fullWidth"
+      className="col-span-full"
       classContent="h-full flex flex-row items-center justify-center gap-[50px] relative"
     >
       {loading ? (
