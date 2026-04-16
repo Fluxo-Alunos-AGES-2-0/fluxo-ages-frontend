@@ -13,6 +13,8 @@
   opacity: 0;
   transition: opacity 0.3s ease;
 
+  z-index: 9999;
+
 }
 
 .modal-backdrop.open {
@@ -25,9 +27,12 @@
 
 .modal {
   background: white;
-  padding: 20px;
-  border-radius: 8px;
-  min-width: 300px;
+  padding: 24px;
+  border-radius: 12px; 
+  min-width: 420px;
+  z-index: 10000;
+  border-left: 4px solid #3b82f6;
+
 }
 
 .modal-backdrop.open .modal {
@@ -46,11 +51,56 @@
   align-items: center;
 }
 
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .modal-body {
-  margin: px 0;
+  margin-top: 12px;
 }
 
 .modal-footer {
   display: flex;
   justify-content: flex-end;
+}
+
+.event-info {
+  display: flex;
+  gap: 24px; 
+  margin-top: 8px;
+}
+
+.event-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.event-item p {
+  margin: 0;
+  font-size: 14px;
+  color: #475569; 
+}
+
+.iconBox {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+}
+
+.iconBox svg {
+  color: #64748b;
+}
+
+.badge {
+  background-color: #e0f2fe;
+  color: #0284c7;
+
+  padding: 4px 10px;
+  border-radius: 999px;
+
+  font-size: 12px;
+  font-weight: 500;
 }

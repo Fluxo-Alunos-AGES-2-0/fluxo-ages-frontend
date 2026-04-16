@@ -1,11 +1,15 @@
 
 import { useEffect, useRef, useState } from "react";
 import "./Modal.css"
+import { Calendar } from 'lucide-react';
+import { Clock4 } from 'lucide-react';
 
-function Modal({ isOpen, onClose, title, children, footer }) {
+
+function Modal({ isOpen, onClose, title, children, footer, data, horario, categoria  }) {
   
   const modalRef =useRef(null);
   const [show, setShow] = useState(isOpen);
+  
     
   useEffect(() => {
       if (isOpen) {
@@ -104,10 +108,29 @@ function Modal({ isOpen, onClose, title, children, footer }) {
     <div className="modal" ref={modalRef}>
       <div className="modal-header">
         <h2>{title}</h2>
-        <button onClick={onClose}>X</button>
+          <div className="header-right">
+            {categoria && <span className="badge">{categoria}</span>}
+            <button onClick={onClose}>X</button>
+          </div>
         </div>
 
       <div className="modal-body">
+          {data && horario && (
+          <div className="event-info">
+            <div className="event-item">
+              <div className="iconBox"><Calendar size={16} /></div>
+          <p>{data}</p>
+          </div>
+
+        <div className="event-item">
+          <div className="iconBox">
+            <Clock4 size={16} />
+          </div>
+          <p>{horario}</p>
+        </div>
+
+      </div>
+          )}
         {children}
       </div>
 

@@ -3,6 +3,7 @@ import { User, Lock, Mail } from "lucide-react";
 import { InputField } from "../components/ui/InputField/InputField"; 
 import Modal from "../components/ui/Modal/Modal";
 import styles from "./HomePage.module.css";
+//import ProfileCard from "../components/profileCard/ProfileCard";
 // import Card from "../components/card/card.component"; 
 
 export default function HomePage() {
@@ -60,20 +61,14 @@ export default function HomePage() {
               onChange={(e) => setEmailErro(e.target.value)}
             />
 
-            <button onClick={() => setOpen(true)}>
-              Abrir Modal
-            </button>
+            
           </div>
         </div>
       </section>
 
-      <Modal
-        isOpen={open}
-        onClose={() => setOpen(false)}
-        title="Meu modal"
-      >
-        <p>Teste de conteúdo</p>
-      </Modal>
+      
+      
+
     </main>
   );
 }
