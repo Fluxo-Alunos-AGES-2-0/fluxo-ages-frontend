@@ -1,4 +1,4 @@
-import { Card } from "@/app/components/Card/Card";
+import Card from "../card/card.component";
 import { useState, useEffect } from "react";
 import { Folder, GraduationCap, CircleStar } from "lucide-react";
 
