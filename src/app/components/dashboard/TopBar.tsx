@@ -1,8 +1,5 @@
 import { Info, Sun } from "lucide-react";
 import { useLocation } from "react-router";
-import { useEffect } from "react";
-import { CronometroWidget } from "../ui/CronometroWidget/CronometroWidget";
-import { useTimer } from "../../context/TimerContext";
 
 const pageTitles: Record<string, string> = {
   "/dashboard": "Dashboard",
@@ -13,7 +10,6 @@ const pageTitles: Record<string, string> = {
 export function TopBar() {
   const { pathname } = useLocation();
   const title = pageTitles[pathname] || "Dashboard";
-  const { startTimer } = useTimer();
 
   return (
     <header className="flex items-center justify-between px-7 h-[72px] shrink-0 bg-white border-b border-[#e5e7eb]">
@@ -21,10 +17,6 @@ export function TopBar() {
         <h1 className="text-[16px] font-semibold text-[#1f2937] m-0">
           {title}
         </h1>
-      </div>
-
-      <div className="flex-1 flex justify-center">
-        {pathname !== "/dashboard" && <CronometroWidget />}
       </div>
 
       <div className="flex-1 flex justify-center" />

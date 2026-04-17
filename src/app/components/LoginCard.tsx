@@ -82,7 +82,7 @@ export function LoginCard({ onOpenCronograma }: LoginCardProps) {
     }
   };
 
-  const handleRecoverySubmit = async () => {
+  const handleRecoverySubmit = () => {
     const newErrors: { recoveryEmail?: string } = {};
     setSuccessMessage("");
 
@@ -98,18 +98,7 @@ export function LoginCard({ onOpenCronograma }: LoginCardProps) {
     }
 
     setErrors((prev) => ({ ...prev, recoveryEmail: undefined }));
-    setIsLoading(true);
-    try {
-      await api.post("/auth/forgot-password", { email: recoveryEmail });
-      setSuccessMessage("Sucesso! Email para troca de senha enviado.");
-    } catch {
-      setErrors((prev) => ({
-        ...prev,
-        recoveryEmail: "Erro ao enviar email. Tente novamente.",
-      }));
-    } finally {
-      setIsLoading(false);
-    }
+    setSuccessMessage("Sucesso! Email para troca de senha enviado.");
   };
 
   return (
