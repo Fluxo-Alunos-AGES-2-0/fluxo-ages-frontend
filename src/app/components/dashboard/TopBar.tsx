@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import { CronometroWidget } from "../ui/CronometroWidget/CronometroWidget";
 import { useTimer } from "../../context/TimerContext";
 
-
 const pageTitles: Record<string, string> = {
   "/dashboard": "Dashboard",
   "/relatorios": "Relatórios",
@@ -24,9 +23,8 @@ export function TopBar() {
         </h1>
       </div>
 
-       
       <div className="flex-1 flex justify-center">
-        <CronometroWidget />
+        {pathname !== "/dashboard" && <CronometroWidget />}
       </div>
 
       <div className="flex-1 flex justify-center" />

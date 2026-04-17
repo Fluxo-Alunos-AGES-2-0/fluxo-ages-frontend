@@ -31,6 +31,7 @@ function toInitials(name: string) {
 function decodeToken(token: string): User | null {
   try {
     const payload = JSON.parse(atob(token.split(".")[1]));
+    if (payload.exp && payload.exp * 1000 < Date.now()) return null;
     return {
       id: Number(payload.sub),
       name: payload.name ?? "",
