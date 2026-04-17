@@ -67,7 +67,7 @@ const TimerCardContent = () => {
   return (
     <>
       <Card
-        title="Controle de Horas"
+        title="Registro de Horas"
         icon="arrow"
         classContent="h-full flex flex-col items-center justify-center relative"
       >
