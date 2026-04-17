@@ -1,75 +1,98 @@
-import { createContext, useContext, useState, useEffect, useRef } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+import { api } from "@/app/services/api";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-interface TimerContextValue {
-  seconds: number;
-  running: boolean;
-  activity: string;
-  saved: boolean;
-  /** True while the full TimerCard is intersecting the viewport */
-  timerCardVisible: boolean;
-  setTimerCardVisible: (v: boolean) => void;
-  setActivity: (v: string) => void;
-  handleStart: () => void;
-  /** Pause without clearing — resumes from current position */
-  handlePause: () => void;
-  /** Stop, save and reset */
-  handleSave: () => void;
+interface TimerContextType {
+  isRunning: boolean;
+  startTime: number | null;
+  elapsedTime: number;
+  startTimer: () => Promise<void>;
+  stopTimer: (description: string) => Promise<void>;
+  resetTimer: () => void;
 }
 
-// ─── Context ──────────────────────────────────────────────────────────────────
-const TimerContext = createContext<TimerContextValue | null>(null);
+const TimerContext = createContext<TimerContextType | undefined>(undefined);
 
-// ─── Provider ─────────────────────────────────────────────────────────────────
-export function TimerProvider({ children }: { children: React.ReactNode }) {
-  const [seconds, setSeconds]               = useState(0);
-  const [running, setRunning]               = useState(false);
-  const [activity, setActivity]             = useState("");
-  const [saved, setSaved]                   = useState(false);
-  const [timerCardVisible, setTimerCardVisible] = useState(false);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+export const TimerProvider = ({ children }: { children: ReactNode }) => {
+  const [isRunning, setIsRunning] = useState(false);
+  const [startTime, setStartTime] = useState<number | null>(null);
+  const [elapsedTime, setElapsedTime] = useState(0);
 
   useEffect(() => {
-    if (running) {
-      intervalRef.current = setInterval(() => setSeconds((s) => s + 1), 1000);
-    } else {
-      if (intervalRef.current) clearInterval(intervalRef.current);
+    api
+      .get<{ id: number; startTime: string }>("/attendance/active")
+      .then((data) => {
+        const backendStart = Date.parse(data.startTime);
+        setStartTime(backendStart);
+        setIsRunning(true);
+      })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    let intervalId: ReturnType<typeof setInterval>;
+
+    if (isRunning && startTime !== null) {
+      intervalId = setInterval(() => {
+        setElapsedTime(Date.now() - startTime);
+      }, 1000);
     }
+
     return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (intervalId) clearInterval(intervalId);
     };
-  }, [running]);
+  }, [isRunning, startTime]);
 
-  const handleStart = () => { setSaved(false); setRunning(true); };
+  const startTimer = async () => {
+    if (isRunning) return;
+    const res = await api.post<{
+      id: number;
+      startTime: string;
+      status: string;
+    }>("/attendance/start", {});
+    const backendStart = Date.parse(res.startTime);
+    setStartTime(backendStart);
+    setElapsedTime(0);
+    setIsRunning(true);
+  };
 
-  const handlePause = () => { setRunning(false); };
+  const stopTimer = async (description: string) => {
+    if (!isRunning) return;
+    await api.post("/attendance/stop", { description });
+    setIsRunning(false);
+  };
 
-  const handleSave = () => {
-    setRunning(false);
-    setSaved(true);
-    setTimeout(() => {
-      setSaved(false);
-      setSeconds(0);
-      setActivity("");
-    }, 3000);
+  const resetTimer = () => {
+    setIsRunning(false);
+    setStartTime(null);
+    setElapsedTime(0);
   };
 
   return (
     <TimerContext.Provider
       value={{
-        seconds, running, activity, saved,
-        timerCardVisible, setTimerCardVisible,
-        setActivity, handleStart, handlePause, handleSave,
+        isRunning,
+        startTime,
+        elapsedTime,
+        startTimer,
+        stopTimer,
+        resetTimer,
       }}
     >
       {children}
     </TimerContext.Provider>
   );
-}
+};
 
-// ─── Hook ─────────────────────────────────────────────────────────────────────
-export function useTimer(): TimerContextValue {
-  const ctx = useContext(TimerContext);
-  if (!ctx) throw new Error("useTimer must be used inside <TimerProvider>");
-  return ctx;
-}
+export const useTimer = () => {
+  const context = useContext(TimerContext);
+  if (context === undefined) {
+    throw new Error("useTimer deve ser usado dentro de um TimerProvider");
+  }
+  return context;
+};

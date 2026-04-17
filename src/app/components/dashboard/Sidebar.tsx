@@ -1,307 +1,162 @@
-import { useNavigate, useLocation } from "react-router";
 import {
   Clock,
   FileText,
-  FolderOpen,
-  Zap,
-  LogOut,
-  X,
-  Calendar,
+  LayoutGrid,
   ChevronRight,
-  Lock,
+  CalendarDays,
+  LogOut,
 } from "lucide-react";
+import { Link, useLocation } from "react-router";
+import { useAuth } from "@/app/context/AuthContext";
+import { mockSchedule, type ScheduleEvent } from "@/app/data/mockSchedule";
+import logoFluxoAges from "@/app/assets/images/login/logo_fluxo_ages.webp";
 
-interface NavItem {
-  id: string;
+const menuItems = [
+  { label: "Controle de Horas", icon: Clock, path: "/dashboard" },
+  { label: "Relatórios", icon: FileText, path: "/relatorios" },
+  { label: "Mapa de Projetos", icon: LayoutGrid, path: "/projetos" },
+];
+
+function NavItem({
+  label,
+  icon: Icon,
+  path,
+  active,
+}: {
   label: string;
-  icon: React.ReactNode;
+  icon: typeof Clock;
   path: string;
-  disabled?: boolean;
-}
-
-const NAV_ITEMS: NavItem[] = [
-  {
-    id: "horas",
-    label: "Controle de Horas",
-    icon: <Clock className="w-4 h-4" />,
-    path: "/dashboard",
-    disabled: false,
-  },
-  {
-    id: "relatorios",
-    label: "Relatórios",
-    icon: <FileText className="w-4 h-4" />,
-    path: "/relatorios",
-    disabled: false,
-  },
-  {
-    id: "projetos",
-    label: "Mapa de Projetos",
-    icon: <FolderOpen className="w-4 h-4" />,
-    path: "/projetos",
-    disabled: false,
-  },
-];
-
-const MINI_SCHEDULE = [
-  { day: "Qui", time: "19:00", label: "Sprint Review", isToday: true },
-  { day: "Sex", time: "08:30", label: "Retrospectiva", isToday: false },
-  { day: "Seg", time: "08:00", label: "Daily Standup", isToday: false },
-  { day: "Seg", time: "14:00", label: "Sprint Planning", isToday: false },
-];
-
-interface SidebarProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-export function Sidebar({ isOpen, onClose }: SidebarProps) {
-  const navigate = useNavigate();
-  const { pathname } = useLocation();
-
-  const handleNav = (item: NavItem) => {
-    if (item.disabled) return;
-    navigate(item.path);
-    onClose();
-  };
-
+  active: boolean;
+}) {
   return (
-    <>
-      {/* Mobile backdrop */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 z-30 bg-black/50 backdrop-blur-sm md:hidden"
-          onClick={onClose}
-        />
-      )}
+    <Link
+      to={path}
+      className={[
+        "flex items-center gap-3 px-4 py-2.5 rounded-lg text-[14px] transition-colors no-underline",
+        active
+          ? "bg-[#eef1fb] text-[#3b5ccc] font-semibold"
+          : "text-[#4b5563] font-medium hover:bg-gray-50",
+      ].join(" ")}
+    >
+      <Icon size={20} strokeWidth={1.8} />
+      <span className="flex-1">{label}</span>
+      {active && <ChevronRight size={18} className="text-[#3b5ccc]" />}
+    </Link>
+  );
+}
 
-      {/* Sidebar panel */}
-      <aside
+function ScheduleItem({ event }: { event: ScheduleEvent }) {
+  return (
+    <div
+      className={[
+        "flex items-center gap-3 px-2 py-2 rounded-xl",
+        event.isToday ? "bg-[#eef1fb]" : "",
+      ].join(" ")}
+    >
+      <div
         className={[
-          "fixed md:static inset-y-0 left-0 z-40 w-[260px] flex-shrink-0",
-          "flex flex-col h-full bg-white dark:bg-[#1E293B]",
-          "border-r border-[#E5E7EB] dark:border-[#334155]",
-          "transition-transform duration-300 ease-in-out",
-          isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
+          "w-[42px] h-[42px] rounded-lg flex flex-col items-center justify-center shrink-0",
+          event.isToday
+            ? "bg-[#3b5ccc] text-white"
+            : "bg-gray-100 text-[#6b7280]",
         ].join(" ")}
       >
-        {/* Logo */}
-        <div className="flex items-center justify-between px-5 py-5 border-b border-[#E5E7EB] dark:border-[#334155]">
-          <button
-            onClick={() => { navigate("/dashboard"); onClose(); }}
-            className="flex items-center gap-2.5 cursor-pointer group"
-            aria-label="Ir para o Dashboard"
-          >
-            <div className="w-8 h-8 rounded-[8px] bg-[#3B5CCC] flex items-center justify-center shadow-sm flex-shrink-0 group-hover:opacity-85 transition-opacity">
-              <Zap className="w-4 h-4 text-white" fill="rgba(255,255,255,0.9)" />
-            </div>
-            <div className="flex items-baseline">
-              <span
-                className="text-[#3B5CCC] dark:text-[#4F6EF7] text-lg tracking-tight group-hover:opacity-80 transition-opacity"
-                style={{ fontWeight: 700 }}
-              >
-                Fluxo
-              </span>
-              <span
-                className="text-[#F47B20] text-lg tracking-tight group-hover:opacity-80 transition-opacity"
-                style={{ fontWeight: 700 }}
-              >
-                AGES
-              </span>
-            </div>
-          </button>
-          {/* Mobile close */}
-          <button
-            onClick={onClose}
-            className="md:hidden p-1.5 rounded-lg text-[#6B7280] dark:text-[#94A3B8] hover:bg-[#F5F6FA] dark:hover:bg-[#334155]/50 transition-colors"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
+        <span className="text-[11px] font-bold leading-none">
+          {event.dayAbbr}
+        </span>
+        <span className="text-[9px] leading-none mt-0.5">{event.time}</span>
+      </div>
+      <div className="flex flex-col min-w-0">
+        <span
+          className={[
+            "text-[14px] truncate",
+            event.isToday
+              ? "font-semibold text-[#1f2937]"
+              : "font-normal text-[#1f2937]",
+          ].join(" ")}
+        >
+          {event.title}
+        </span>
+        {event.isToday && (
+          <span className="text-[12px] font-semibold text-[#f47b20]">Hoje</span>
+        )}
+      </div>
+    </div>
+  );
+}
 
-        {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
-          <p
-            className="px-3 pb-2 text-[10px] text-[#9CA3AF] dark:text-[#64748B] uppercase tracking-widest"
-            style={{ fontWeight: 600 }}
-          >
-            Menu principal
+function UserFooter() {
+  const { user, logout } = useAuth();
+  if (!user) return null;
+
+  return (
+    <div className="border-t border-[#e5e7eb] px-5 py-5 flex flex-col gap-4">
+      <div className="flex items-center gap-3">
+        <div className="w-[44px] h-[44px] rounded-full bg-[#3b5ccc] text-white flex items-center justify-center text-[15px] font-semibold shrink-0">
+          {user.initials}
+        </div>
+        <div>
+          <p className="text-[15px] font-semibold text-[#1f2937] m-0 leading-tight">
+            {user.name}
           </p>
-
-          {NAV_ITEMS.map((item) => {
-            const isActive = !item.disabled && pathname === item.path;
-
-            /* ── Disabled / coming-soon item ── */
-            if (item.disabled) {
-              return (
-                <div
-                  key={item.id}
-                  title="Em breve"
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[8px] text-sm select-none opacity-45 cursor-not-allowed"
-                >
-                  <span className="text-[#9CA3AF] dark:text-[#64748B]">
-                    {item.icon}
-                  </span>
-                  <span
-                    className="flex-1 text-[#9CA3AF] dark:text-[#64748B]"
-                    style={{ fontWeight: 400 }}
-                  >
-                    {item.label}
-                  </span>
-                  <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-[#F5F6FA] dark:bg-[#334155]/60 border border-[#E5E7EB] dark:border-[#334155]">
-                    <Lock className="w-2.5 h-2.5 text-[#C4C9D4] dark:text-[#475569]" />
-                    <span
-                      className="text-[9px] text-[#C4C9D4] dark:text-[#475569] leading-none"
-                      style={{ fontWeight: 600 }}
-                    >
-                      Em breve
-                    </span>
-                  </span>
-                </div>
-              );
-            }
-
-            /* ── Active / enabled item ── */
-            return (
-              <button
-                key={item.id}
-                onClick={() => handleNav(item)}
-                className={[
-                  "w-full flex items-center gap-3 px-3 py-2.5 rounded-[8px] text-sm transition-all duration-150 cursor-pointer text-left group",
-                  isActive
-                    ? "bg-[#EEF2FF] dark:bg-[#3B5CCC]/20 text-[#3B5CCC] dark:text-[#4F6EF7]"
-                    : "text-[#6B7280] dark:text-[#94A3B8] hover:bg-[#F5F6FA] dark:hover:bg-[#334155]/50 hover:text-[#1F2937] dark:hover:text-[#F9FAFB]",
-                ].join(" ")}
-                style={{ fontWeight: isActive ? 600 : 400 }}
-              >
-                <span
-                  className={
-                    isActive
-                      ? "text-[#3B5CCC] dark:text-[#4F6EF7]"
-                      : "text-[#9CA3AF] dark:text-[#64748B] group-hover:text-[#6B7280] dark:group-hover:text-[#94A3B8]"
-                  }
-                >
-                  {item.icon}
-                </span>
-                <span className="flex-1">{item.label}</span>
-                {isActive && (
-                  <ChevronRight className="w-3.5 h-3.5 opacity-60" />
-                )}
-              </button>
-            );
-          })}
-
-          {/* ── Mini Cronograma da Turma ── */}
-          <div className="mt-6 pt-4 border-t border-[#E5E7EB] dark:border-[#334155]">
-            <div className="flex items-center gap-2 px-3 pb-3">
-              <Calendar className="w-3.5 h-3.5 text-[#6B7280] dark:text-[#64748B]" />
-              <p
-                className="text-[10px] text-[#9CA3AF] dark:text-[#64748B] uppercase tracking-widest"
-                style={{ fontWeight: 600 }}
-              >
-                Cronograma da Turma
-              </p>
-            </div>
-
-            <div className="space-y-1 px-1">
-              {MINI_SCHEDULE.map((event, idx) => (
-                <div
-                  key={idx}
-                  className={[
-                    "flex items-center gap-3 px-2 py-2 rounded-[8px] transition-colors",
-                    event.isToday
-                      ? "bg-[#EEF2FF] dark:bg-[#3B5CCC]/15"
-                      : "hover:bg-[#F5F6FA] dark:hover:bg-[#334155]/30",
-                  ].join(" ")}
-                >
-                  {/* Day pill */}
-                  <div
-                    className={[
-                      "flex-shrink-0 w-10 text-center py-1 rounded-[6px]",
-                      event.isToday
-                        ? "bg-[#3B5CCC] dark:bg-[#4F6EF7]"
-                        : "bg-[#F5F6FA] dark:bg-[#334155]/60",
-                    ].join(" ")}
-                  >
-                    <span
-                      className={[
-                        "text-[9px] block leading-none",
-                        event.isToday
-                          ? "text-white"
-                          : "text-[#6B7280] dark:text-[#94A3B8]",
-                      ].join(" ")}
-                      style={{ fontWeight: 700 }}
-                    >
-                      {event.day}
-                    </span>
-                    <span
-                      className={[
-                        "text-[9px] block mt-0.5 leading-none",
-                        event.isToday
-                          ? "text-white/80"
-                          : "text-[#9CA3AF] dark:text-[#64748B]",
-                      ].join(" ")}
-                    >
-                      {event.time}
-                    </span>
-                  </div>
-
-                  <div className="min-w-0">
-                    <p
-                      className={[
-                        "text-xs truncate leading-snug",
-                        event.isToday
-                          ? "text-[#3B5CCC] dark:text-[#4F6EF7]"
-                          : "text-[#6B7280] dark:text-[#94A3B8]",
-                      ].join(" ")}
-                      style={{ fontWeight: event.isToday ? 600 : 400 }}
-                    >
-                      {event.label}
-                    </p>
-                    {event.isToday && (
-                      <span
-                        className="text-[9px] text-[#F47B20]"
-                        style={{ fontWeight: 600 }}
-                      >
-                        Hoje
-                      </span>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </nav>
-
-        {/* User footer */}
-        <div className="px-4 py-4 border-t border-[#E5E7EB] dark:border-[#334155]">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#3B5CCC] to-[#5B7AE8] flex items-center justify-center flex-shrink-0 shadow-sm">
-              <span className="text-white text-xs" style={{ fontWeight: 700 }}>
-                LF
-              </span>
-            </div>
-            <div className="min-w-0">
-              <p
-                className="text-sm text-[#1F2937] dark:text-[#F9FAFB] truncate"
-                style={{ fontWeight: 600 }}
-              >
-                Lucas Fernandes
-              </p>
-              <p className="text-xs text-[#6B7280] dark:text-[#94A3B8] truncate">
-                AGES III
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={() => navigate("/")}
-            className="w-full flex items-center gap-2 px-3 py-2 rounded-[8px] text-xs text-[#6B7280] dark:text-[#94A3B8] hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-500 dark:hover:text-red-400 transition-colors cursor-pointer"
-          >
-            <LogOut className="w-3.5 h-3.5" />
-            Sair da conta
-          </button>
+          <p className="text-[12px] text-[#6b7280] m-0">{user.level}</p>
         </div>
-      </aside>
-    </>
+      </div>
+      <button
+        onClick={logout}
+        className="flex items-center gap-2 bg-transparent border-none text-[#6b7280] text-[13px] cursor-pointer p-0 hover:text-[#1f2937] transition-colors"
+      >
+        <LogOut size={16} />
+        Sair da conta
+      </button>
+    </div>
+  );
+}
+
+export function Sidebar() {
+  const { pathname } = useLocation();
+
+  return (
+    <aside className="flex flex-col h-screen sticky top-0 bg-white border-r border-[#e5e7eb]">
+      {/* Logo */}
+      <div className="h-[72px] flex items-center justify-center px-6 shrink-0 border-b border-[#e5e7eb]">
+        <img
+          src={logoFluxoAges}
+          alt="FluxoAGES"
+          className="h-10 w-auto object-contain"
+        />
+      </div>
+
+      {/* Nav + Schedule */}
+      <div className="flex-1 overflow-y-auto px-4 pt-2 pb-4 flex flex-col">
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-[#9ca3af] px-4 pt-5 pb-3 m-0">
+          Menu Principal
+        </p>
+        <div className="flex flex-col gap-0.5">
+          {menuItems.map((item) => (
+            <NavItem
+              key={item.path}
+              label={item.label}
+              icon={item.icon}
+              path={item.path}
+              active={pathname === item.path}
+            />
+          ))}
+        </div>
+
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-[#9ca3af] px-4 pt-6 pb-3 m-0 flex items-center gap-1.5">
+          <CalendarDays size={14} className="text-[#9ca3af]" />
+          Cronograma da Turma
+        </p>
+        <div className="flex flex-col gap-1">
+          {mockSchedule.map((event) => (
+            <ScheduleItem key={event.id} event={event} />
+          ))}
+        </div>
+      </div>
+
+      {/* Footer */}
+      <UserFooter />
+    </aside>
   );
 }
