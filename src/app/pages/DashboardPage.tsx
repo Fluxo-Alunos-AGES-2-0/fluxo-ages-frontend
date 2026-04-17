@@ -1,23 +1,69 @@
+import { useEffect, useState } from "react";
 import { ProfileCard } from "../components/profileCard/ProfileCard";
 import { TimerCard } from "../components/TimerCard/TimerCard";
 import { HoursTracker } from "../components/HoursTracker/HoursTracker";
+import { api } from "@/app/services/api";
+import { useAuth } from "@/app/context/AuthContext";
+
+interface ProfileData {
+  id: number;
+  name: string;
+  email: string;
+  avatarUrl: string | null;
+  agesLevel: number;
+  currentProject: { id: number; name: string } | null;
+  professor: { id: number; name: string } | null;
+  attendance: { totalClasses: number; presences: number; absences: number };
+}
+
+interface HoursData {
+  completedSeconds: number;
+  remainingSeconds: number;
+  totalSeconds: number;
+  percentual: number;
+}
+
+interface DashboardResponse {
+  profile: ProfileData;
+  hours: HoursData;
+}
+
+const ROMAN = ["I", "II", "III", "IV", "V", "VI"];
+function toAgesLevel(n: number) {
+  return `AGES ${ROMAN[n - 1] ?? n}`;
+}
 
 export default function DashboardPage() {
+  const { updateUser } = useAuth();
+  const [profile, setProfile] = useState<ProfileData | null>(null);
+  const [hours, setHours] = useState<HoursData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    api
+      .get<DashboardResponse>("/dashboard")
+      .then((data) => {
+        setProfile(data.profile);
+        setHours(data.hours);
+        updateUser({ level: toAgesLevel(data.profile.agesLevel) });
+      })
+      .catch((err: Error) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 lg:grid-rows-[auto_1fr] lg:h-full gap-6">
-      {/* Linha Superior - Coluna Esquerda */}
+    <div className="grid grid-cols-1 lg:grid-cols-3 lg:rows-[auto_1fr] lg:h-full gap-6">
       <div className="lg:col-span-1 flex flex-col">
-        <ProfileCard />
+        <ProfileCard profile={profile} loading={loading} error={error} />
       </div>
 
-      {/* Linha Superior - Coluna Direita */}
       <div className="lg:col-span-2 flex flex-col">
         <TimerCard />
       </div>
 
-      {/* Linha Inferior - Largura Total */}
       <div className="lg:col-span-3">
-        <HoursTracker />
+        <HoursTracker hours={hours} loading={loading} error={error} />
       </div>
     </div>
   );

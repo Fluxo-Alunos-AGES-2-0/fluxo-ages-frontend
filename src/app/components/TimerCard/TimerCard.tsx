@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Play, Pause } from "lucide-react";
 
-import { TimerProvider, useTimer } from "@/app/context/TimerContext";
+import { useTimer } from "@/app/context/TimerContext";
 
 import { Card } from "@/app/components/Card/Card";
 import { Button } from "@/app/components/ui/Button/Button";
@@ -14,10 +14,23 @@ const TimerCardContent = () => {
   const [description, setDescription] = useState("");
   const [error, setError] = useState<string | undefined>(undefined);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isStarting, setIsStarting] = useState(false);
+  const [isStopping, setIsStopping] = useState(false);
 
-  const handleStart = () => {
-    startTimer();
-    setError(undefined);
+  const handleStart = async () => {
+    setIsStarting(true);
+    try {
+      await startTimer();
+      setError(undefined);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Erro ao iniciar registro de horas.",
+      );
+    } finally {
+      setIsStarting(false);
+    }
   };
 
   const handleStopAttempt = () => {
@@ -29,14 +42,27 @@ const TimerCardContent = () => {
     setIsModalOpen(true);
   };
 
-  const handleConfirmFinish = () => {
-    stopTimer();
-    resetTimer();
-    setDescription("");
-    setIsModalOpen(false);
+  const handleConfirmFinish = async () => {
+    setIsStopping(true);
+    try {
+      await stopTimer(description);
+      resetTimer();
+      setDescription("");
+      setIsModalOpen(false);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Erro ao encerrar registro de horas.",
+      );
+      setIsModalOpen(false);
+    } finally {
+      setIsStopping(false);
+    }
   };
 
-  const timerChildClass = "w-full flex flex-col items-center p-6 gap-6 border-b border-slate-100 last:border-none";
+  const timerChildClass =
+    "w-full flex flex-col items-center p-6 gap-6 border-b border-slate-100 last:border-none";
 
   return (
     <>
@@ -47,18 +73,20 @@ const TimerCardContent = () => {
       >
         <div className={timerChildClass}>
           <TimerDisplay />
-          
+
           {!isRunning ? (
             <Button
               onClick={handleStart}
+              disabled={isStarting}
               className="flex items-center gap-2 bg-[#4F46E5] hover:bg-indigo-700 text-white px-10 py-3 rounded-xl transition-all font-bold"
             >
               <Play size={18} fill="currentColor" />
-              Iniciar
+              {isStarting ? "Iniciando..." : "Iniciar"}
             </Button>
           ) : (
             <Button
               onClick={handleStopAttempt}
+              disabled={isStopping}
               className="flex items-center gap-2 !bg-[#f47b20] border border-orange-200 hover:bg-orange-100 text-white px-10 py-3 rounded-xl transition-all font-bold"
             >
               <Pause size={18} fill="currentColor" />
@@ -82,22 +110,18 @@ const TimerCardContent = () => {
         </div>
       </Card>
 
-      <ConfirmationModal 
+      <ConfirmationModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onConfirm={handleConfirmFinish}
         title="Encerrar horas"
         description="Tem certeza de que deseja encerrar o relatório de horas atual?"
         warningMessage="Uma vez encerrado, os dados serão enviados para análise e não poderão ser alterados localmente."
-        confirmText="Encerrar"
+        confirmText={isStopping ? "Encerrando..." : "Encerrar"}
         cancelText="Cancelar"
       />
     </>
   );
 };
 
-export const TimerCard = () => (
-  <TimerProvider>
-    <TimerCardContent />
-  </TimerProvider>
-);
+export const TimerCard = () => <TimerCardContent />;

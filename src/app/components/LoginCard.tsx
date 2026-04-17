@@ -8,7 +8,6 @@ import {
   Globe,
   GitBranch,
   BookOpen,
-  Zap,
   KeyRound,
   Mail,
 } from "lucide-react";
@@ -16,9 +15,16 @@ import { InputField } from "@/app/components/ui/InputField/InputField";
 import { Button } from "@/app/components/ui/Button/Button";
 import { QuickAccessButton } from "@/app/components/ui/QuickAccessButton/QuickAccessButton";
 import logoFluxoAges from "@/app/assets/images/login/logo_fluxo_ages.webp";
+import { api } from "@/app/services/api";
 
 interface LoginCardProps {
   onOpenCronograma: () => void;
+}
+
+interface LoginResponse {
+  token: string;
+  expiresIn: number;
+  user: { id: number; name: string; email: string; role: string };
 }
 
 export function LoginCard({ onOpenCronograma }: LoginCardProps) {
@@ -28,10 +34,12 @@ export function LoginCard({ onOpenCronograma }: LoginCardProps) {
     usuario?: string;
     senha?: string;
     recoveryEmail?: string;
+    general?: string;
   }>({});
   const [successMessage, setSuccessMessage] = useState("");
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [recoveryEmail, setRecoveryEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -39,12 +47,11 @@ export function LoginCard({ onOpenCronograma }: LoginCardProps) {
     setErrors((prev) => ({ ...prev, [field]: undefined }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const newErrors: { usuario?: string; senha?: string } = {};
 
     if (!usuario.trim()) newErrors.usuario = "Informe seu usuário";
-
     if (!senha.trim()) newErrors.senha = "Informe sua senha";
 
     if (Object.keys(newErrors).length > 0) {
@@ -52,22 +59,31 @@ export function LoginCard({ onOpenCronograma }: LoginCardProps) {
       return;
     }
 
-    localStorage.setItem("token", "mock-token");
-    navigate("/dashboard");
+    setIsLoading(true);
+    try {
+      const res = await api.post<LoginResponse>("/auth/login", {
+        email: usuario,
+        password: senha,
+      });
+      localStorage.setItem("token", res.token);
+      navigate("/dashboard");
+    } catch {
+      setErrors({ general: "Usuário ou senha inválidos." });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleForgotPassword = () => {
     setShowForgotPassword((prev) => !prev);
-
     if (showForgotPassword) {
       setRecoveryEmail("");
       setErrors((prev) => ({ ...prev, recoveryEmail: undefined }));
     }
   };
 
-  const handleRecoverySubmit = () => {
+  const handleRecoverySubmit = async () => {
     const newErrors: { recoveryEmail?: string } = {};
-
     setSuccessMessage("");
 
     if (!recoveryEmail.trim()) {
@@ -80,8 +96,20 @@ export function LoginCard({ onOpenCronograma }: LoginCardProps) {
       setErrors((prev) => ({ ...prev, ...newErrors }));
       return;
     }
+
     setErrors((prev) => ({ ...prev, recoveryEmail: undefined }));
-    setSuccessMessage("Sucesso! Email para troca de senha enviado.");
+    setIsLoading(true);
+    try {
+      await api.post("/auth/forgot-password", { email: recoveryEmail });
+      setSuccessMessage("Sucesso! Email para troca de senha enviado.");
+    } catch {
+      setErrors((prev) => ({
+        ...prev,
+        recoveryEmail: "Erro ao enviar email. Tente novamente.",
+      }));
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -89,7 +117,6 @@ export function LoginCard({ onOpenCronograma }: LoginCardProps) {
       className="w-full bg-white rounded-[12px] flex flex-col overflow-hidden"
       style={{ boxShadow: "0 8px 30px rgba(0,0,0,0.12)" }}
     >
-      {/* Top accent bar */}
       <div className="h-1 w-full bg-gradient-to-r from-[#3B5CCC] via-[#5B7AE8] to-[#F47B20]" />
 
       <div
@@ -114,7 +141,6 @@ export function LoginCard({ onOpenCronograma }: LoginCardProps) {
           </p>
         </div>
 
-        {/* Form */}
         <form
           onSubmit={handleSubmit}
           noValidate
@@ -150,13 +176,18 @@ export function LoginCard({ onOpenCronograma }: LoginCardProps) {
             autoComplete="current-password"
           />
 
+          {errors.general && (
+            <p className="text-sm text-red-600 text-center">{errors.general}</p>
+          )}
+
           <Button
             type="submit"
             fullWidth
             className="py-2.5 text-sm"
             style={{ fontWeight: 600 }}
+            disabled={isLoading}
           >
-            Entrar
+            {isLoading ? "Entrando..." : "Entrar"}
           </Button>
 
           <div className="flex justify-center">
@@ -171,6 +202,7 @@ export function LoginCard({ onOpenCronograma }: LoginCardProps) {
               </span>
             </button>
           </div>
+
           <div
             className={`grid transition-all duration-300 ease-in-out ${
               showForgotPassword
@@ -201,9 +233,11 @@ export function LoginCard({ onOpenCronograma }: LoginCardProps) {
                   className="py-2.5 text-sm bg-[#2d4db3] text-white hover:bg-[#243f94] transition-all duration-200"
                   style={{ fontWeight: 600 }}
                   onClick={handleRecoverySubmit}
+                  disabled={isLoading}
                 >
-                  Confirmar
+                  {isLoading ? "Enviando..." : "Confirmar"}
                 </Button>
+
                 {successMessage && (
                   <p className="text-sm text-green-600 text-center">
                     {successMessage}
@@ -214,7 +248,6 @@ export function LoginCard({ onOpenCronograma }: LoginCardProps) {
           </div>
         </form>
 
-        {/* Divider */}
         <div className="flex items-center gap-3">
           <div className="flex-1 h-px bg-[#E5E7EB]" />
           <span className="text-[11px] text-[#9CA3AF] uppercase tracking-wider whitespace-nowrap">
@@ -223,7 +256,6 @@ export function LoginCard({ onOpenCronograma }: LoginCardProps) {
           <div className="flex-1 h-px bg-[#E5E7EB]" />
         </div>
 
-        {/* Quick Access */}
         <div className="flex flex-col gap-1.5">
           <QuickAccessButton
             icon={<Calendar className="w-4 h-4" />}
@@ -253,7 +285,6 @@ export function LoginCard({ onOpenCronograma }: LoginCardProps) {
           />
         </div>
 
-        {/* Footer */}
         <p className="text-center text-[11px] text-[#9CA3AF]">
           © {new Date().getFullYear()} FluxoAGES · PUCRS · Todos os direitos
           reservados

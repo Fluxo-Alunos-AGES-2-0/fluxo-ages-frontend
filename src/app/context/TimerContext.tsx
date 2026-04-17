@@ -5,13 +5,14 @@ import React, {
   useEffect,
   ReactNode,
 } from "react";
+import { api } from "@/app/services/api";
 
 interface TimerContextType {
   isRunning: boolean;
   startTime: number | null;
   elapsedTime: number;
-  startTimer: () => void;
-  stopTimer: () => void;
+  startTimer: () => Promise<void>;
+  stopTimer: (description: string) => Promise<void>;
   resetTimer: () => void;
 }
 
@@ -21,6 +22,17 @@ export const TimerProvider = ({ children }: { children: ReactNode }) => {
   const [isRunning, setIsRunning] = useState(false);
   const [startTime, setStartTime] = useState<number | null>(null);
   const [elapsedTime, setElapsedTime] = useState(0);
+
+  useEffect(() => {
+    api
+      .get<{ id: number; startTime: string }>("/attendance/active")
+      .then((data) => {
+        const backendStart = Date.parse(data.startTime);
+        setStartTime(backendStart);
+        setIsRunning(true);
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     let intervalId: ReturnType<typeof setInterval>;
@@ -36,15 +48,22 @@ export const TimerProvider = ({ children }: { children: ReactNode }) => {
     };
   }, [isRunning, startTime]);
 
-  const startTimer = () => {
-    if (!isRunning) {
-      const now = Date.now();
-      setStartTime(now - elapsedTime);
-      setIsRunning(true);
-    }
+  const startTimer = async () => {
+    if (isRunning) return;
+    const res = await api.post<{
+      id: number;
+      startTime: string;
+      status: string;
+    }>("/attendance/start", {});
+    const backendStart = Date.parse(res.startTime);
+    setStartTime(backendStart);
+    setElapsedTime(0);
+    setIsRunning(true);
   };
 
-  const stopTimer = () => {
+  const stopTimer = async (description: string) => {
+    if (!isRunning) return;
+    await api.post("/attendance/stop", { description });
     setIsRunning(false);
   };
 
