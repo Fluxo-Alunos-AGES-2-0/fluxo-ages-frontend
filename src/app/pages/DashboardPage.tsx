@@ -4,7 +4,7 @@ import { HoursTracker } from "../components/HoursTracker/HoursTracker";
 
 export default function DashboardPage() {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-3 lg:grid-rows-[auto_1fr] lg:h-full gap-6">
       {/* Linha Superior - Coluna Esquerda */}
       <div className="lg:col-span-1 flex flex-col">
         <ProfileCard />
