@@ -25,7 +25,7 @@ export const TimerProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     api
-      .get<{ id: number; startTime: string }>("/attendance/active")
+      .get<{ id: number; startTime: string }>("/hours/active")
       .then((data) => {
         const backendStart = Date.parse(data.startTime);
         setStartTime(backendStart);
@@ -54,7 +54,7 @@ export const TimerProvider = ({ children }: { children: ReactNode }) => {
       id: number;
       startTime: string;
       status: string;
-    }>("/attendance/start", {});
+    }>("/hours/start", {});
     const backendStart = Date.parse(res.startTime);
     setStartTime(backendStart);
     setElapsedTime(0);
@@ -63,7 +63,7 @@ export const TimerProvider = ({ children }: { children: ReactNode }) => {
 
   const stopTimer = async (description: string) => {
     if (!isRunning) return;
-    await api.post("/attendance/stop", { description });
+    await api.post("/hours/stop", { description });
     setIsRunning(false);
   };
 

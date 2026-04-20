@@ -62,7 +62,7 @@ export function LoginCard({ onOpenCronograma }: LoginCardProps) {
     setIsLoading(true);
     try {
       const res = await api.post<LoginResponse>("/auth/login", {
-        email: usuario,
+        username: usuario,
         password: senha,
       });
       localStorage.setItem("token", res.token);
