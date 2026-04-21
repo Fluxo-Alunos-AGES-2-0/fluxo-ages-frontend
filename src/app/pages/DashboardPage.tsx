@@ -56,8 +56,8 @@ export default function DashboardPage() {
   const refreshHours = () => {
   setHoursLoading(true)
   api
-    .get<DashboardResponse>("/dashboard")
-    .then((data) => setHours(data.hours))
+    .get<HoursData>("/hours/me/control")
+    .then((data) => setHours(data))
     .catch((err: Error) => setError(err.message))
     .finally(() => setHoursLoading(false))
 }
