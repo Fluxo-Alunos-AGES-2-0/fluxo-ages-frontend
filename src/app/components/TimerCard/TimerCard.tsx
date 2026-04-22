@@ -10,8 +10,9 @@ import { TextArea } from "@/app/components/ui/TextArea/TextArea";
 import { ConfirmationModal } from "@/app/components/ui/ConfirmationModal/ConfirmationModal";
 
 interface TimerCardContentProps {
-  onConfirmFinish: () => void;
+  onConfirmFinish: () => Promise<void>;
 }
+
 const TimerCardContent = ({ onConfirmFinish }: TimerCardContentProps) => {
   const { isRunning, startTimer, stopTimer, resetTimer } = useTimer();
   const [description, setDescription] = useState("");
@@ -71,7 +72,7 @@ const TimerCardContent = ({ onConfirmFinish }: TimerCardContentProps) => {
   return (
     <>
       <Card
-        title="Registro de Horas"
+        title="Controle de Horas"
         icon="arrow"
         classContent="h-full flex flex-col items-center justify-center relative"
       >
@@ -128,4 +129,6 @@ const TimerCardContent = ({ onConfirmFinish }: TimerCardContentProps) => {
   );
 };
 
-export const TimerCard = ({ onConfirmFinish }: TimerCardContentProps) => <TimerCardContent onConfirmFinish={onConfirmFinish} />;
+export const TimerCard = ({ onConfirmFinish }: TimerCardContentProps) => (
+  <TimerCardContent onConfirmFinish={onConfirmFinish} />
+);
