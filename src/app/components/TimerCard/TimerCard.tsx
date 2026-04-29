@@ -121,7 +121,7 @@ const TimerCardContent = ({ onConfirmFinish }: TimerCardContentProps) => {
         onConfirm={handleConfirmFinish}
         title="Encerrar horas"
         description="Tem certeza de que deseja encerrar o relatório de horas atual?"
-        warningMessage="Uma vez encerrado, os dados serão enviados para análise e não poderão ser alterados localmente."
+        warningMessage="Uma vez encerrado, o registro não poderá ser editado diretamente. Para realizar alterações, será necessário solicitar a edição."
         confirmText={isStopping ? "Encerrando..." : "Encerrar"}
         cancelText="Cancelar"
       />
