@@ -4,6 +4,7 @@ import { TimerCard } from "../components/TimerCard/TimerCard";
 import { HoursTracker } from "../components/HoursTracker/HoursTracker";
 import { api } from "@/app/services/api";
 import { useAuth } from "@/app/context/AuthContext";
+import { useToast } from "@/app/context/ToastContext";
 
 interface ProfileData {
   id: number;
@@ -35,6 +36,7 @@ function toAgesLevel(n: number) {
 
 export default function DashboardPage() {
   const { updateUser } = useAuth();
+  const { showToast } = useToast(); 
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [hours, setHours] = useState<HoursData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -49,7 +51,14 @@ export default function DashboardPage() {
         setHours(data.hours);
         updateUser({ level: toAgesLevel(data.profile.agesLevel) });
       })
-      .catch((err: Error) => setError(err.message))
+      .catch((err: Error) => {
+        setError(err.message);
+        showToast({
+          variant: "error",
+          title: "Erro ao carregar",
+          message: "Não foi possível carregar os dados do dashboard.",
+        });
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -58,7 +67,14 @@ export default function DashboardPage() {
     return api
       .get<HoursData>("/hours/me/control")
       .then((data) => setHours(data))
-      .catch((err: Error) => setError(err.message))
+      .catch((err: Error) => {
+        setError(err.message);
+        showToast({
+          variant: "error",
+          title: "Erro ao atualizar horas",
+          message: "Não foi possível recarregar o controle de horas.",
+        });
+      })
       .finally(() => setHoursLoading(false));
   };
 

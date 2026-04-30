@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Play, Pause } from "lucide-react";
 
 import { useTimer } from "@/app/context/TimerContext";
+import { useToast } from "@/app/context/ToastContext"; 
 
 import { Card } from "@/app/components/Card/Card";
 import { Button } from "@/app/components/ui/Button/Button";
@@ -15,6 +16,7 @@ interface TimerCardContentProps {
 
 const TimerCardContent = ({ onConfirmFinish }: TimerCardContentProps) => {
   const { isRunning, startTimer, stopTimer, resetTimer } = useTimer();
+  const { showToast } = useToast(); 
   const [description, setDescription] = useState("");
   const [error, setError] = useState<string | undefined>(undefined);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -27,11 +29,10 @@ const TimerCardContent = ({ onConfirmFinish }: TimerCardContentProps) => {
       await startTimer();
       setError(undefined);
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Erro ao iniciar registro de horas.",
-      );
+      const msg =
+        err instanceof Error ? err.message : "Erro ao iniciar registro de horas.";
+      setError(msg);
+      showToast({ variant: "error", title: "Erro ao iniciar", message: msg });
     } finally {
       setIsStarting(false);
     }
@@ -54,13 +55,17 @@ const TimerCardContent = ({ onConfirmFinish }: TimerCardContentProps) => {
       resetTimer();
       setDescription("");
       setIsModalOpen(false);
+      showToast({
+        variant: "success",
+        title: "Horas registradas",
+        message: "Suas horas foram salvas com sucesso.",
+      });
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Erro ao encerrar registro de horas.",
-      );
+      const msg =
+        err instanceof Error ? err.message : "Erro ao encerrar registro de horas.";
+      setError(msg);
       setIsModalOpen(false);
+      showToast({ variant: "error", title: "Erro ao encerrar", message: msg });
     } finally {
       setIsStopping(false);
     }
