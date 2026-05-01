@@ -16,7 +16,7 @@ import { Button } from "@/app/components/ui/Button/Button";
 import { QuickAccessButton } from "@/app/components/ui/QuickAccessButton/QuickAccessButton";
 import logoFluxoAges from "@/app/assets/images/login/logo_fluxo_ages.webp";
 import { api } from "@/app/services/api";
-import { useToast } from "@/app/context/ToastContext"; 
+import { useToast } from "@/app/context/ToastContext";
 
 interface LoginCardProps {
   onOpenCronograma: () => void;

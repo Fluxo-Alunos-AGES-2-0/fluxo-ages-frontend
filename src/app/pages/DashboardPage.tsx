@@ -36,7 +36,7 @@ function toAgesLevel(n: number) {
 
 export default function DashboardPage() {
   const { updateUser } = useAuth();
-  const { showToast } = useToast(); 
+  const { showToast } = useToast();
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [hours, setHours] = useState<HoursData | null>(null);
   const [loading, setLoading] = useState(true);

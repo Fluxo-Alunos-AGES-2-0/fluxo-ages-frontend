@@ -39,7 +39,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         removeToast(id);
       }, 4000);
     },
-    [removeToast]
+    [removeToast],
   );
 
   return (
