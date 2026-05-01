@@ -1,5 +1,8 @@
-import { useState } from "react";
+import { api } from "../services/api";
+import { useEffect, useState } from "react";
 import { FileText, Download, ChevronDown } from "lucide-react";
+import { HoursTable } from "../components/reports/HoursTable";
+import { HoursSummary } from "../components/reports/HoursSummary";
 
 type TabId = "horas" | "sprint" | "andamento" | "final";
 
@@ -19,6 +22,18 @@ const TABS: Tab[] = [
 export default function RelatoriosPage() {
   const [activeTab, setActiveTab] = useState<TabId>("horas");
   const [selectedProject, setSelectedProject] = useState("");
+  const [hours, setHours] = useState([]);
+
+  useEffect(() => {
+  api
+    .get("/hours/me")
+    .then((data) => {
+      setHours(data as []);
+    })
+    .catch((error) => {
+      console.error("Erro ao buscar horas:", error);
+    });
+}, []);
 
   const currentTab = TABS.find((t) => t.id === activeTab)!;
 
@@ -100,7 +115,14 @@ export default function RelatoriosPage() {
         )}
 
         {/* Slot – cada aba renderiza seu componente filho */}
-        <div role="tabpanel" className="p-6" />
+        <div role="tabpanel" className="p-6">
+          {activeTab === "horas" && (
+            <>
+              <HoursSummary data={hours} />
+              <HoursTable data={hours} />
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
