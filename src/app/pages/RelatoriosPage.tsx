@@ -10,10 +10,10 @@ interface Tab {
 }
 
 const TABS: Tab[] = [
-  { id: "horas",     label: "Horas",     hasProjectFilter: true  },
-  { id: "sprint",    label: "Sprint",    hasProjectFilter: true  },
+  { id: "horas", label: "Horas", hasProjectFilter: true },
+  { id: "sprint", label: "Sprint", hasProjectFilter: true },
   { id: "andamento", label: "Andamento", hasProjectFilter: false },
-  { id: "final",     label: "Final",     hasProjectFilter: false },
+  { id: "final", label: "Final", hasProjectFilter: false },
 ];
 
 export default function RelatoriosPage() {
@@ -34,7 +34,6 @@ export default function RelatoriosPage() {
 
       {/* Card container */}
       <div className="bg-white rounded-2xl border border-[#e5e7eb] overflow-hidden">
-
         {/* Barra de abas */}
         <div className="flex items-center border-b border-[#e5e7eb] px-6">
           <nav className="flex flex-1 gap-1" role="tablist">
