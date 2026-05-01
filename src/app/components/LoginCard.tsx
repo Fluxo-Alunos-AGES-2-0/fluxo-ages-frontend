@@ -16,6 +16,7 @@ import { Button } from "@/app/components/ui/Button/Button";
 import { QuickAccessButton } from "@/app/components/ui/QuickAccessButton/QuickAccessButton";
 import logoFluxoAges from "@/app/assets/images/login/logo_fluxo_ages.webp";
 import { api } from "@/app/services/api";
+import { useToast } from "@/app/context/ToastContext";
 
 interface LoginCardProps {
   onOpenCronograma: () => void;
@@ -34,7 +35,6 @@ export function LoginCard({ onOpenCronograma }: LoginCardProps) {
     usuario?: string;
     senha?: string;
     recoveryEmail?: string;
-    general?: string;
   }>({});
   const [successMessage, setSuccessMessage] = useState("");
   const [showForgotPassword, setShowForgotPassword] = useState(false);
@@ -42,6 +42,7 @@ export function LoginCard({ onOpenCronograma }: LoginCardProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
   const clearError = (field: "usuario" | "senha" | "recoveryEmail") => {
     setErrors((prev) => ({ ...prev, [field]: undefined }));
@@ -66,9 +67,18 @@ export function LoginCard({ onOpenCronograma }: LoginCardProps) {
         password: senha,
       });
       localStorage.setItem("token", res.token);
+      showToast({
+        variant: "success",
+        title: "Sucesso",
+        message: "Login efetuado com sucesso!",
+      });
       navigate("/dashboard");
     } catch {
-      setErrors({ general: "Usuário ou senha inválidos." });
+      showToast({
+        variant: "error",
+        title: "Erro ao entrar",
+        message: "Usuário ou senha inválidos.",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -164,10 +174,6 @@ export function LoginCard({ onOpenCronograma }: LoginCardProps) {
             error={errors.senha}
             autoComplete="current-password"
           />
-
-          {errors.general && (
-            <p className="text-sm text-red-600 text-center">{errors.general}</p>
-          )}
 
           <Button
             type="submit"
