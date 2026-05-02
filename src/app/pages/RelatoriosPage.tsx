@@ -6,6 +6,14 @@ import { HoursSummary } from "../components/reports/HoursSummary";
 
 type TabId = "horas" | "sprint" | "andamento" | "final";
 
+interface HourEntry {
+  id: number;
+  startTime: string;
+  totalTimeSeconds: number;
+  description: string;
+  status?: "VALIDO" | "INVALIDO" | "REQUISITADO";
+}
+
 interface Tab {
   id: TabId;
   label: string;
@@ -22,18 +30,34 @@ const TABS: Tab[] = [
 export default function RelatoriosPage() {
   const [activeTab, setActiveTab] = useState<TabId>("horas");
   const [selectedProject, setSelectedProject] = useState("");
-  const [hours, setHours] = useState([]);
+  const [hours, setHours] = useState<HourEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-  api
-    .get("/hours/me")
-    .then((data) => {
-      setHours(data as []);
-    })
-    .catch((error) => {
-      console.error("Erro ao buscar horas:", error);
-    });
-}, []);
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+
+    api
+      .get<HourEntry[]>("/hours/me")
+      .then((data) => {
+        if (cancelled) return;
+        setHours(data ?? []);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        console.error("Erro ao buscar horas:", err);
+        setError("Não foi possível carregar os registros de horas.");
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const currentTab = TABS.find((t) => t.id === activeTab)!;
 
@@ -118,8 +142,20 @@ export default function RelatoriosPage() {
         <div role="tabpanel" className="p-6">
           {activeTab === "horas" && (
             <>
-              <HoursSummary data={hours} />
-              <HoursTable data={hours} />
+              {loading && (
+                <div className="text-center text-[#6b7280] py-10">
+                  Carregando registros...
+                </div>
+              )}
+              {!loading && error && (
+                <div className="text-center text-red-600 py-10">{error}</div>
+              )}
+              {!loading && !error && (
+                <>
+                  <HoursSummary data={hours} />
+                  <HoursTable data={hours} />
+                </>
+              )}
             </>
           )}
         </div>

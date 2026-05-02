@@ -1,8 +1,17 @@
-export function HoursSummary({ data }: { data: any[] }) {
-  const totalSeconds = 60 * 60 * 60; // 60h
+interface HourEntry {
+  totalTimeSeconds: number;
+}
+
+interface HoursSummaryProps {
+  data: HourEntry[];
+  totalHours?: number;
+}
+
+export function HoursSummary({ data, totalHours = 60 }: HoursSummaryProps) {
+  const totalSeconds = totalHours * 3600;
   const doneSeconds = data.reduce(
     (acc, item) => acc + (item.totalTimeSeconds ?? 0),
-    0
+    0,
   );
   const remainingSeconds = Math.max(totalSeconds - doneSeconds, 0);
 
@@ -22,5 +31,7 @@ export function HoursSummary({ data }: { data: any[] }) {
 
 function formatHours(seconds: number) {
   const h = Math.floor(seconds / 3600);
-  return `${h}h`;
+  const m = Math.floor((seconds % 3600) / 60);
+  if (m === 0) return `${h}h`;
+  return `${h}h ${m}min`;
 }
