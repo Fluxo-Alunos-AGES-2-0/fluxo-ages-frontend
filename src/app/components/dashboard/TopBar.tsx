@@ -19,7 +19,6 @@ export function TopBar() {
         </h1>
       </div>
 
-      {/* Timer slot - reserved for FLU-57 */}
       <div className="flex-1 flex justify-center" />
 
       <div className="flex-1 flex items-center justify-end gap-3">

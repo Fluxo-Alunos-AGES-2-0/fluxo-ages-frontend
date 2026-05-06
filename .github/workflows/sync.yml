@@ -1,0 +1,26 @@
+name: Sync to GitLab
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Enviar para o GitLab
+        env:
+          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+        run: |
+          # Adiciona o repositório do GitLab da PUCRS usando o token de autenticação
+          git remote add gitlab https://oauth2:${GITLAB_TOKEN}@tools.ages.pucrs.br/fluxo-ages-2.0-alunos/frontend-fluxo-alunos.git
+          
+          # Envia a branch atual para o GitLab forçando a atualização
+          git push gitlab HEAD:refs/heads/${{ github.ref_name }} --force

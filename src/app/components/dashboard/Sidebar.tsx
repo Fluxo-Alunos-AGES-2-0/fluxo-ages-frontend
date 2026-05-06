@@ -12,7 +12,7 @@ import { mockSchedule, type ScheduleEvent } from "@/app/data/mockSchedule";
 import logoFluxoAges from "@/app/assets/images/login/logo_fluxo_ages.webp";
 
 const menuItems = [
-  { label: "Controle de Horas", icon: Clock, path: "/dashboard" },
+  { label: "Dashboard", icon: Clock, path: "/dashboard" },
   { label: "Relatórios", icon: FileText, path: "/relatorios" },
   { label: "Mapa de Projetos", icon: LayoutGrid, path: "/projetos" },
 ];

@@ -1,45 +1,46 @@
-import { useEffect, useState } from "react";
-import { Card } from "@/app/components/card/card.component";
-import { CircularProgress } from "@/app/components/circularProgress/circularProgress.component";
-import { Loader } from "@/app/components/loader/loader.component";
+import { Card } from "@/app/components/Card/Card";
+import { CircularProgress } from "@/app/components/CircularProgress/CircularProgress";
+import { Loader } from "@/app/components/Loader/Loader";
 
-export const HoursTracker = () => {
-  const [hours, setHours] = useState({
-    total: "",
-    done: "",
-    todo: "",
-  });
-  const [loading, setLoading] = useState(true);
+interface HoursData {
+  completedSeconds: number;
+  remainingSeconds: number;
+  totalSeconds: number;
+  percentual: number;
+}
 
-  const fetchHoursData = () => {
-    setTimeout(() => {
-      setHours({
-        total: "60:00:00",
-        done: "42:00:00",
-        todo: "18:00:00",
-      });
-      setLoading(false);
-    }, 3000);
-  };
+interface HoursTrackerProps {
+  hours: HoursData | null;
+  loading: boolean;
+  error: string | null;
+}
 
-  useEffect(() => {
-    fetchHoursData();
-  }, []);
+function toHHMMSS(seconds: number): string {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+  return [h, m, s].map((v) => String(v).padStart(2, "0")).join(":");
+}
 
+export const HoursTracker = ({ hours, loading, error }: HoursTrackerProps) => {
   return (
     <Card
       title="Controle de Horas"
       icon="arrow"
-      className="fullWidth"
+      className="col-span-full"
       classContent="h-full flex flex-row items-center justify-center gap-[50px] relative"
     >
       {loading ? (
         <Loader />
+      ) : error || !hours ? (
+        <p className="text-sm text-red-500">
+          {error ?? "Erro ao carregar horas."}
+        </p>
       ) : (
         <>
           <div className="w-full h-full border-r border-[#e5e7eb] flex flex-col items-center justify-center">
             <span className="text-[#3b5ccc] text-2xl font-bold leading-8">
-              {hours.done}
+              {toHHMMSS(hours.completedSeconds)}
             </span>
             <p className="text-[#6b7280] text-center text-[11px] font-normal leading-[16.5px] m-0">
               Concluídas
@@ -47,7 +48,7 @@ export const HoursTracker = () => {
           </div>
           <div className="w-full h-full border-r border-[#e5e7eb] flex flex-col items-center justify-center">
             <span className="text-[#f47b20] text-2xl font-bold leading-8">
-              {hours.todo}
+              {toHHMMSS(hours.remainingSeconds)}
             </span>
             <p className="text-[#6b7280] text-center text-[11px] font-normal leading-[16.5px] m-0">
               A cumprir
@@ -55,14 +56,14 @@ export const HoursTracker = () => {
           </div>
           <div className="w-full h-full border-r border-[#e5e7eb] flex flex-col items-center justify-center">
             <span className="text-[#1f2937] text-2xl font-bold leading-8">
-              {hours.total}
+              {toHHMMSS(hours.totalSeconds)}
             </span>
             <p className="text-[#6b7280] text-center text-[11px] font-normal leading-[16.5px] m-0">
               Total
             </p>
           </div>
           <div className="w-full h-full flex flex-col items-center justify-center">
-            <CircularProgress percentage={65} />
+            <CircularProgress percentage={Math.round(hours.percentual)} />
           </div>
         </>
       )}
