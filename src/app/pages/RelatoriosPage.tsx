@@ -4,7 +4,7 @@ import { FileText, Download, ChevronDown } from "lucide-react";
 import { HoursTable } from "../components/reports/HoursTable";
 import { HoursSummary } from "../components/reports/HoursSummary";
 import { FileDown, UploadCloud } from "lucide-react";
-import { ReportsProgressTable } from "../components/reports/ReportsProgressTable";
+import { GenericReportsTable } from "../components/reports/GenericReportsTable";
 import { Button } from "../components/ui/Button/Button";
 
 type TabId = "horas" | "sprint" | "andamento" | "final";
@@ -17,7 +17,7 @@ interface HourEntry {
   status?: "VALIDO" | "INVALIDO" | "REQUISITADO";
 }
 
-interface ProgressReportEntry {
+interface GenericReportEntry {
     "date": string;
     "project": string;
     "grade": number;
@@ -41,18 +41,15 @@ export default function RelatoriosPage() {
   const [activeTab, setActiveTab] = useState<TabId>("horas");
   const [selectedProject, setSelectedProject] = useState("");
   const [hours, setHours] = useState<HourEntry[]>([]);
-  const [reportProgress, setReportProgress] = useState<ProgressReportEntry[]>([]);
+  const [progressReport, setProgressReport] = useState<GenericReportEntry[]>([]);
+  const [finalReport, setFinalReport] = useState<GenericReportEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if(activeTab === "horas"){
-      fetchHoursData()
-    }
-
-    if(activeTab === "andamento"){
-      fetchProgressReportData();
-    }
+    if(activeTab === "horas") fetchHoursData()
+    if(activeTab === "andamento") fetchProgressReportData();
+    if(activeTab === "final") fetchFinalReportData();
   }, []);
 
   function fetchProgressReportData (){
@@ -60,7 +57,7 @@ export default function RelatoriosPage() {
     setLoading(true);
     setError(null);
     
-    setReportProgress([
+    setProgressReport([
     {    
       "date": "09/07/2026",
       "project": "Fluxo AGES 2.0",
@@ -71,6 +68,35 @@ export default function RelatoriosPage() {
       "date": "16/04/2015",
       "project": "Fluxo AGES 1.0",
       "grade": 10.0,
+      "feedback": ""
+    }
+    ])
+
+    setLoading(false)
+  }
+
+  function fetchFinalReportData (){
+    //Mocked data while API endpoint is not ready
+    setLoading(true);
+    setError(null);
+    
+    setFinalReport([
+    {    
+      "date": "09/07/2026",
+      "project": "Fluxo AGES 2.0",
+      "grade": 10.0,
+      "feedback": ""
+    },
+    {    
+      "date": "23/11/2023",
+      "project": "Projeto 2",
+      "grade": 9.5,
+      "feedback": ""
+    },
+    {    
+      "date": "16/04/2021",
+      "project": "Projeto 1",
+      "grade": 8.0,
       "feedback": ""
     }
     ])
@@ -132,7 +158,7 @@ export default function RelatoriosPage() {
                     "relative px-4 py-4 text-[14px] font-medium transition-colors focus:outline-none",
                     isActive
                       ? "text-[#3b5ccc]"
-                      : "text-[#6b7280] hover:text-[#374151]",
+                      : "text-[#6b7280] hover:text-[#374151] hover:cursor-pointer",
                   ].join(" ")}
                 >
                   {tab.label}
@@ -184,6 +210,8 @@ export default function RelatoriosPage() {
 
         {/* Slot – cada aba renderiza seu componente filho */}
         <div role="tabpanel" className="p-6">
+
+          {/* Conteúdo da aba Horas*/}
           {activeTab === "horas" && (
             <>
               {loading && (
@@ -222,7 +250,30 @@ export default function RelatoriosPage() {
                   Enviar Relatório
                 </Button>
               </div>
-              <ReportsProgressTable data={reportProgress}/>
+              <GenericReportsTable data={progressReport}/>
+            </div>
+          )}
+
+          {/* Conteúdo da aba Final */}
+          {activeTab === "final" && (
+            <div className="flex flex-col gap-6">
+              {/* Sub-header: botões de modelo e enviar */}
+              <div className="flex items-center justify-between border-b border-[#e5e7eb] pb-4">
+                <div className="relative">
+                  <Button variant="secondary" 
+                  className="flex items-center gap-2 text-[#3b5ccc] font-bold text-[15px] px-1 rounded-none border-t-0 border-x-0 border-b-2 border-[#3b5ccc] bg-transparent hover:bg-transparent shadow-none">
+                    <FileDown size={20} strokeWidth={2.5} />
+                      Modelo de Relatório
+                  </Button>
+                </div>
+
+                {/* Botão Enviar Relatório*/}
+                <Button className="flex items-center gap-2 bg-[#4c6ef5] text-white px-5 py-2.5 rounded-lg font-bold text-[14px] hover:bg-[#3b5ccc] transition-colors shadow-sm">
+                  <UploadCloud size={18} />
+                  Enviar Relatório
+                </Button>
+              </div>
+              <GenericReportsTable data={finalReport}/>
             </div>
           )}
         </div>
