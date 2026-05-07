@@ -271,7 +271,7 @@ export default function RelatoriosPage() {
                 </div>
 
                 {/* Botão Enviar Relatório*/}
-                <Button className="flex items-center gap-2 bg-[#4c6ef5] text-white px-5 py-2.5 rounded-lg font-bold text-[14px] hover:bg-[#3b5ccc] transition-colors shadow-sm">
+                <Button onClick={() => setIsUploadModalOpen(true)} className="flex items-center gap-2 bg-[#4c6ef5] text-white px-5 py-2.5 rounded-lg font-bold text-[14px] hover:bg-[#3b5ccc] transition-colors shadow-sm">
                   <UploadCloud size={18} />
                   Enviar Relatório
                 </Button>
@@ -284,9 +284,14 @@ export default function RelatoriosPage() {
 
       <ReportUploadModal 
         isOpen={isUploadModalOpen} 
-        onClose={() => setIsUploadModalOpen(false)} 
+          onClose={() => setIsUploadModalOpen(false)} 
+          reportType={activeTab === "andamento" ? "andamento" : "final"} 
           onSuccess={() => {
-        fetchProgressReportData();
+           if (activeTab === "andamento") {
+               fetchProgressReportData();
+          } else {
+              fetchFinalReportData();
+    }
   }}
 />
 

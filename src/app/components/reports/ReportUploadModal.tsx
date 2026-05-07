@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react'; 
 import { Modal } from '../ui/Modal/Modal'; 
 import { Upload, ChevronDown, Check, XCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -7,37 +7,32 @@ interface ReportUploadModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  reportType: "andamento" | "final"; 
 }
 
-export const ReportUploadModal = ({ isOpen, onClose, onSuccess }: ReportUploadModalProps) => {
+export const ReportUploadModal = ({ isOpen, onClose, onSuccess, reportType }: ReportUploadModalProps) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [studentName, setStudentName] = useState("Ellen Vitória da Silva Miranda");
   const [selectedTeam, setSelectedTeam] = useState("Fluxo AGES 2.0 - Alunos");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    if (!isOpen) {
+      setSelectedFile(null);
+    }
+  }, [isOpen, reportType]);
+
   const showToast = (type: 'success' | 'error', message: string) => {
     toast.custom((t) => (
-      <div
-        className={`${
-          t.visible ? 'animate-enter' : 'animate-leave'
-        } max-w-[280px] w-full shadow-md pointer-events-auto flex`}
-      >
+      <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} max-w-[280px] w-full shadow-md pointer-events-auto flex`}>
         <div className={`flex-1 p-2.5 flex items-center gap-2.5 ${type === 'success' ? 'bg-[#4caf50]' : 'bg-[#e53935]'} rounded-sm`}>
           <div className="flex-shrink-0">
-            {type === 'success' ? (
-              <Check className="text-white" size={18} strokeWidth={3} />
-            ) : (
-              <XCircle className="text-white" size={18} strokeWidth={3} />
-            )}
+            {type === 'success' ? <Check className="text-white" size={18} strokeWidth={3} /> : <XCircle className="text-white" size={18} strokeWidth={3} />}
           </div>
           <div className="flex flex-col">
-            <p className="text-[13px] font-bold text-white leading-none">
-              {type === 'success' ? 'Sucesso' : 'Erro'}
-            </p>
-            <p className="text-[11px] text-white opacity-90 mt-0.5 leading-tight">
-              {message}
-            </p>
+            <p className="text-[13px] font-bold text-white leading-none">{type === 'success' ? 'Sucesso' : 'Erro'}</p>
+            <p className="text-[11px] text-white opacity-90 mt-0.5 leading-tight">{message}</p>
           </div>
         </div>
       </div>
@@ -48,7 +43,7 @@ export const ReportUploadModal = ({ isOpen, onClose, onSuccess }: ReportUploadMo
     const file = event.target.files?.[0];
     if (file && file.type === "application/pdf") {
       setSelectedFile(file);
-    } else {
+    } else if (file) {
       showToast('error', "Selecione um arquivo PDF.");
       setSelectedFile(null);
     }
@@ -59,10 +54,10 @@ export const ReportUploadModal = ({ isOpen, onClose, onSuccess }: ReportUploadMo
     setIsUploading(true);
     try {
       await new Promise(resolve => setTimeout(resolve, 1500));
-      showToast('success', "Relatório enviado!");
+      
+      showToast('success', `Relatório enviado!`);
       onSuccess(); 
       onClose();   
-      setSelectedFile(null);
     } catch (error) {
       showToast('error', "Falha no envio.");
     } finally {
@@ -71,7 +66,11 @@ export const ReportUploadModal = ({ isOpen, onClose, onSuccess }: ReportUploadMo
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Novo Relatório de Andamento">
+    <Modal 
+      isOpen={isOpen} 
+      onClose={onClose} 
+      title={reportType === "andamento" ? "Novo Relatório de Andamento" : "Novo Relatório Final"}
+    >
       <div className="flex flex-col gap-6 p-2 text-left">
         <div className="grid grid-cols-2 gap-4">
           <div className="flex flex-col gap-1.5">
@@ -94,7 +93,7 @@ export const ReportUploadModal = ({ isOpen, onClose, onSuccess }: ReportUploadMo
                 className="appearance-none w-full h-[42px] px-4 rounded-lg bg-[#f8fafc] border border-[#e5e7eb] text-[#374151] text-[14px] cursor-pointer focus:outline-none"
               >
                 <option value="Fluxo AGES 2.0 - Alunos">Fluxo AGES 2.0 - Alunos</option>
-                <option value="Fluxo AGES 2.0 - Desenvolvedores">Fluxo AGES 2.0 - Desenvolvedores</option>
+                <option value="Fluxo AGES 2.0 - Desenvolvedores">Fluxo AGES 2.0 - Desenvolvedores</option> 
               </select>
               <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6b7280] pointer-events-none" />
             </div>
@@ -112,10 +111,10 @@ export const ReportUploadModal = ({ isOpen, onClose, onSuccess }: ReportUploadMo
             }`}
           >
             <input type="file" ref={fileInputRef} onChange={handleFileChange} accept=".pdf" className="hidden" />
-            <span className={`text-[14px] ${selectedFile ? 'text-[#f97316] font-medium' : 'text-[#9ca3af]'}`}>
+            <span className={`text-[14px] truncate pr-4 ${selectedFile ? 'text-[#f97316] font-medium' : 'text-[#9ca3af]'}`}>
               {selectedFile ? selectedFile.name : "Escolha o seu arquivo (PDF)"}
             </span>
-            <Upload size={20} className="text-[#f97316]" strokeWidth={2.5} />
+            <Upload size={20} className="text-[#f97316] flex-shrink-0" strokeWidth={2.5} />
           </div>
           <span className="text-[11px] text-[#9ca3af]">Limite de 25MB por arquivo.</span>
         </div>
@@ -123,6 +122,7 @@ export const ReportUploadModal = ({ isOpen, onClose, onSuccess }: ReportUploadMo
         <div className="flex justify-end gap-3 mt-4">
           <button 
             onClick={onClose}
+            type="button"
             className="px-8 py-2.5 rounded-xl border border-[#e5e7eb] text-[#f97316] font-bold text-[15px] hover:bg-gray-50 transition-colors"
           >
             Fechar
