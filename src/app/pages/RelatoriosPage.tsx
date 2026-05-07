@@ -6,6 +6,7 @@ import { HoursSummary } from "../components/reports/HoursSummary";
 import { FileDown, UploadCloud } from "lucide-react";
 import { GenericReportsTable } from "../components/reports/GenericReportsTable";
 import { Button } from "../components/ui/Button/Button";
+import { ReportUploadModal } from "../components/reports/ReportUploadModal";
 
 type TabId = "horas" | "sprint" | "andamento" | "final";
 
@@ -45,6 +46,7 @@ export default function RelatoriosPage() {
   const [finalReport, setFinalReport] = useState<GenericReportEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
 
   useEffect(() => {
     if(activeTab === "horas") fetchHoursData()
@@ -243,9 +245,10 @@ export default function RelatoriosPage() {
                       Modelo de Relatório
                   </Button>
                 </div>
+                
 
                 {/* Botão Enviar Relatório*/}
-                <Button className="flex items-center gap-2 bg-[#4c6ef5] text-white px-5 py-2.5 rounded-lg font-bold text-[14px] hover:bg-[#3b5ccc] transition-colors shadow-sm">
+                <Button onClick={() => setIsUploadModalOpen(true)} className="flex items-center gap-2 bg-[#4c6ef5] text-white px-5 py-2.5 rounded-lg font-bold text-[14px] hover:bg-[#3b5ccc] transition-colors shadow-sm">
                   <UploadCloud size={18} />
                   Enviar Relatório
                 </Button>
@@ -278,6 +281,15 @@ export default function RelatoriosPage() {
           )}
         </div>
       </div>
+
+      <ReportUploadModal 
+        isOpen={isUploadModalOpen} 
+        onClose={() => setIsUploadModalOpen(false)} 
+          onSuccess={() => {
+        fetchProgressReportData();
+  }}
+/>
+
     </div>
   );
 }
