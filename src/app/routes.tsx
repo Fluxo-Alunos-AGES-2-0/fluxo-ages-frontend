@@ -2,8 +2,8 @@ import { createBrowserRouter, Navigate } from "react-router";
 import LoginPage from "./pages/LoginPage";
 import { AppLayout } from "./components/dashboard/AppLayout";
 import DashboardPage from "./pages/DashboardPage";
-import PasswordRecovery from "./components/passwordRecovery/PasswordRecovery";
 import RelatoriosPage from "./pages/RelatoriosPage";
+import PasswordRecovery from "./components/passwordRecovery/PasswordRecovery";
 
 export const router = createBrowserRouter([
   { path: "/login", Component: LoginPage },
