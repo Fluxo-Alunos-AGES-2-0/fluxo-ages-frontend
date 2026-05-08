@@ -18,10 +18,10 @@ interface HourEntry {
 }
 
 interface ProgressReportEntry {
-    "date": string;
-    "project": string;
-    "grade": number;
-    "feedback": string;
+  date: string;
+  project: string;
+  grade: number;
+  feedback: string;
 }
 
 interface Tab {
@@ -41,67 +41,59 @@ export default function RelatoriosPage() {
   const [activeTab, setActiveTab] = useState<TabId>("horas");
   const [selectedProject, setSelectedProject] = useState("");
   const [hours, setHours] = useState<HourEntry[]>([]);
-  const [reportProgress, setReportProgress] = useState<ProgressReportEntry[]>([]);
+  const [reportProgress, setReportProgress] = useState<ProgressReportEntry[]>(
+    [],
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if(activeTab === "horas"){
-      fetchHoursData()
-    }
+    let cancelled = false;
 
-    if(activeTab === "andamento"){
-      fetchProgressReportData();
-    }
-  }, []);
-
-  function fetchProgressReportData (){
-    //Mocked data while API endpoint is not ready
-    setLoading(true);
-    setError(null);
-    
-    setReportProgress([
-    {    
-      "date": "09/07/2026",
-      "project": "Fluxo AGES 2.0",
-      "grade": 9.0,
-      "feedback": ""
-    },
-    {    
-      "date": "16/04/2015",
-      "project": "Fluxo AGES 1.0",
-      "grade": 10.0,
-      "feedback": ""
-    }
-    ])
-
-    setLoading(false)
-  }
-
-  function fetchHoursData(){
-      let cancelled = false;
+    if (activeTab === "horas") {
       setLoading(true);
       setError(null);
-
       api
-      .get<HourEntry[]>("/hours/me")
-      .then((data) => {
-        if (cancelled) return;
-        setHours(data ?? []);
-      })
-      .catch((err) => {
-        if (cancelled) return;
-        console.error("Erro ao buscar horas:", err);
-        setError("Não foi possível carregar os registros de horas.");
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
+        .get<HourEntry[]>("/hours/me")
+        .then((data) => {
+          if (cancelled) return;
+          setHours(data ?? []);
+        })
+        .catch((err) => {
+          if (cancelled) return;
+          console.error("Erro ao buscar horas:", err);
+          setError("Não foi possível carregar os registros de horas.");
+        })
+        .finally(() => {
+          if (!cancelled) setLoading(false);
+        });
+    }
+
+    if (activeTab === "andamento") {
+      // TODO: trocar para chamada real quando o endpoint estiver pronto
+      setLoading(true);
+      setError(null);
+      setReportProgress([
+        {
+          date: "09/07/2026",
+          project: "Fluxo AGES 2.0",
+          grade: 9.0,
+          feedback: "",
+        },
+        {
+          date: "16/04/2015",
+          project: "Fluxo AGES 1.0",
+          grade: 10.0,
+          feedback: "",
+        },
+      ]);
+      setLoading(false);
+    }
 
     return () => {
       cancelled = true;
     };
-  }
+  }, [activeTab]);
 
   const currentTab = TABS.find((t) => t.id === activeTab)!;
 
@@ -209,10 +201,12 @@ export default function RelatoriosPage() {
               {/* Sub-header: botões de modelo e enviar */}
               <div className="flex items-center justify-between border-b border-[#e5e7eb] pb-4">
                 <div className="relative">
-                  <Button variant="secondary" 
-                  className="flex items-center gap-2 text-[#3b5ccc] font-bold text-[15px] px-1 rounded-none border-t-0 border-x-0 border-b-2 border-[#3b5ccc] bg-transparent hover:bg-transparent shadow-none">
+                  <Button
+                    variant="secondary"
+                    className="flex items-center gap-2 text-[#3b5ccc] font-bold text-[15px] px-1 rounded-none border-t-0 border-x-0 border-b-2 border-[#3b5ccc] bg-transparent hover:bg-transparent shadow-none"
+                  >
                     <FileDown size={20} strokeWidth={2.5} />
-                      Modelo de Relatório
+                    Modelo de Relatório
                   </Button>
                 </div>
 
@@ -222,7 +216,18 @@ export default function RelatoriosPage() {
                   Enviar Relatório
                 </Button>
               </div>
-              <ReportsProgressTable data={reportProgress}/>
+
+              {loading && (
+                <div className="text-center text-[#6b7280] py-10">
+                  Carregando registros...
+                </div>
+              )}
+              {!loading && error && (
+                <div className="text-center text-red-600 py-10">{error}</div>
+              )}
+              {!loading && !error && (
+                <ReportsProgressTable data={reportProgress} />
+              )}
             </div>
           )}
         </div>
