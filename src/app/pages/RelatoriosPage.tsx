@@ -15,6 +15,7 @@ import {
 } from "../components/reports/GenericReportsTable";
 import { Button } from "../components/ui/Button/Button";
 import { ReportUploadModal } from "../components/reports/ReportUploadModal";
+import { SprintTable } from "../components/reports/SprintTable";
 
 type TabId = "horas" | "sprint" | "andamento" | "final";
 
@@ -262,7 +263,7 @@ export default function RelatoriosPage() {
               )}
             </>
           )}
-
+          {activeTab === "sprint" && <SprintTable />}
           {activeTab === "andamento" && renderReportTab(progressReport)}
           {activeTab === "final" && renderReportTab(finalReport)}
         </div>
