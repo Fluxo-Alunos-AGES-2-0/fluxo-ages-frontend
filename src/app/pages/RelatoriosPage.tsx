@@ -3,6 +3,9 @@ import { useEffect, useState } from "react";
 import { FileText, Download, ChevronDown } from "lucide-react";
 import { HoursTable } from "../components/reports/HoursTable";
 import { HoursSummary } from "../components/reports/HoursSummary";
+import { FileDown, UploadCloud } from "lucide-react";
+import { ReportsProgressTable } from "../components/reports/ReportsProgressTable";
+import { Button } from "../components/ui/Button/Button";
 
 type TabId = "horas" | "sprint" | "andamento" | "final";
 
@@ -12,6 +15,13 @@ interface HourEntry {
   totalTimeSeconds: number;
   description: string;
   status?: "VALIDO" | "INVALIDO" | "REQUISITADO";
+}
+
+interface ProgressReportEntry {
+  date: string;
+  project: string;
+  grade: number;
+  feedback: string;
 }
 
 interface Tab {
@@ -31,33 +41,59 @@ export default function RelatoriosPage() {
   const [activeTab, setActiveTab] = useState<TabId>("horas");
   const [selectedProject, setSelectedProject] = useState("");
   const [hours, setHours] = useState<HourEntry[]>([]);
+  const [reportProgress, setReportProgress] = useState<ProgressReportEntry[]>(
+    [],
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
-    setError(null);
 
-    api
-      .get<HourEntry[]>("/hours/me")
-      .then((data) => {
-        if (cancelled) return;
-        setHours(data ?? []);
-      })
-      .catch((err) => {
-        if (cancelled) return;
-        console.error("Erro ao buscar horas:", err);
-        setError("Não foi possível carregar os registros de horas.");
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
+    if (activeTab === "horas") {
+      setLoading(true);
+      setError(null);
+      api
+        .get<HourEntry[]>("/hours/me")
+        .then((data) => {
+          if (cancelled) return;
+          setHours(data ?? []);
+        })
+        .catch((err) => {
+          if (cancelled) return;
+          console.error("Erro ao buscar horas:", err);
+          setError("Não foi possível carregar os registros de horas.");
+        })
+        .finally(() => {
+          if (!cancelled) setLoading(false);
+        });
+    }
+
+    if (activeTab === "andamento") {
+      // TODO: trocar para chamada real quando o endpoint estiver pronto
+      setLoading(true);
+      setError(null);
+      setReportProgress([
+        {
+          date: "09/07/2026",
+          project: "Fluxo AGES 2.0",
+          grade: 9.0,
+          feedback: "",
+        },
+        {
+          date: "16/04/2015",
+          project: "Fluxo AGES 1.0",
+          grade: 10.0,
+          feedback: "",
+        },
+      ]);
+      setLoading(false);
+    }
 
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [activeTab]);
 
   const currentTab = TABS.find((t) => t.id === activeTab)!;
 
@@ -157,6 +193,42 @@ export default function RelatoriosPage() {
                 </>
               )}
             </>
+          )}
+
+          {/* Conteúdo da aba Andamento */}
+          {activeTab === "andamento" && (
+            <div className="flex flex-col gap-6">
+              {/* Sub-header: botões de modelo e enviar */}
+              <div className="flex items-center justify-between border-b border-[#e5e7eb] pb-4">
+                <div className="relative">
+                  <Button
+                    variant="secondary"
+                    className="flex items-center gap-2 text-[#3b5ccc] font-bold text-[15px] px-1 rounded-none border-t-0 border-x-0 border-b-2 border-[#3b5ccc] bg-transparent hover:bg-transparent shadow-none"
+                  >
+                    <FileDown size={20} strokeWidth={2.5} />
+                    Modelo de Relatório
+                  </Button>
+                </div>
+
+                {/* Botão Enviar Relatório*/}
+                <Button className="flex items-center gap-2 bg-[#4c6ef5] text-white px-5 py-2.5 rounded-lg font-bold text-[14px] hover:bg-[#3b5ccc] transition-colors shadow-sm">
+                  <UploadCloud size={18} />
+                  Enviar Relatório
+                </Button>
+              </div>
+
+              {loading && (
+                <div className="text-center text-[#6b7280] py-10">
+                  Carregando registros...
+                </div>
+              )}
+              {!loading && error && (
+                <div className="text-center text-red-600 py-10">{error}</div>
+              )}
+              {!loading && !error && (
+                <ReportsProgressTable data={reportProgress} />
+              )}
+            </div>
           )}
         </div>
       </div>
