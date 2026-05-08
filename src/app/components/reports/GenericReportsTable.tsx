@@ -1,17 +1,17 @@
 import { Download, MessageSquare } from "lucide-react";
 
-interface ProgressReportEntry {
+export interface ReportEntry {
   date: string;
   project: string;
   grade: number;
   feedback: string;
 }
 
-interface ReportsProgressTableProps {
-  data: ProgressReportEntry[];
+interface GenericReportsTableProps {
+  data: ReportEntry[];
 }
 
-export function ReportsProgressTable({ data }: ReportsProgressTableProps) {
+export function GenericReportsTable({ data }: GenericReportsTableProps) {
   if (data.length === 0) {
     return (
       <div className="text-center text-[#6b7280] py-10">
@@ -48,7 +48,7 @@ export function ReportsProgressTable({ data }: ReportsProgressTableProps) {
               key={`${report.date}-${report.project}-${index}`}
               className="hover:bg-gray-50 transition-colors"
             >
-              <td className="px-6 py-4 text-[14px] text-[#374151] font-semibold">
+              <td className="px-6 py-4 text-[14px] text-[#374151]">
                 {report.date}
               </td>
               <td className="px-6 py-4 text-[14px] text-[#374151] font-medium">
