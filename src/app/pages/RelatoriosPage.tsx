@@ -14,6 +14,7 @@ import {
   type ReportEntry,
 } from "../components/reports/GenericReportsTable";
 import { Button } from "../components/ui/Button/Button";
+import { ReportUploadModal } from "../components/reports/ReportUploadModal";
 
 type TabId = "horas" | "sprint" | "andamento" | "final";
 
@@ -82,6 +83,8 @@ export default function RelatoriosPage() {
   const [finalReport, setFinalReport] = useState<ReportEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -124,7 +127,7 @@ export default function RelatoriosPage() {
     return () => {
       cancelled = true;
     };
-  }, [activeTab]);
+  }, [activeTab, refreshKey]);
 
   const currentTab = TABS.find((t) => t.id === activeTab)!;
 
@@ -141,7 +144,10 @@ export default function RelatoriosPage() {
           </Button>
         </div>
 
-        <Button className="flex items-center gap-2 bg-[#4c6ef5] text-white px-5 py-2.5 rounded-lg font-bold text-[14px] hover:bg-[#3b5ccc] transition-colors shadow-sm">
+        <Button
+          onClick={() => setIsUploadModalOpen(true)}
+          className="flex items-center gap-2 bg-[#4c6ef5] text-white px-5 py-2.5 rounded-lg font-bold text-[14px] hover:bg-[#3b5ccc] transition-colors shadow-sm"
+        >
           <UploadCloud size={18} />
           Enviar Relatório
         </Button>
@@ -261,6 +267,14 @@ export default function RelatoriosPage() {
           {activeTab === "final" && renderReportTab(finalReport)}
         </div>
       </div>
+
+      <ReportUploadModal
+        isOpen={isUploadModalOpen}
+        onClose={() => setIsUploadModalOpen(false)}
+        onSuccess={() => {
+          setRefreshKey((k) => k + 1);
+        }}
+      />
     </div>
   );
 }
