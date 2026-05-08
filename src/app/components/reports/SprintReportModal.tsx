@@ -1,13 +1,29 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Modal } from "../ui/Modal/Modal";
 
 interface SprintReportModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSubmit?: (data: SprintReportFormData) => void;
 }
 
-export function SprintReportModal({ isOpen, onClose }: SprintReportModalProps) {
-  const [project] = useState("Fluxo AGES 2.0 - Alunos");
+export interface SprintReportFormData {
+  project: string;
+  sprint: string;
+  plannedActivities: string;
+  completedActivities: string;
+  problems: string;
+  lessonsLearned: string;
+  nextSteps: string;
+}
+
+const DEFAULT_PROJECT = "Fluxo AGES 2.0 - Alunos";
+
+export function SprintReportModal({
+  isOpen,
+  onClose,
+  onSubmit,
+}: SprintReportModalProps) {
   const [sprint, setSprint] = useState("");
   const [plannedActivities, setPlannedActivities] = useState("");
   const [completedActivities, setCompletedActivities] = useState("");
@@ -15,13 +31,42 @@ export function SprintReportModal({ isOpen, onClose }: SprintReportModalProps) {
   const [lessonsLearned, setLessonsLearned] = useState("");
   const [nextSteps, setNextSteps] = useState("");
 
-  const isFormValid =
+  useEffect(() => {
+    if (!isOpen) {
+      setSprint("");
+      setPlannedActivities("");
+      setCompletedActivities("");
+      setProblems("");
+      setLessonsLearned("");
+      setNextSteps("");
+    }
+  }, [isOpen]);
+
+  const isFormValid = Boolean(
     sprint.trim() &&
     plannedActivities.trim() &&
     completedActivities.trim() &&
     problems.trim() &&
     lessonsLearned.trim() &&
-    nextSteps.trim();
+    nextSteps.trim(),
+  );
+
+  const handleSubmit = () => {
+    if (!isFormValid) return;
+
+    // TODO: integrar com endpoint real de relatório de sprint quando o backend estiver pronto
+    onSubmit?.({
+      project: DEFAULT_PROJECT,
+      sprint,
+      plannedActivities,
+      completedActivities,
+      problems,
+      lessonsLearned,
+      nextSteps,
+    });
+
+    onClose();
+  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Relatório de Sprint">
@@ -34,7 +79,7 @@ export function SprintReportModal({ isOpen, onClose }: SprintReportModalProps) {
               </label>
 
               <input
-                value={project}
+                value={DEFAULT_PROJECT}
                 disabled
                 className="
                   h-[42px] w-full rounded-lg border border-[#e5e7eb]
@@ -114,6 +159,7 @@ export function SprintReportModal({ isOpen, onClose }: SprintReportModalProps) {
 
           <button
             type="button"
+            onClick={handleSubmit}
             disabled={!isFormValid}
             className="
               rounded-lg bg-[#f97316]

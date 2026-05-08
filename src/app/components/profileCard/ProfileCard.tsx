@@ -1,147 +1,97 @@
-import { useState } from "react";
-import { Card } from "@/app/components/Card/Card";
+import {Card} from "../Card/Card";
+import styles from "./ProfileCard.module.css";
+import { useState, useEffect } from "react";
 import { Folder, GraduationCap, CircleStar } from "lucide-react";
 
-interface ProfileData {
-  id: number;
-  name: string;
-  email: string;
-  avatarUrl: string | null;
-  agesLevel: number;
-  currentProject: { id: number; name: string } | null;
-  professor: { id: number; name: string } | null;
-  attendance: { totalClasses: number; presences: number; absences: number };
-}
-
 interface ProfileCardProps {
-  profile: ProfileData | null;
+  profile: any;
   loading: boolean;
   error: string | null;
 }
 
-function gerarCor(nome: string): string {
-  let hash = 0;
-  for (let i = 0; i < nome.length; i++) {
-    hash = nome.charCodeAt(i) + ((hash << 5) - hash);
+function ProfileCard({ profile, loading, error }: ProfileCardProps) { 
+  // CORTE AQUI: a linha do useState foi removida para não duplicar com a prop 'loading'
+  
+  const nome = profile?.name || "Ellen Miranda";
+
+  function gerarCor(nome: string) {
+      let hash = 0;
+      for (let i = 0; i < nome.length; i++) {
+          hash = nome.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      return `hsl(${Math.abs(hash) % 360}, 60%, 50%)`;
   }
-  return `hsl(${hash % 360}, 60%, 50%)`;
-}
 
-const ROMAN = ["I", "II", "III", "IV", "V", "VI"];
+  const iniciais = nome
+      .split(" ")
+      .map((n: string) => n[0])
+      .slice(0, 2)
+      .join("");
 
-export function ProfileCard({ profile, loading, error }: ProfileCardProps) {
+  const corAvatar = gerarCor(nome);
+
   if (loading) {
     return (
       <Card title="Perfil do Estudante">
-        <div className="flex flex-col gap-3">
-          <div className="w-14 h-14 rounded-full bg-gray-200 animate-pulse" />
-          <div className="w-3/5 h-4 bg-gray-200 rounded animate-pulse" />
-          <div className="w-2/5 h-3 bg-gray-200 rounded animate-pulse" />
-          <div className="w-full h-3.5 bg-gray-200 rounded animate-pulse" />
-          <div className="w-full h-3.5 bg-gray-200 rounded animate-pulse" />
-          <div className="w-full h-3.5 bg-gray-200 rounded animate-pulse" />
+        <div className={styles.skeleton}>
+          <div className={styles.skeletonAvatar}></div>
+          <div className={styles.skeletonText}></div>
+          <div className={styles.skeletonTextSmall}></div>
+          <div className={styles.skeletonLine}></div>
+          <div className={styles.skeletonLine}></div>
+          <div className={styles.skeletonLine}></div>
         </div>
       </Card>
     );
   }
-
-  if (error || !profile) {
-    return (
-      <Card title="Perfil do Estudante">
-        <p className="text-sm text-red-500">
-          {error ?? "Erro ao carregar perfil."}
-        </p>
-      </Card>
-    );
-  }
-
-  const [imgError, setImgError] = useState(false);
-  const iniciais = profile.name
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((n) => n[0].toUpperCase())
-    .join("");
-  const corAvatar = gerarCor(profile.name);
-  const agesLabel = `AGES ${ROMAN[profile.agesLevel - 1] ?? profile.agesLevel}`;
 
   return (
     <Card title="Perfil do Estudante" headerAction={<button>Editar</button>}>
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-3">
-          {profile.avatarUrl && !imgError ? (
-            <img
-              src={profile.avatarUrl}
-              alt={profile.name}
-              className="w-14 h-14 rounded-full object-cover shrink-0"
-              onError={() => setImgError(true)}
-            />
-          ) : (
-            <div
-              className="w-14 h-14 rounded-full flex items-center justify-center text-white font-bold shrink-0"
-              style={{ backgroundColor: corAvatar }}
-            >
-              {iniciais}
-            </div>
-          )}
+      <div className={styles.profile}>
+        <div className={styles.userInfo}>
+          <div className={styles.avatar} style={{ backgroundColor: corAvatar }}>
+            {iniciais}
+          </div>
           <div>
-            <h3>{profile.name}</h3>
-            <p>{profile.email}</p>
+            <h3>{nome}</h3>
+            <p>lfucas@email.com</p>
           </div>
         </div>
 
-        {profile.currentProject && (
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center">
-              <Folder size={16} />
-            </div>
-            <div>
-              <small className="text-gray-400 text-xs">PROJETO ATUAL</small>
-              <p className="m-0 font-medium">{profile.currentProject.name}</p>
-            </div>
-          </div>
-        )}
-
-        {profile.professor && (
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center">
-              <GraduationCap size={16} />
-            </div>
-            <div>
-              <small className="text-gray-400 text-xs">PROFESSOR</small>
-              <p className="m-0 font-medium">{profile.professor.name}</p>
-            </div>
-          </div>
-        )}
-
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center">
-            <CircleStar size={16} />
-          </div>
+        <div className={styles.infoRow}>
+          <div className={styles.iconBox}><Folder size={16} /></div>
           <div>
-            <small className="text-gray-400 text-xs">NÍVEL AGES</small>
-            <p className="m-0 font-medium">{agesLabel}</p>
+            <small>PROJETO ATUAL</small>
+            <p>Sis. Gestão Acadêmica</p>
+          </div>
+        </div>
+
+        <div className={styles.infoRow}>
+          <div className={styles.iconBox}><GraduationCap size={16} /></div>
+          <div>
+            <small>PROFESSOR</small>
+            <p>Prof. João Silva</p>
+          </div>
+        </div>
+
+        <div className={styles.infoRow}>
+          <div className={styles.iconBox}><CircleStar size={16} /></div>
+          <div>
+            <small>NÍVEL AGES</small>
+            <p>AGES III</p>
           </div>
         </div>
 
         <hr />
 
-        <button
-          className="opacity-70 flex justify-between items-center gap-3 p-3 rounded-lg cursor-pointer border-none bg-transparent w-full"
-          onClick={() => {}}
-        >
-          <div className="flex flex-col items-center">
-            Aulas <b>{profile.attendance.totalClasses}</b>
-          </div>
-          <div className="flex flex-col items-center">
-            Presenças{" "}
-            <b className="text-green-600">{profile.attendance.presences}</b>
-          </div>
-          <div className="flex flex-col items-center">
-            Faltas <b className="text-red-600">{profile.attendance.absences}</b>
-          </div>
+        <button className={styles.frequencia} onClick={() => console.log("clicou")}>
+          <div>Aulas <b>0</b></div>
+          <div>Presenças <b style={{color: "green"}}>0</b></div>
+          <div>Faltas <b style={{color: "red"}}>0</b></div>
         </button>
       </div>
     </Card>
   );
 }
+
+export default ProfileCard;

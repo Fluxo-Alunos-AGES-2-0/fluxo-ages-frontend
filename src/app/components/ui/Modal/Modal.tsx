@@ -87,10 +87,10 @@ export function Modal({
     >
       <div
         ref={modalRef}
-        className="bg-white p-6 rounded-xl min-w-[420px] z-[10000] border-l-4 border-blue-500"
+        className="bg-white p-6 rounded-xl min-w-[420px] z-[10000] border-l-4 border-blue-500 shadow-2xl"
       >
         <div className="flex justify-between items-center">
-          <h2>{title}</h2>
+          <h2 className="text-[24px] font-bold text-black">{title}</h2>
           <div className="flex items-center gap-2">
             {categoria && (
               <span className="bg-sky-100 text-sky-600 px-2.5 py-1 rounded-full text-xs font-medium">

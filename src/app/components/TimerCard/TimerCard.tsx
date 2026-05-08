@@ -10,6 +10,9 @@ import { TimerDisplay } from "@/app/components/ui/TimerDisplay";
 import { TextArea } from "@/app/components/ui/TextArea/TextArea";
 import { ConfirmationModal } from "@/app/components/ui/ConfirmationModal/ConfirmationModal";
 
+const MAX_CHARS = 1250;
+const MIN_CHARS = 15;
+
 interface TimerCardContentProps {
   onConfirmFinish: () => Promise<void>;
 }
@@ -17,6 +20,7 @@ interface TimerCardContentProps {
 const TimerCardContent = ({ onConfirmFinish }: TimerCardContentProps) => {
   const { isRunning, startTimer, stopTimer, resetTimer } = useTimer();
   const { showToast } = useToast();
+
   const [description, setDescription] = useState("");
   const [error, setError] = useState<string | undefined>(undefined);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -41,10 +45,21 @@ const TimerCardContent = ({ onConfirmFinish }: TimerCardContentProps) => {
   };
 
   const handleStopAttempt = () => {
-    if (!description.trim()) {
-      setError("A descrição é obrigatória para encerrar a atividade.");
+    const trimmedDescription = description.trim();
+    const currentLength = trimmedDescription.length;
+
+    if (currentLength < MIN_CHARS) {
+      setError(
+        `A descrição deve ter no mínimo ${MIN_CHARS} caracteres para encerrar.`,
+      );
       return;
     }
+
+    if (currentLength > MAX_CHARS) {
+      setError(`A descrição excedeu o limite de ${MAX_CHARS} caracteres.`);
+      return;
+    }
+
     setError(undefined);
     setIsModalOpen(true);
   };
@@ -54,9 +69,12 @@ const TimerCardContent = ({ onConfirmFinish }: TimerCardContentProps) => {
     try {
       await stopTimer(description);
       await onConfirmFinish();
+
       resetTimer();
       setDescription("");
+      setError(undefined);
       setIsModalOpen(false);
+
       showToast({
         variant: "success",
         title: "Horas registradas",
@@ -85,6 +103,7 @@ const TimerCardContent = ({ onConfirmFinish }: TimerCardContentProps) => {
         icon="arrow"
         classContent="h-full flex flex-col items-center justify-center relative"
       >
+        {/* Seção do Cronômetro e Botões de Ação */}
         <div className={timerChildClass}>
           <TimerDisplay />
 
@@ -109,6 +128,7 @@ const TimerCardContent = ({ onConfirmFinish }: TimerCardContentProps) => {
           )}
         </div>
 
+        {/* Seção da TextArea com Contador e Erro Inline */}
         <div className={timerChildClass}>
           <TextArea
             label="Descrição da atividade"
@@ -116,10 +136,16 @@ const TimerCardContent = ({ onConfirmFinish }: TimerCardContentProps) => {
             value={description}
             onChange={(val) => {
               setDescription(val);
-              if (val.trim()) setError(undefined);
+              if (
+                val.trim().length >= MIN_CHARS &&
+                val.trim().length <= MAX_CHARS
+              ) {
+                setError(undefined);
+              }
             }}
             disabled={!isRunning}
             error={error}
+            maxLength={MAX_CHARS}
           />
         </div>
       </Card>

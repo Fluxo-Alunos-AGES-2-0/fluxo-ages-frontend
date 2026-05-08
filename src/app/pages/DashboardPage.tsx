@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ProfileCard } from "../components/profileCard/ProfileCard";
+import ProfileCard from "../components/profileCard/ProfileCard";
 import { TimerCard } from "../components/TimerCard/TimerCard";
 import { HoursTracker } from "../components/HoursTracker/HoursTracker";
 import { api } from "@/app/services/api";
