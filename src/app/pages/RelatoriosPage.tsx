@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { FileText, Download, ChevronDown } from "lucide-react";
 import { HoursTable } from "../components/reports/HoursTable";
 import { HoursSummary } from "../components/reports/HoursSummary";
+import { SprintTable } from "../components/reports/SprintTable";
 
 type TabId = "horas" | "sprint" | "andamento" | "final";
 
@@ -158,6 +159,7 @@ export default function RelatoriosPage() {
               )}
             </>
           )}
+          {activeTab === "sprint" && <SprintTable />}
         </div>
       </div>
     </div>
