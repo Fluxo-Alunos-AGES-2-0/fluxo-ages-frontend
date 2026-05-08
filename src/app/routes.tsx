@@ -3,9 +3,11 @@ import LoginPage from "./pages/LoginPage";
 import { AppLayout } from "./components/dashboard/AppLayout";
 import DashboardPage from "./pages/DashboardPage";
 import RelatoriosPage from "./pages/RelatoriosPage";
+import PasswordRecovery from "./components/passwordRecovery/PasswordRecovery";
 
 export const router = createBrowserRouter([
   { path: "/login", Component: LoginPage },
+  { path: "/recuperar-senha", Component: PasswordRecovery },
   {
     path: "/",
     Component: AppLayout,
