@@ -271,6 +271,7 @@ export default function RelatoriosPage() {
       <ReportUploadModal
         isOpen={isUploadModalOpen}
         onClose={() => setIsUploadModalOpen(false)}
+        reportType={activeTab === "final" ? "final" : "andamento"}
         onSuccess={() => {
           setRefreshKey((k) => k + 1);
         }}

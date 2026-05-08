@@ -9,12 +9,14 @@ interface ReportUploadModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  reportType?: "andamento" | "final";
 }
 
 export const ReportUploadModal = ({
   isOpen,
   onClose,
   onSuccess,
+  reportType = "andamento",
 }: ReportUploadModalProps) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -106,7 +108,11 @@ export const ReportUploadModal = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Novo Relatório de Andamento"
+      title={
+        reportType === "andamento"
+          ? "Novo Relatório de Andamento"
+          : "Novo Relatório Final"
+      }
     >
       <div className="flex flex-col gap-6 p-2 text-left">
         <div className="grid grid-cols-2 gap-4">
