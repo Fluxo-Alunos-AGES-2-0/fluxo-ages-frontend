@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { ChevronDown, ChevronUp, Clock, Pencil, Trash2 } from "lucide-react";
 
+const LONG_DESCRIPTION_THRESHOLD = 80;
+
 type HourStatus = "VALIDO" | "INVALIDO" | "REQUISITADO";
 
 interface HourEntry {
@@ -43,11 +45,12 @@ export function HoursTable({ data }: HoursTableProps) {
           {data.map((item) => {
             const status: HourStatus = item.status ?? "VALIDO";
             const isExpanded = expandedId === item.id;
-            const isLongDescription = item.description.length > 80;
+            const isLongDescription =
+              item.description.length > LONG_DESCRIPTION_THRESHOLD;
 
             return (
-              <tr 
-                key={item.id} 
+              <tr
+                key={item.id}
                 className="border-b border-[#eef0f4] hover:bg-slate-50/30 transition-colors"
               >
                 {/* Adicionado align-top em todas as células para manter o alinhamento no topo */}
@@ -64,19 +67,27 @@ export function HoursTable({ data }: HoursTableProps) {
 
                 <td className="px-6 py-4 align-top">
                   <div className="flex items-start gap-2 w-full">
-                    <p className={`text-slate-700 leading-relaxed break-all ${
-                      isExpanded ? "whitespace-normal" : "line-clamp-1"
-                    }`}>
+                    <p
+                      className={`text-slate-700 leading-relaxed break-words ${
+                        isExpanded ? "whitespace-normal" : "line-clamp-1"
+                      }`}
+                    >
                       {item.description}
                     </p>
-                    
+
                     {isLongDescription && (
                       <button
                         type="button"
-                        onClick={() => setExpandedId(isExpanded ? null : item.id)}
+                        onClick={() =>
+                          setExpandedId(isExpanded ? null : item.id)
+                        }
                         className="flex-shrink-0 mt-0.5 text-slate-400 hover:text-blue-600 cursor-pointer transition-colors p-1"
                       >
-                        {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                        {isExpanded ? (
+                          <ChevronUp size={16} />
+                        ) : (
+                          <ChevronDown size={16} />
+                        )}
                       </button>
                     )}
                   </div>
@@ -90,10 +101,22 @@ export function HoursTable({ data }: HoursTableProps) {
 
                 <td className="px-6 py-4 text-right align-top">
                   <div className="flex items-center justify-end gap-3">
-                    <button type="button" disabled className="text-blue-500/40 cursor-not-allowed">
+                    <button
+                      type="button"
+                      disabled
+                      aria-label="Editar relatório"
+                      title="Em breve"
+                      className="text-blue-500/40 cursor-not-allowed"
+                    >
                       <Pencil size={18} />
                     </button>
-                    <button type="button" disabled className="text-red-500/40 cursor-not-allowed">
+                    <button
+                      type="button"
+                      disabled
+                      aria-label="Excluir relatório"
+                      title="Em breve"
+                      className="text-red-500/40 cursor-not-allowed"
+                    >
                       <Trash2 size={18} />
                     </button>
                   </div>
@@ -111,16 +134,21 @@ function formatDuration(seconds: number) {
   const h = Math.floor(seconds / 3600);
   const m = Math.floor((seconds % 3600) / 60);
   const s = seconds % 60;
-  return `${h}h ${String(m).padStart(2, '0')}m ${String(s).padStart(2, '0')}s`;
+  return `${h}h ${String(m).padStart(2, "0")}m ${String(s).padStart(2, "0")}s`;
 }
 
 function formatStatus(status: HourStatus) {
-  const labels = { VALIDO: "Válido", INVALIDO: "Inválido", REQUISITADO: "Requisitado" };
-  return labels[status];
+  const labels: Record<HourStatus, string> = {
+    VALIDO: "Válido",
+    INVALIDO: "Inválido",
+    REQUISITADO: "Requisitado",
+  };
+  return labels[status] ?? "Válido";
 }
 
 function getStatusClass(status: HourStatus) {
-  const base = "inline-block w-24 px-2 py-1 rounded-full text-[11px] font-bold border";
+  const base =
+    "inline-block w-24 px-2 py-1 rounded-full text-[11px] font-bold border";
   switch (status) {
     case "VALIDO":
       return `${base} bg-[#f0fdf4] text-[#22c55e] border-[#bbf7d0]`;
