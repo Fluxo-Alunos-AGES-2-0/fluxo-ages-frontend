@@ -68,7 +68,7 @@ export function HoursTable({ data }: HoursTableProps) {
                 <td className="px-6 py-4 align-top">
                   <div className="flex items-start gap-2 w-full">
                     <p
-                      className={`text-slate-700 leading-relaxed break-words ${
+                      className={`text-slate-700 leading-relaxed break-all ${
                         isExpanded ? "whitespace-normal" : "line-clamp-1"
                       }`}
                     >
