@@ -39,7 +39,7 @@ export const TextArea: React.FC<TextAreaFieldProps> = ({
 
   return (
     <div className={`flex flex-col w-full font-sans ${className}`}>
-      <label className="mb-1.5 text-sm font-semibold text-slate-700">
+      <label className="mb-1.5 text-sm font-semibold text-[#6B7280] cursor-text">
         {label}
       </label>
 

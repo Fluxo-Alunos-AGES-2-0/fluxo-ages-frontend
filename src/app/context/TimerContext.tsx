@@ -65,6 +65,8 @@ export const TimerProvider = ({ children }: { children: ReactNode }) => {
     if (!isRunning) return;
     await api.post("/hours/stop", { description });
     setIsRunning(false);
+    setStartTime(null);
+    setElapsedTime(0);
   };
 
   const resetTimer = () => {
