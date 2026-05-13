@@ -56,7 +56,7 @@ export const Card: React.FC<CardProps> = ({
       <div
         className={[
           "flex-1",
-          hasHeader ? "p-5" : "p-8",
+          hasHeader ? "px-5 py-3" : "p-8",
           classContent || "",
         ].join(" ")}
       >
