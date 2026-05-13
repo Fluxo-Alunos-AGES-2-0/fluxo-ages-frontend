@@ -1,5 +1,4 @@
 import { Card } from "../Card/Card";
-import { useState, useEffect } from "react";
 import { Folder, GraduationCap, CircleStar } from "lucide-react";
 import { ProfileData } from "../../types/dashboard";
 import { toAgesLevel } from "@/app/utils/agesLevel";
@@ -11,10 +10,8 @@ interface ProfileCardProps {
 }
 
 function ProfileCard({ profile, loading, error }: ProfileCardProps) {
-  // CORTE AQUI: a linha do useState foi removida para não duplicar com a prop 'loading'
-
-  const nome = profile?.name || "Ellen Miranda";
-  const email = profile?.email || "teste@mock.com";
+  const nome = profile?.name || "Usuário";
+  const email = profile?.email || "";
   const projeto = profile?.currentProject?.name || "Sis. Gestão Acadêmica";
   const professor = profile?.professor?.name || "Prof. João Silva";
   const aulas = profile?.attendance?.totalClasses ?? "24";
@@ -22,7 +19,6 @@ function ProfileCard({ profile, loading, error }: ProfileCardProps) {
   const faltas = profile?.attendance?.absences ?? "12";
 
   const agesLevel = toAgesLevel(profile?.agesLevel);
-
 
   function gerarCor(nome: string) {
     let hash = 0;
@@ -44,7 +40,6 @@ function ProfileCard({ profile, loading, error }: ProfileCardProps) {
     return (
       <Card title="Perfil do Estudante">
         <div className="flex flex-col gap-3 animate-pulse">
-
           <div className="w-14 h-14 rounded-full bg-gray-200" />
 
           <div className="w-3/5 h-4 rounded bg-gray-200" />
@@ -56,7 +51,6 @@ function ProfileCard({ profile, loading, error }: ProfileCardProps) {
           <div className="w-full h-3.5 rounded bg-gray-200" />
 
           <div className="w-full h-3.5 rounded bg-gray-200" />
-
         </div>
       </Card>
     );
@@ -65,7 +59,6 @@ function ProfileCard({ profile, loading, error }: ProfileCardProps) {
   return (
     <Card title="Perfil do Estudante" headerAction={<button>Editar</button>}>
       <div className="flex flex-col gap-4">
-
         <div className="flex items-center gap-3">
           <div
             className="w-14 h-14 rounded-full flex items-center justify-center text-white font-bold shrink-0"
@@ -100,9 +93,7 @@ function ProfileCard({ profile, loading, error }: ProfileCardProps) {
           </div>
 
           <div>
-            <small className="text-xs text-muted-foreground">
-              PROFESSOR
-            </small>
+            <small className="text-xs text-muted-foreground">PROFESSOR</small>
 
             <p className="font-medium">{professor}</p>
           </div>
@@ -114,9 +105,7 @@ function ProfileCard({ profile, loading, error }: ProfileCardProps) {
           </div>
 
           <div>
-            <small className="text-xs text-muted-foreground">
-              NÍVEL AGES
-            </small>
+            <small className="text-xs text-muted-foreground">NÍVEL AGES</small>
 
             <p className="font-medium">{agesLevel}</p>
           </div>
