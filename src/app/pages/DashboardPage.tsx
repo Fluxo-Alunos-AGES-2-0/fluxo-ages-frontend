@@ -5,34 +5,12 @@ import { HoursTracker } from "../components/HoursTracker/HoursTracker";
 import { api } from "@/app/services/api";
 import { useAuth } from "@/app/context/AuthContext";
 import { useToast } from "@/app/context/ToastContext";
-
-interface ProfileData {
-  id: number;
-  name: string;
-  email: string;
-  avatarUrl: string | null;
-  agesLevel: number;
-  currentProject: { id: number; name: string } | null;
-  professor: { id: number; name: string } | null;
-  attendance: { totalClasses: number; presences: number; absences: number };
-}
-
-interface HoursData {
-  completedSeconds: number;
-  remainingSeconds: number;
-  totalSeconds: number;
-  percentual: number;
-}
-
-interface DashboardResponse {
-  profile: ProfileData;
-  hours: HoursData;
-}
-
-const ROMAN = ["I", "II", "III", "IV", "V", "VI"];
-function toAgesLevel(n: number) {
-  return `AGES ${ROMAN[n - 1] ?? n}`;
-}
+import { toAgesLevel } from "@/app/utils/agesLevel";
+import {
+  ProfileData,
+  HoursData,
+  DashboardResponse,
+} from "../types/dashboard";
 
 export default function DashboardPage() {
   const { updateUser } = useAuth();
