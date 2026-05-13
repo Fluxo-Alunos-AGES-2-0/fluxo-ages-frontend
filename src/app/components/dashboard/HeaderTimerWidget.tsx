@@ -12,22 +12,25 @@ export const HeaderTimerWidget = () => {
   const [isStopping, setIsStopping] = useState(false);
   const { showToast } = useToast();
 
+  const handleConfirmStop = async (description?: string) => {
+    if (!description) return;
+
+    setIsStopping(true);
+    try {
+      await stopTimer(description);
+      setIsModalOpen(false);
+    } catch {
+      showToast({
+        variant: "error",
+        title: "Erro",
+        message: "Não foi possível encerrar.",
+      });
+    } finally {
+      setIsStopping(false);
+    }
+  };
 
   if (!isRunning) return null;
-
-    const handleConfirmStop = async (description?: string) => {
-        if (!description) return;
-        
-        setIsStopping(true);
-        try {
-            await stopTimer(description); 
-            setIsModalOpen(false);
-        } catch (err) {
-            showToast({ variant: "error", title: "Erro", message: "Não foi possível encerrar." });
-        } finally {
-            setIsStopping(false);
-        }
-    };
 
   return (
     <>
@@ -35,12 +38,11 @@ export const HeaderTimerWidget = () => {
         onClick={() => setIsModalOpen(true)}
         className="flex items-center gap-3 bg-[#F47B2040] px-5 py-2 rounded-full transition-all cursor-pointer"
       >
-        {/* Pingo de status pulsante */}
         <span className="relative flex h-3 w-3">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F47B20] opacity-75" />
-            <span className="relative inline-flex rounded-full h-3 w-3 bg-[#F47B20]" />
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F47B20] opacity-75" />
+          <span className="relative inline-flex rounded-full h-3 w-3 bg-[#F47B20]" />
         </span>
-        
+
         <span className="text-lg font-semibold text-[#F47B20]">
           {isStopping ? "Encerrando..." : formatMsToTime(elapsedTime)}
         </span>
@@ -57,9 +59,9 @@ export const HeaderTimerWidget = () => {
         warningMessage="Uma vez encerrado, o registro não poderá ser editado diretamente. Para realizar alterações, será necessário solicitar a edição."
         confirmText="Encerrar Ponto"
         cancelText="Voltar"
-        inputMinLenght={MIN_CHARS}
-        inputMaxLenght={MAX_CHARS}
-    />
+        inputMinLength={MIN_CHARS}
+        inputMaxLength={MAX_CHARS}
+      />
     </>
   );
 };

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { AlertTriangle } from 'lucide-react';
-import { Button } from '../Button/Button';
-import { TextArea } from '../TextArea/TextArea';
+import React, { useState, useEffect } from "react";
+import { AlertTriangle } from "lucide-react";
+import { Button } from "../Button/Button";
+import { TextArea } from "../TextArea/TextArea";
 
 interface ConfirmationModalProps {
   isOpen: boolean;
@@ -14,8 +14,8 @@ interface ConfirmationModalProps {
   cancelText?: string;
   withInput?: boolean;
   isLoading?: boolean;
-  inputMinLenght?: number;
-  inputMaxLenght?: number;
+  inputMinLength?: number;
+  inputMaxLength?: number;
 }
 
 export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
@@ -29,8 +29,8 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   cancelText = "Cancelar",
   withInput = false,
   isLoading = false,
-  inputMinLenght = 0,
-  inputMaxLenght = 1250
+  inputMinLength = 0,
+  inputMaxLength = 1250,
 }) => {
   const [inputValue, setInputValue] = useState("");
   const [error, setError] = useState<string | undefined>(undefined);
@@ -47,14 +47,18 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   const handleConfirm = async () => {
     if (withInput) {
       const trimmedValue = inputValue.trim();
-      
-      if (trimmedValue.length < inputMinLenght) {
-        setError(`A descrição deve ter no mínimo ${inputMinLenght} caracteres.`);
+
+      if (trimmedValue.length < inputMinLength) {
+        setError(
+          `A descrição deve ter no mínimo ${inputMinLength} caracteres.`,
+        );
         return;
       }
-      
-      if (trimmedValue.length > inputMaxLenght) {
-        setError(`A descrição excedeu o limite de ${inputMaxLenght} caracteres.`);
+
+      if (trimmedValue.length > inputMaxLength) {
+        setError(
+          `A descrição excedeu o limite de ${inputMaxLength} caracteres.`,
+        );
         return;
       }
 
@@ -68,7 +72,6 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   return (
     <div className="fixed inset-0 z-[99] flex items-center justify-center bg-black/40 p-4">
       <div className="bg-white rounded-[12px] w-full max-w-[570px] flex flex-col overflow-hidden shadow-xl">
-        
         {/* Header */}
         <div className="px-10 py-5 text-left">
           <h2 className="text-[24px] font-semibold text-[#1f2937]">{title}</h2>
@@ -78,7 +81,6 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 
         {/* Content */}
         <div className="px-10 py-8 flex flex-col gap-6 text-left">
-          
           <div className="flex flex-col gap-4">
             <p className="text-base text-slate-600">{description}</p>
 
@@ -116,7 +118,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
             >
               {cancelText}
             </Button>
-            
+
             <Button
               variant="primary"
               fullWidth
