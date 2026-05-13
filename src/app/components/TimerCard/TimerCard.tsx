@@ -101,7 +101,7 @@ const TimerCardContent = ({ onConfirmFinish }: TimerCardContentProps) => {
       <Card
         title="Controle de Horas"
         icon="arrow"
-        classContent="h-full flex flex-col items-center justify-center relative"
+        classContent="flex flex-col items-center justify-center relative overflow-hidden"
       >
         {/* Seção do Cronômetro e Botões de Ação */}
         <div className={timerChildClass}>
