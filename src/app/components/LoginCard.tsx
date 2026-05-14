@@ -92,7 +92,7 @@ export function LoginCard({ onOpenCronograma }: LoginCardProps) {
     }
   };
 
-  const handleRecoverySubmit = () => {
+  const handleRecoverySubmit = async () => {
     const newErrors: { recoveryEmail?: string } = {};
     setSuccessMessage("");
 
@@ -107,8 +107,21 @@ export function LoginCard({ onOpenCronograma }: LoginCardProps) {
       return;
     }
 
-    setErrors((prev) => ({ ...prev, recoveryEmail: undefined }));
-    setSuccessMessage("Sucesso! Email para troca de senha enviado.");
+    setIsLoading(true);
+    try {
+      await api.post("/auth/forgot-password", { email: recoveryEmail });
+      setErrors((prev) => ({ ...prev, recoveryEmail: undefined }));
+      setSuccessMessage("Verifique sua caixa de entrada");
+      setRecoveryEmail("");
+    } catch (error) {
+      showToast({
+        variant: "error",
+        title: "Erro ao solicitar recuperação",
+        message: error instanceof Error ? error.message : "Tente novamente",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
