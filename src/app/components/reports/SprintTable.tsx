@@ -93,6 +93,8 @@ export function SprintTable() {
     setIsSubmitting(true);
 
     try {
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+
       await api.post("/report/sprint", toPayload(data));
       showToast({
         variant: "success",
