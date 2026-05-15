@@ -22,26 +22,31 @@ export function GenericReportsTable({ data }: GenericReportsTableProps) {
 
   return (
     <div className="overflow-hidden border border-[#e5e7eb] rounded-xl">
-      <table className="w-full border-collapse">
+      <table className="w-full table-fixed border-collapse">
         <thead>
           <tr className="bg-[#f9fafb] border-b border-[#e5e7eb]">
-            <th className="px-6 py-4 text-left text-[13px] font-semibold text-[#6b7280]">
+            <th className="w-[22%] px-6 py-4 text-left text-[13px] font-semibold text-[#6b7280]">
               Data de criação
             </th>
-            <th className="px-6 py-4 text-left text-[13px] font-semibold text-[#6b7280]">
+
+            <th className="w-[38%] px-6 py-4 text-left text-[13px] font-semibold text-[#6b7280]">
               Projeto
             </th>
-            <th className="px-6 py-4 text-left text-[13px] font-semibold text-[#6b7280]">
+
+            <th className="w-[14%] px-6 py-4 text-left text-[13px] font-semibold text-[#6b7280]">
               Nota
             </th>
-            <th className="px-6 py-4 text-center text-[13px] font-semibold text-[#6b7280]">
+
+            <th className="w-[13%] px-6 py-4 text-center text-[13px] font-semibold text-[#6b7280]">
               Feedback
             </th>
-            <th className="px-6 py-4 text-center text-[13px] font-semibold text-[#6b7280]">
+
+            <th className="w-[13%] px-6 py-4 text-center text-[13px] font-semibold text-[#6b7280]">
               Download
             </th>
           </tr>
         </thead>
+
         <tbody className="divide-y divide-[#e5e7eb]">
           {data.map((report, index) => (
             <tr
@@ -51,12 +56,15 @@ export function GenericReportsTable({ data }: GenericReportsTableProps) {
               <td className="px-6 py-4 text-[14px] text-[#374151]">
                 {report.date}
               </td>
-              <td className="px-6 py-4 text-[14px] text-[#374151] font-medium">
+
+              <td className="px-6 py-4 text-[14px] text-[#374151] font-medium truncate">
                 {report.project}
               </td>
+
               <td className="px-6 py-4 text-[14px] text-[#374151]">
                 {report.grade?.toFixed(1) ?? "-"}
               </td>
+
               <td className="px-6 py-4 text-center">
                 <button
                   type="button"
@@ -67,6 +75,7 @@ export function GenericReportsTable({ data }: GenericReportsTableProps) {
                   <MessageSquare size={20} />
                 </button>
               </td>
+
               <td className="px-6 py-4 text-center">
                 <button
                   type="button"
