@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 import { Modal } from "../ui/Modal/Modal";
+import { Button } from "../ui/Button/Button";
+import { TextArea } from "../ui/TextArea/TextArea";
 
 interface SprintReportModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit?: (data: SprintReportFormData) => void | Promise<void>;
   isSubmitting?: boolean;
+  usedSprints?: string[];
 }
 
 export interface SprintReportFormData {
@@ -19,12 +22,20 @@ export interface SprintReportFormData {
 }
 
 const DEFAULT_PROJECT = "Fluxo AGES 2.0 - Alunos";
+const SPRINT_OPTIONS = [
+  "Sprint 1",
+  "Sprint 2",
+  "Sprint 3",
+  "Sprint 4",
+  "Sprint 5",
+];
 
 export function SprintReportModal({
   isOpen,
   onClose,
   onSubmit,
   isSubmitting = false,
+  usedSprints = [],
 }: SprintReportModalProps) {
   const [sprint, setSprint] = useState("");
   const [plannedActivities, setPlannedActivities] = useState("");
@@ -43,6 +54,9 @@ export function SprintReportModal({
       setNextSteps("");
     }
   }, [isOpen]);
+
+  const usedSet = new Set(usedSprints);
+  const availableSprints = SPRINT_OPTIONS.filter((s) => !usedSet.has(s));
 
   const isFormValid = Boolean(
     sprint.trim() &&
@@ -69,73 +83,82 @@ export function SprintReportModal({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Relatório de Sprint">
-      <div className="mt-4 flex max-h-[70vh] flex-col">
-        <div className="flex flex-col gap-4 overflow-y-auto pr-2">
+      <div className="mt-4 flex max-h-[70vh] w-[640px] max-w-full flex-col">
+        <div
+          className="
+            flex flex-col gap-4 overflow-y-auto pr-2
+            scrollbar-thin
+            [&::-webkit-scrollbar]:w-1.5
+            [&::-webkit-scrollbar-thumb]:bg-slate-200
+            [&::-webkit-scrollbar-thumb]:rounded-full
+            [&::-webkit-scrollbar-track]:bg-transparent
+            hover:[&::-webkit-scrollbar-thumb]:bg-slate-300
+          "
+        >
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="mb-1 block text-sm font-medium text-[#374151]">
+              <label className="mb-1.5 block text-sm font-semibold text-[#6B7280]">
                 Projeto*
               </label>
 
               <input
                 value={DEFAULT_PROJECT}
                 disabled
-                className="
-                  h-[42px] w-full rounded-lg border border-[#e5e7eb]
-                  bg-[#f9fafb] px-3 text-sm text-[#6b7280]
-                "
+                className="h-[42px] w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm text-slate-500"
               />
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-[#374151]">
+              <label className="mb-1.5 block text-sm font-semibold text-[#6B7280]">
                 Sprint*
               </label>
 
               <select
                 value={sprint}
                 onChange={(e) => setSprint(e.target.value)}
-                className="
-                  h-[42px] w-full rounded-lg border border-[#e5e7eb]
-                  bg-white px-3 text-sm text-[#374151]
-                  focus:outline-none focus:ring-2 focus:ring-[#3b5ccc]/30
-                "
+                className="h-[42px] w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-700 cursor-pointer focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="">Selecione</option>
-                <option value="Sprint 1">Sprint 1</option>
-                <option value="Sprint 2">Sprint 2</option>
-                <option value="Sprint 3">Sprint 3</option>
-                <option value="Sprint 4">Sprint 4</option>
-                <option value="Sprint 5">Sprint 5</option>
+                {SPRINT_OPTIONS.map((s) => (
+                  <option key={s} value={s} disabled={usedSet.has(s)}>
+                    {s}
+                    {usedSet.has(s) ? " (já enviada)" : ""}
+                  </option>
+                ))}
               </select>
+              {availableSprints.length === 0 && (
+                <span className="mt-1 block text-xs text-slate-500">
+                  Todas as sprints já possuem relatório.
+                </span>
+              )}
             </div>
           </div>
 
-          <TextAreaField
+          <TextArea
             label="Atividades Previstas*"
             value={plannedActivities}
             onChange={setPlannedActivities}
           />
 
-          <TextAreaField
+          <TextArea
             label="Atividades Concluídas*"
             value={completedActivities}
             onChange={setCompletedActivities}
           />
 
-          <TextAreaField
+          <TextArea
             label="Problemas Encontrados*"
             value={problems}
             onChange={setProblems}
           />
 
-          <TextAreaField
+          <TextArea
             label="Lições Aprendidas*"
             value={lessonsLearned}
             onChange={setLessonsLearned}
           />
 
-          <TextAreaField
+          <TextArea
             label="Próximos Passos*"
             value={nextSteps}
             onChange={setNextSteps}
@@ -143,64 +166,20 @@ export function SprintReportModal({
         </div>
 
         <div className="mt-4 flex justify-end gap-3 border-t border-[#e5e7eb] pt-4">
-          <button
-            type="button"
-            onClick={onClose}
-            disabled={isSubmitting}
-            className="
-              rounded-lg border border-[#e5e7eb]
-              px-5 py-2 text-sm font-medium text-[#374151]
-              hover:bg-[#f9fafb]
-              disabled:cursor-not-allowed disabled:opacity-50
-              transition-colors cursor-pointer
-            "
-          >
-            Fechar
-          </button>
-
-          <button
-            type="button"
+          <Button
+            variant="primary"
             onClick={handleSubmit}
             disabled={!isFormValid || isSubmitting}
-            className="
-              rounded-lg bg-[#f97316]
-              px-5 py-2 text-sm font-medium text-white
-              hover:bg-[#ea580c]
-              disabled:cursor-not-allowed disabled:opacity-50
-            "
+            loading={isSubmitting}
           >
             {isSubmitting ? "Enviando..." : "Cadastrar"}
-          </button>
+          </Button>
+
+          <Button variant="secondary" onClick={onClose} disabled={isSubmitting}>
+            Fechar
+          </Button>
         </div>
       </div>
     </Modal>
-  );
-}
-
-interface TextAreaFieldProps {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-}
-
-function TextAreaField({ label, value, onChange }: TextAreaFieldProps) {
-  return (
-    <div>
-      <label className="mb-1 block text-sm font-medium text-[#374151]">
-        {label}
-      </label>
-
-      <textarea
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        rows={4}
-        className="
-          w-full rounded-lg border border-[#e5e7eb]
-          px-3 py-2 text-sm text-[#374151]
-          resize-none
-          focus:outline-none focus:ring-2 focus:ring-[#3b5ccc]/30
-        "
-      />
-    </div>
   );
 }

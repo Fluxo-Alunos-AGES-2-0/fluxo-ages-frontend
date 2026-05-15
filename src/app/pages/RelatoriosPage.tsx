@@ -180,9 +180,9 @@ export default function RelatoriosPage() {
       </div>
 
       {/* Card container */}
-      <div className="bg-white rounded-2xl border border-[#e5e7eb] overflow-hidden">
+      <div className="bg-white rounded-2xl border border-[#e5e7eb]">
         {/* Barra de abas */}
-        <div className="flex items-center border-b border-[#e5e7eb] px-6">
+        <div className="sticky top-0 z-10 flex items-center border-b border-[#e5e7eb] px-6 bg-white rounded-t-2xl">
           <nav className="flex flex-1 gap-1" role="tablist">
             {TABS.map((tab) => {
               const isActive = tab.id === activeTab;

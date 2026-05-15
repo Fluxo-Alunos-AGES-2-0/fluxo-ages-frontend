@@ -7,7 +7,7 @@ import {
   type SprintReportFormData,
 } from "./SprintReportModal";
 
-interface SprintReport {
+export interface SprintReport {
   id: number;
   sprint: string;
   student: string;
@@ -113,26 +113,29 @@ export function SprintTable() {
           Nenhum relatório de sprint encontrado.
         </div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+        <div className="w-full overflow-hidden rounded-xl border border-[#eef0f4]">
+          <table className="w-full text-sm border-collapse">
             <thead className="bg-[#f9fafb] text-[#6b7280] border-b border-[#eef0f4]">
               <tr>
-                <th className="px-4 py-3 text-left">Sprint</th>
-                <th className="px-4 py-3 text-left">Aluno</th>
-                <th className="px-4 py-3 text-left">Data</th>
+                <th className="px-6 py-4 text-left font-semibold">Sprint</th>
+                <th className="px-6 py-4 text-left font-semibold">Aluno</th>
+                <th className="px-6 py-4 text-left font-semibold">Data</th>
               </tr>
             </thead>
 
-            <tbody>
+            <tbody className="bg-white">
               {sprintReports.map((item) => (
-                <tr key={item.id} className="border-t border-[#eef0f4]">
-                  <td className="px-4 py-3 font-medium text-[#374151]">
+                <tr
+                  key={item.id}
+                  className="border-b border-[#eef0f4] hover:bg-slate-50/30 transition-colors last:border-b-0"
+                >
+                  <td className="px-6 py-4 font-medium text-slate-700">
                     {item.sprint}
                   </td>
 
-                  <td className="px-4 py-3 text-[#374151]">{item.student}</td>
+                  <td className="px-6 py-4 text-slate-600">{item.student}</td>
 
-                  <td className="px-4 py-3 text-[#374151]">
+                  <td className="px-6 py-4 text-slate-600">
                     {new Date(item.date).toLocaleDateString("pt-BR")}
                   </td>
                 </tr>
@@ -147,6 +150,7 @@ export function SprintTable() {
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleSubmit}
         isSubmitting={isSubmitting}
+        usedSprints={sprintReports.map((r) => r.sprint)}
       />
     </>
   );
