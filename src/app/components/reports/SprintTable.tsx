@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import { LoaderCircle, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
+import { api } from "../../services/api";
+import { useToast } from "../../context/ToastContext";
 import {
   SprintReportModal,
   type SprintReportFormData,
@@ -10,58 +12,81 @@ interface SprintReport {
   sprint: string;
   student: string;
   date: string;
-  status: "PROCESSANDO" | "ENVIADO";
+  id_project: number;
 }
 
-// TODO: trocar para chamada real quando o endpoint estiver pronto
-const MOCK_SPRINT_REPORTS: SprintReport[] = [
-  {
-    id: 1,
-    sprint: "Sprint 1",
-    student: "João Silva",
-    date: "2024-06-15T14:30:00Z",
-    status: "ENVIADO",
-  },
-  {
-    id: 2,
-    sprint: "Sprint 2",
-    student: "Maria Oliveira",
-    date: "2024-06-20T10:00:00Z",
-    status: "PROCESSANDO",
-  },
-];
+interface SprintReportPayload {
+  sprint: number;
+  predictedActivity: string;
+  activityCompleted: string;
+  problemsEncountered: string;
+  learnedLessons: string;
+  nextSteps: string;
+}
+
+function parseSprintNumber(value: string): number {
+  const match = value.match(/\d+/);
+  return match ? Number(match[0]) : NaN;
+}
+
+function toPayload(data: SprintReportFormData): SprintReportPayload {
+  return {
+    sprint: parseSprintNumber(data.sprint),
+    predictedActivity: data.plannedActivities,
+    activityCompleted: data.completedActivities,
+    problemsEncountered: data.problems,
+    learnedLessons: data.lessonsLearned,
+    nextSteps: data.nextSteps,
+  };
+}
 
 export function SprintTable() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [sprintReports, setSprintReports] =
-    useState<SprintReport[]>(MOCK_SPRINT_REPORTS);
+  const [sprintReports, setSprintReports] = useState<SprintReport[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { showToast } = useToast();
+
+  const fetchReports = () => {
+    setLoading(true);
+    setError(null);
+    api
+      .get<SprintReport[]>("/report/me/sprint")
+      .then((data) => setSprintReports(data ?? []))
+      .catch((err) => {
+        console.error("Erro ao buscar relatórios de sprint:", err);
+        setError("Não foi possível carregar os relatórios de sprint.");
+      })
+      .finally(() => setLoading(false));
+  };
 
   useEffect(() => {
-    // Simula a finalização do envio dos relatórios em PROCESSANDO
-    const timer = setTimeout(() => {
-      setSprintReports((prev) =>
-        prev.map((report) =>
-          report.status === "PROCESSANDO"
-            ? { ...report, status: "ENVIADO" }
-            : report,
-        ),
-      );
-    }, 2000);
-
-    return () => clearTimeout(timer);
+    fetchReports();
   }, []);
 
-  const handleSubmit = (data: SprintReportFormData) => {
-    setSprintReports((prev) => [
-      ...prev,
-      {
-        id: prev.length > 0 ? Math.max(...prev.map((r) => r.id)) + 1 : 1,
-        sprint: data.sprint,
-        student: "Aluno Atual",
-        date: new Date().toISOString(),
-        status: "PROCESSANDO",
-      },
-    ]);
+  const handleSubmit = async (data: SprintReportFormData) => {
+    setIsSubmitting(true);
+    try {
+      await api.post("/report/sprint", toPayload(data));
+      showToast({
+        variant: "success",
+        title: "Relatório enviado",
+        message: "Relatório de sprint registrado com sucesso.",
+      });
+      setIsModalOpen(false);
+      fetchReports();
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Erro ao enviar relatório.";
+      showToast({
+        variant: "error",
+        title: "Erro ao enviar",
+        message,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -77,7 +102,13 @@ export function SprintTable() {
         </button>
       </div>
 
-      {sprintReports.length === 0 ? (
+      {loading ? (
+        <div className="text-center text-[#6b7280] py-10">
+          Carregando relatórios...
+        </div>
+      ) : error ? (
+        <div className="text-center text-red-600 py-10">{error}</div>
+      ) : sprintReports.length === 0 ? (
         <div className="text-center text-[#6b7280] py-10">
           Nenhum relatório de sprint encontrado.
         </div>
@@ -89,7 +120,6 @@ export function SprintTable() {
                 <th className="px-4 py-3 text-left">Sprint</th>
                 <th className="px-4 py-3 text-left">Aluno</th>
                 <th className="px-4 py-3 text-left">Data</th>
-                <th className="px-4 py-3 text-left">Status</th>
               </tr>
             </thead>
 
@@ -105,19 +135,6 @@ export function SprintTable() {
                   <td className="px-4 py-3 text-[#374151]">
                     {new Date(item.date).toLocaleDateString("pt-BR")}
                   </td>
-
-                  <td className="px-4 py-3">
-                    {item.status === "PROCESSANDO" ? (
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-100 px-2.5 py-1 text-xs font-medium text-blue-600">
-                        <LoaderCircle size={13} className="animate-spin" />
-                        Enviando
-                      </span>
-                    ) : (
-                      <span className="rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-600">
-                        Enviado
-                      </span>
-                    )}
-                  </td>
                 </tr>
               ))}
             </tbody>
@@ -129,6 +146,7 @@ export function SprintTable() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleSubmit}
+        isSubmitting={isSubmitting}
       />
     </>
   );

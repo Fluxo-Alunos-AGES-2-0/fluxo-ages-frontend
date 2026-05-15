@@ -4,7 +4,8 @@ import { Modal } from "../ui/Modal/Modal";
 interface SprintReportModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit?: (data: SprintReportFormData) => void;
+  onSubmit?: (data: SprintReportFormData) => void | Promise<void>;
+  isSubmitting?: boolean;
 }
 
 export interface SprintReportFormData {
@@ -23,6 +24,7 @@ export function SprintReportModal({
   isOpen,
   onClose,
   onSubmit,
+  isSubmitting = false,
 }: SprintReportModalProps) {
   const [sprint, setSprint] = useState("");
   const [plannedActivities, setPlannedActivities] = useState("");
@@ -52,9 +54,8 @@ export function SprintReportModal({
   );
 
   const handleSubmit = () => {
-    if (!isFormValid) return;
+    if (!isFormValid || isSubmitting) return;
 
-    // TODO: integrar com endpoint real de relatório de sprint quando o backend estiver pronto
     onSubmit?.({
       project: DEFAULT_PROJECT,
       sprint,
@@ -64,8 +65,6 @@ export function SprintReportModal({
       lessonsLearned,
       nextSteps,
     });
-
-    onClose();
   };
 
   return (
@@ -147,10 +146,12 @@ export function SprintReportModal({
           <button
             type="button"
             onClick={onClose}
+            disabled={isSubmitting}
             className="
               rounded-lg border border-[#e5e7eb]
               px-5 py-2 text-sm font-medium text-[#374151]
               hover:bg-[#f9fafb]
+              disabled:cursor-not-allowed disabled:opacity-50
               transition-colors cursor-pointer
             "
           >
@@ -160,7 +161,7 @@ export function SprintReportModal({
           <button
             type="button"
             onClick={handleSubmit}
-            disabled={!isFormValid}
+            disabled={!isFormValid || isSubmitting}
             className="
               rounded-lg bg-[#f97316]
               px-5 py-2 text-sm font-medium text-white
@@ -168,7 +169,7 @@ export function SprintReportModal({
               disabled:cursor-not-allowed disabled:opacity-50
             "
           >
-            Cadastrar
+            {isSubmitting ? "Enviando..." : "Cadastrar"}
           </button>
         </div>
       </div>
