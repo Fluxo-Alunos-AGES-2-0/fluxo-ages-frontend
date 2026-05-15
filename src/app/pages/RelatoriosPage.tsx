@@ -1,12 +1,6 @@
 import { api } from "../services/api";
 import { useEffect, useState } from "react";
-import {
-  FileText,
-  Download,
-  ChevronDown,
-  FileDown,
-  UploadCloud,
-} from "lucide-react";
+import { FileText, ChevronDown, FileDown, UploadCloud } from "lucide-react";
 import { HoursTable } from "../components/reports/HoursTable";
 import { HoursSummary } from "../components/reports/HoursSummary";
 import {
