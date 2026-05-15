@@ -21,7 +21,7 @@ export interface SprintReportFormData {
   nextSteps: string;
 }
 
-const DEFAULT_PROJECT = "Fluxo AGES 2.0 - Estudantes";
+const DEFAULT_PROJECT = "Fluxo AGES 2.0 - Alunos";
 const SPRINT_OPTIONS = [
   "Sprint 1",
   "Sprint 2",
