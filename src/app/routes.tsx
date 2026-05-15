@@ -7,7 +7,7 @@ import PasswordRecovery from "./components/passwordRecovery/PasswordRecovery";
 
 export const router = createBrowserRouter([
   { path: "/login", Component: LoginPage },
-  { path: "/recuperar-senha", Component: PasswordRecovery },
+  { path: "/reset-password", Component: PasswordRecovery },
   {
     path: "/",
     Component: AppLayout,
