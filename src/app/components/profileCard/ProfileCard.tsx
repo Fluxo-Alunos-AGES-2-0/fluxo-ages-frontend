@@ -1,17 +1,7 @@
-import { useState } from "react";
-import { Card } from "@/app/components/Card/Card";
+import { Card } from "../Card/Card";
 import { Folder, GraduationCap, CircleStar } from "lucide-react";
-
-interface ProfileData {
-  id: number;
-  name: string;
-  email: string;
-  avatarUrl: string | null;
-  agesLevel: number;
-  currentProject: { id: number; name: string } | null;
-  professor: { id: number; name: string } | null;
-  attendance: { totalClasses: number; presences: number; absences: number };
-}
+import { ProfileData } from "../../types/dashboard";
+import { toAgesLevel } from "@/app/utils/agesLevel";
 
 interface ProfileCardProps {
   profile: ProfileData | null;
@@ -19,108 +9,105 @@ interface ProfileCardProps {
   error: string | null;
 }
 
-function gerarCor(nome: string): string {
-  let hash = 0;
-  for (let i = 0; i < nome.length; i++) {
-    hash = nome.charCodeAt(i) + ((hash << 5) - hash);
+function ProfileCard({ profile, loading, error }: ProfileCardProps) {
+  const nome = profile?.name || "Usuário";
+  const email = profile?.email || "";
+  const projeto = profile?.currentProject?.name || "Sis. Gestão Acadêmica";
+  const professor = profile?.professor?.name || "Prof. João Silva";
+  const aulas = profile?.attendance?.totalClasses ?? "24";
+  const presencas = profile?.attendance?.presences ?? "12";
+  const faltas = profile?.attendance?.absences ?? "12";
+
+  const agesLevel = toAgesLevel(profile?.agesLevel);
+
+  function gerarCor(nome: string) {
+    let hash = 0;
+    for (let i = 0; i < nome.length; i++) {
+      hash = nome.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return `hsl(${Math.abs(hash) % 360}, 60%, 50%)`;
   }
-  return `hsl(${hash % 360}, 60%, 50%)`;
-}
 
-const ROMAN = ["I", "II", "III", "IV", "V", "VI"];
+  const iniciais = nome
+    .split(" ")
+    .map((n: string) => n[0])
+    .slice(0, 2)
+    .join("");
 
-export function ProfileCard({ profile, loading, error }: ProfileCardProps) {
+  const corAvatar = gerarCor(nome);
+
   if (loading) {
     return (
       <Card title="Perfil do Estudante">
-        <div className="flex flex-col gap-3">
-          <div className="w-14 h-14 rounded-full bg-gray-200 animate-pulse" />
-          <div className="w-3/5 h-4 bg-gray-200 rounded animate-pulse" />
-          <div className="w-2/5 h-3 bg-gray-200 rounded animate-pulse" />
-          <div className="w-full h-3.5 bg-gray-200 rounded animate-pulse" />
-          <div className="w-full h-3.5 bg-gray-200 rounded animate-pulse" />
-          <div className="w-full h-3.5 bg-gray-200 rounded animate-pulse" />
+        <div className="flex flex-col gap-3 animate-pulse">
+          <div className="w-14 h-14 rounded-full bg-gray-200" />
+
+          <div className="w-3/5 h-4 rounded bg-gray-200" />
+
+          <div className="w-2/5 h-3 rounded bg-gray-200" />
+
+          <div className="w-full h-3.5 rounded bg-gray-200" />
+
+          <div className="w-full h-3.5 rounded bg-gray-200" />
+
+          <div className="w-full h-3.5 rounded bg-gray-200" />
         </div>
       </Card>
     );
   }
-
-  if (error || !profile) {
-    return (
-      <Card title="Perfil do Estudante">
-        <p className="text-sm text-red-500">
-          {error ?? "Erro ao carregar perfil."}
-        </p>
-      </Card>
-    );
-  }
-
-  const [imgError, setImgError] = useState(false);
-  const iniciais = profile.name
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((n) => n[0].toUpperCase())
-    .join("");
-  const corAvatar = gerarCor(profile.name);
-  const agesLabel = `AGES ${ROMAN[profile.agesLevel - 1] ?? profile.agesLevel}`;
 
   return (
     <Card title="Perfil do Estudante" headerAction={<button>Editar</button>}>
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-3">
-          {profile.avatarUrl && !imgError ? (
-            <img
-              src={profile.avatarUrl}
-              alt={profile.name}
-              className="w-14 h-14 rounded-full object-cover shrink-0"
-              onError={() => setImgError(true)}
-            />
-          ) : (
-            <div
-              className="w-14 h-14 rounded-full flex items-center justify-center text-white font-bold shrink-0"
-              style={{ backgroundColor: corAvatar }}
-            >
-              {iniciais}
-            </div>
-          )}
+          <div
+            className="w-14 h-14 rounded-full flex items-center justify-center text-white font-bold shrink-0"
+            style={{ backgroundColor: corAvatar }}
+          >
+            {iniciais}
+          </div>
+
           <div>
-            <h3>{profile.name}</h3>
-            <p>{profile.email}</p>
+            <h3 className="font-semibold">{nome}</h3>
+            <p className="text-sm text-muted-foreground">{email}</p>
           </div>
         </div>
 
-        {profile.currentProject && (
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center">
-              <Folder size={16} />
-            </div>
-            <div>
-              <small className="text-gray-400 text-xs">PROJETO ATUAL</small>
-              <p className="m-0 font-medium">{profile.currentProject.name}</p>
-            </div>
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
+            <Folder size={16} />
           </div>
-        )}
 
-        {profile.professor && (
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center">
-              <GraduationCap size={16} />
-            </div>
-            <div>
-              <small className="text-gray-400 text-xs">PROFESSOR</small>
-              <p className="m-0 font-medium">{profile.professor.name}</p>
-            </div>
+          <div>
+            <small className="text-xs text-muted-foreground">
+              PROJETO ATUAL
+            </small>
+
+            <p className="font-medium">{projeto}</p>
           </div>
-        )}
+        </div>
 
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
+            <GraduationCap size={16} />
+          </div>
+
+          <div>
+            <small className="text-xs text-muted-foreground">PROFESSOR</small>
+
+            <p className="font-medium">{professor}</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
             <CircleStar size={16} />
           </div>
+
           <div>
-            <small className="text-gray-400 text-xs">NÍVEL AGES</small>
-            <p className="m-0 font-medium">{agesLabel}</p>
+            <small className="text-xs text-muted-foreground">NÍVEL AGES</small>
+
+            <p className="font-medium">{agesLevel}</p>
           </div>
         </div>
 
@@ -128,20 +115,26 @@ export function ProfileCard({ profile, loading, error }: ProfileCardProps) {
 
         <button
           className="opacity-70 flex justify-between items-center gap-3 p-3 rounded-lg cursor-pointer border-none bg-transparent w-full"
-          onClick={() => {}}
+          onClick={() => console.log("clicou")}
         >
           <div className="flex flex-col items-center">
-            Aulas <b>{profile.attendance.totalClasses}</b>
+            <span>Aulas</span>
+            <b>{aulas}</b>
           </div>
+
           <div className="flex flex-col items-center">
-            Presenças{" "}
-            <b className="text-green-600">{profile.attendance.presences}</b>
+            <span>Presenças</span>
+            <b className="text-green-600">{presencas}</b>
           </div>
+
           <div className="flex flex-col items-center">
-            Faltas <b className="text-red-600">{profile.attendance.absences}</b>
+            <span>Faltas</span>
+            <b className="text-red-600">{faltas}</b>
           </div>
         </button>
       </div>
     </Card>
   );
 }
+
+export default ProfileCard;

@@ -1,13 +1,7 @@
 import { Card } from "@/app/components/Card/Card";
 import { CircularProgress } from "@/app/components/CircularProgress/CircularProgress";
 import { Loader } from "@/app/components/Loader/Loader";
-
-interface HoursData {
-  completedSeconds: number;
-  remainingSeconds: number;
-  totalSeconds: number;
-  percentual: number;
-}
+import { HoursData } from "../../types/dashboard";
 
 interface HoursTrackerProps {
   hours: HoursData | null;

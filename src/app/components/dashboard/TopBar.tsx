@@ -1,5 +1,6 @@
 import { Info, Sun } from "lucide-react";
 import { useLocation } from "react-router";
+import { HeaderTimerWidget } from "./HeaderTimerWidget";
 
 const pageTitles: Record<string, string> = {
   "/dashboard": "Dashboard",
@@ -10,6 +11,7 @@ const pageTitles: Record<string, string> = {
 export function TopBar() {
   const { pathname } = useLocation();
   const title = pageTitles[pathname] || "Dashboard";
+  const showTimerWidget = pathname !== "/dashboard";
 
   return (
     <header className="flex items-center justify-between px-7 h-[72px] shrink-0 bg-white border-b border-[#e5e7eb]">
@@ -19,7 +21,8 @@ export function TopBar() {
         </h1>
       </div>
 
-      <div className="flex-1 flex justify-center" />
+      {/* Renderização condicional do Widget */}
+      {showTimerWidget && <HeaderTimerWidget />}
 
       <div className="flex-1 flex items-center justify-end gap-3">
         <button
@@ -28,6 +31,7 @@ export function TopBar() {
         >
           <Info size={18} />
         </button>
+
         <div className="w-[50px] h-[28px] rounded-full bg-[#e5e7eb] flex items-center p-[3px] cursor-pointer">
           <div className="w-[22px] h-[22px] rounded-full bg-white flex items-center justify-center text-[#f47b20] shadow-sm">
             <Sun size={14} />

@@ -16,6 +16,7 @@ import { Button } from "@/app/components/ui/Button/Button";
 import { QuickAccessButton } from "@/app/components/ui/QuickAccessButton/QuickAccessButton";
 import logoFluxoAges from "@/app/assets/images/login/logo_fluxo_ages.webp";
 import { api } from "@/app/services/api";
+import { useToast } from "@/app/context/ToastContext";
 
 interface LoginCardProps {
   onOpenCronograma: () => void;
@@ -34,7 +35,6 @@ export function LoginCard({ onOpenCronograma }: LoginCardProps) {
     usuario?: string;
     senha?: string;
     recoveryEmail?: string;
-    general?: string;
   }>({});
   const [successMessage, setSuccessMessage] = useState("");
   const [showForgotPassword, setShowForgotPassword] = useState(false);
@@ -42,6 +42,7 @@ export function LoginCard({ onOpenCronograma }: LoginCardProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
   const clearError = (field: "usuario" | "senha" | "recoveryEmail") => {
     setErrors((prev) => ({ ...prev, [field]: undefined }));
@@ -62,13 +63,22 @@ export function LoginCard({ onOpenCronograma }: LoginCardProps) {
     setIsLoading(true);
     try {
       const res = await api.post<LoginResponse>("/auth/login", {
-        email: usuario,
+        username: usuario,
         password: senha,
       });
       localStorage.setItem("token", res.token);
+      showToast({
+        variant: "success",
+        title: "Sucesso",
+        message: "Login efetuado com sucesso!",
+      });
       navigate("/dashboard");
     } catch {
-      setErrors({ general: "Usuário ou senha inválidos." });
+      showToast({
+        variant: "error",
+        title: "Erro ao entrar",
+        message: "Usuário ou senha inválidos.",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -82,7 +92,7 @@ export function LoginCard({ onOpenCronograma }: LoginCardProps) {
     }
   };
 
-  const handleRecoverySubmit = () => {
+  const handleRecoverySubmit = async () => {
     const newErrors: { recoveryEmail?: string } = {};
     setSuccessMessage("");
 
@@ -97,8 +107,21 @@ export function LoginCard({ onOpenCronograma }: LoginCardProps) {
       return;
     }
 
-    setErrors((prev) => ({ ...prev, recoveryEmail: undefined }));
-    setSuccessMessage("Sucesso! Email para troca de senha enviado.");
+    setIsLoading(true);
+    try {
+      await api.post("/auth/forgot-password", { email: recoveryEmail });
+      setErrors((prev) => ({ ...prev, recoveryEmail: undefined }));
+      setSuccessMessage("Verifique sua caixa de entrada");
+      setRecoveryEmail("");
+    } catch (error) {
+      showToast({
+        variant: "error",
+        title: "Erro ao solicitar recuperação",
+        message: error instanceof Error ? error.message : "Tente novamente",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -164,10 +187,6 @@ export function LoginCard({ onOpenCronograma }: LoginCardProps) {
             error={errors.senha}
             autoComplete="current-password"
           />
-
-          {errors.general && (
-            <p className="text-sm text-red-600 text-center">{errors.general}</p>
-          )}
 
           <Button
             type="submit"

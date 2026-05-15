@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Play, Pause } from "lucide-react";
 
 import { useTimer } from "@/app/context/TimerContext";
+import { useToast } from "@/app/context/ToastContext";
 
 import { Card } from "@/app/components/Card/Card";
 import { Button } from "@/app/components/ui/Button/Button";
@@ -9,8 +10,17 @@ import { TimerDisplay } from "@/app/components/ui/TimerDisplay";
 import { TextArea } from "@/app/components/ui/TextArea/TextArea";
 import { ConfirmationModal } from "@/app/components/ui/ConfirmationModal/ConfirmationModal";
 
-const TimerCardContent = () => {
+const MAX_CHARS = 1250;
+const MIN_CHARS = 15;
+
+interface TimerCardContentProps {
+  onConfirmFinish: () => Promise<void>;
+}
+
+const TimerCardContent = ({ onConfirmFinish }: TimerCardContentProps) => {
   const { isRunning, startTimer, stopTimer, resetTimer } = useTimer();
+  const { showToast } = useToast();
+
   const [description, setDescription] = useState("");
   const [error, setError] = useState<string | undefined>(undefined);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -23,21 +33,33 @@ const TimerCardContent = () => {
       await startTimer();
       setError(undefined);
     } catch (err) {
-      setError(
+      const msg =
         err instanceof Error
           ? err.message
-          : "Erro ao iniciar registro de horas.",
-      );
+          : "Erro ao iniciar registro de horas.";
+      setError(msg);
+      showToast({ variant: "error", title: "Erro ao iniciar", message: msg });
     } finally {
       setIsStarting(false);
     }
   };
 
   const handleStopAttempt = () => {
-    if (!description.trim()) {
-      setError("A descrição é obrigatória para encerrar a atividade.");
+    const trimmedDescription = description.trim();
+    const currentLength = trimmedDescription.length;
+
+    if (currentLength < MIN_CHARS) {
+      setError(
+        `A descrição deve ter no mínimo ${MIN_CHARS} caracteres para encerrar.`,
+      );
       return;
     }
+
+    if (currentLength > MAX_CHARS) {
+      setError(`A descrição excedeu o limite de ${MAX_CHARS} caracteres.`);
+      return;
+    }
+
     setError(undefined);
     setIsModalOpen(true);
   };
@@ -46,16 +68,26 @@ const TimerCardContent = () => {
     setIsStopping(true);
     try {
       await stopTimer(description);
+      await onConfirmFinish();
+
       resetTimer();
       setDescription("");
+      setError(undefined);
       setIsModalOpen(false);
+
+      showToast({
+        variant: "success",
+        title: "Horas registradas",
+        message: "Suas horas foram salvas com sucesso.",
+      });
     } catch (err) {
-      setError(
+      const msg =
         err instanceof Error
           ? err.message
-          : "Erro ao encerrar registro de horas.",
-      );
+          : "Erro ao encerrar registro de horas.";
+      setError(msg);
       setIsModalOpen(false);
+      showToast({ variant: "error", title: "Erro ao encerrar", message: msg });
     } finally {
       setIsStopping(false);
     }
@@ -69,8 +101,9 @@ const TimerCardContent = () => {
       <Card
         title="Controle de Horas"
         icon="arrow"
-        classContent="h-full flex flex-col items-center justify-center relative"
+        classContent="flex flex-col items-center justify-center relative overflow-hidden"
       >
+        {/* Seção do Cronômetro e Botões de Ação */}
         <div className={timerChildClass}>
           <TimerDisplay />
 
@@ -95,6 +128,7 @@ const TimerCardContent = () => {
           )}
         </div>
 
+        {/* Seção da TextArea com Contador e Erro Inline */}
         <div className={timerChildClass}>
           <TextArea
             label="Descrição da atividade"
@@ -102,10 +136,16 @@ const TimerCardContent = () => {
             value={description}
             onChange={(val) => {
               setDescription(val);
-              if (val.trim()) setError(undefined);
+              if (
+                val.trim().length >= MIN_CHARS &&
+                val.trim().length <= MAX_CHARS
+              ) {
+                setError(undefined);
+              }
             }}
             disabled={!isRunning}
             error={error}
+            maxLength={MAX_CHARS}
           />
         </div>
       </Card>
@@ -116,7 +156,7 @@ const TimerCardContent = () => {
         onConfirm={handleConfirmFinish}
         title="Encerrar horas"
         description="Tem certeza de que deseja encerrar o relatório de horas atual?"
-        warningMessage="Uma vez encerrado, os dados serão enviados para análise e não poderão ser alterados localmente."
+        warningMessage="Uma vez encerrado, alterações no registro estarão sujeitas à aprovação."
         confirmText={isStopping ? "Encerrando..." : "Encerrar"}
         cancelText="Cancelar"
       />
@@ -124,4 +164,6 @@ const TimerCardContent = () => {
   );
 };
 
-export const TimerCard = () => <TimerCardContent />;
+export const TimerCard = ({ onConfirmFinish }: TimerCardContentProps) => (
+  <TimerCardContent onConfirmFinish={onConfirmFinish} />
+);
