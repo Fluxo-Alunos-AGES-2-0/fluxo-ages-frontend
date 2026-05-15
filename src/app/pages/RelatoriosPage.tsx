@@ -1,12 +1,6 @@
 import { api } from "../services/api";
 import { useEffect, useState } from "react";
-import {
-  FileText,
-  Download,
-  ChevronDown,
-  FileDown,
-  UploadCloud,
-} from "lucide-react";
+import { FileText, ChevronDown, FileDown, UploadCloud } from "lucide-react";
 import { HoursTable } from "../components/reports/HoursTable";
 import { HoursSummary } from "../components/reports/HoursSummary";
 import {
@@ -207,24 +201,12 @@ export default function RelatoriosPage() {
               );
             })}
           </nav>
-
-          {/* Ícone de download */}
-          <button
-            aria-label="Baixar relatório"
-            className="
-              w-[34px] h-[34px] flex items-center justify-center
-              rounded-lg border border-[#e5e7eb] text-[#6b7280]
-              hover:bg-[#f3f4f6] hover:text-[#3b5ccc] transition-colors
-            "
-          >
-            <Download size={16} strokeWidth={1.8} />
-          </button>
         </div>
 
         {/* Filtro compartilhado (Horas + Sprint) */}
         {currentTab.hasProjectFilter && (
           <div className="px-6 pt-5">
-            <div className="relative">
+            <div className="relative inline-block">
               <select
                 value={selectedProject}
                 onChange={(e) => setSelectedProject(e.target.value)}

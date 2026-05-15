@@ -77,7 +77,7 @@ const PasswordRecovery = () => {
 
       if (errorMessage.includes("400")) {
         setTokenError(
-          "Token expirado ou já utilizado. Solicite uma nova recuperação."
+          "Token expirado ou já utilizado. Solicite uma nova recuperação.",
         );
       } else {
         showToast({
@@ -100,9 +100,9 @@ const PasswordRecovery = () => {
         <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"></div>
 
         <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-sm flex flex-col items-center z-10">
-          <img src={LogoFluxo} alt="FluxoAGES" className="mb-2 w-32" />
+          <img src={LogoFluxo} alt="FluxoAGES" className="mb-2 w-56 h-auto" />
 
-          <h2 className="text-gray-400 uppercase tracking-[0.2em] text-[9px] font-semibold mb-6">
+          <h2 className="text-gray-400 uppercase tracking-[0.2em] text-xs font-semibold mb-6">
             Recuperação de Senha
           </h2>
 
@@ -132,9 +132,9 @@ const PasswordRecovery = () => {
       <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"></div>
 
       <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-sm flex flex-col items-center z-10">
-        <img src={LogoFluxo} alt="FluxoAGES" className="mb-2 w-32" />
+        <img src={LogoFluxo} alt="FluxoAGES" className="mb-2 w-56 h-auto" />
 
-        <h2 className="text-gray-400 uppercase tracking-[0.2em] text-[9px] font-semibold mb-6">
+        <h2 className="text-gray-400 uppercase tracking-[0.2em] text-xs font-semibold mb-6">
           Redefinir Senha
         </h2>
 
