@@ -40,41 +40,22 @@ const TABS: Tab[] = [
   { id: "final", label: "Final", hasProjectFilter: false },
 ];
 
-const MOCK_PROGRESS_REPORTS: ReportEntry[] = [
-  {
-    date: "09/07/2026",
-    project: "Fluxo AGES 2.0",
-    grade: 9.0,
-    feedback: "",
-  },
-  {
-    date: "16/04/2015",
-    project: "Fluxo AGES 1.0",
-    grade: 10.0,
-    feedback: "",
-  },
-];
+interface ReportApiResponse {
+  date: string;
+  project: string;
+  grade: number;
+  feedback: string | null;
+}
 
-const MOCK_FINAL_REPORTS: ReportEntry[] = [
-  {
-    date: "09/07/2026",
-    project: "Fluxo AGES 2.0",
-    grade: 10.0,
-    feedback: "",
-  },
-  {
-    date: "23/11/2023",
-    project: "Projeto 2",
-    grade: 9.5,
-    feedback: "",
-  },
-  {
-    date: "16/04/2021",
-    project: "Projeto 1",
-    grade: 8.0,
-    feedback: "",
-  },
-];
+function toReportEntry(report: ReportApiResponse): ReportEntry {
+  const [year, month, day] = report.date.split("-");
+  return {
+    date: `${day}/${month}/${year}`,
+    project: report.project,
+    grade: report.grade,
+    feedback: report.feedback ?? "",
+  };
+}
 
 export default function RelatoriosPage() {
   const [activeTab, setActiveTab] = useState<TabId>("horas");
@@ -110,19 +91,41 @@ export default function RelatoriosPage() {
     }
 
     if (activeTab === "andamento") {
-      // TODO: trocar para chamada real quando o endpoint estiver pronto
       setLoading(true);
       setError(null);
-      setProgressReport(MOCK_PROGRESS_REPORTS);
-      setLoading(false);
+      api
+        .get<ReportApiResponse[]>("/report/me/progress")
+        .then((data) => {
+          if (cancelled) return;
+          setProgressReport((data ?? []).map(toReportEntry));
+        })
+        .catch((err) => {
+          if (cancelled) return;
+          console.error("Erro ao buscar relatórios de andamento:", err);
+          setError("Não foi possível carregar os relatórios de andamento.");
+        })
+        .finally(() => {
+          if (!cancelled) setLoading(false);
+        });
     }
 
     if (activeTab === "final") {
-      // TODO: trocar para chamada real quando o endpoint estiver pronto
       setLoading(true);
       setError(null);
-      setFinalReport(MOCK_FINAL_REPORTS);
-      setLoading(false);
+      api
+        .get<ReportApiResponse[]>("/report/me/final")
+        .then((data) => {
+          if (cancelled) return;
+          setFinalReport((data ?? []).map(toReportEntry));
+        })
+        .catch((err) => {
+          if (cancelled) return;
+          console.error("Erro ao buscar relatórios finais:", err);
+          setError("Não foi possível carregar os relatórios finais.");
+        })
+        .finally(() => {
+          if (!cancelled) setLoading(false);
+        });
     }
 
     return () => {
