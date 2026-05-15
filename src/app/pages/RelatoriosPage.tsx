@@ -290,6 +290,7 @@ export default function RelatoriosPage() {
         isOpen={isUploadModalOpen}
         onClose={() => setIsUploadModalOpen(false)}
         reportType={activeTab === "final" ? "final" : "andamento"}
+        currentProject={projects[0]?.name ?? ""}
         onSuccess={() => {
           setRefreshKey((k) => k + 1);
         }}

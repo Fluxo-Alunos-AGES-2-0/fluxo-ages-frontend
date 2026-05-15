@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Modal } from "../ui/Modal/Modal";
-import { Upload, ChevronDown, Check, XCircle } from "lucide-react";
+import { Upload, Check, XCircle } from "lucide-react";
 import toast from "react-hot-toast";
+import { useAuth } from "../../context/AuthContext";
 
 const MAX_FILE_SIZE_BYTES = 25 * 1024 * 1024;
 
@@ -10,6 +11,7 @@ interface ReportUploadModalProps {
   onClose: () => void;
   onSuccess: () => void;
   reportType?: "andamento" | "final";
+  currentProject?: string;
 }
 
 export const ReportUploadModal = ({
@@ -17,11 +19,11 @@ export const ReportUploadModal = ({
   onClose,
   onSuccess,
   reportType = "andamento",
+  currentProject = "",
 }: ReportUploadModalProps) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
-  const [studentName, setStudentName] = useState("");
-  const [selectedTeam, setSelectedTeam] = useState("Fluxo AGES 2.0 - Alunos");
+  const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -122,34 +124,21 @@ export const ReportUploadModal = ({
             </label>
             <input
               type="text"
-              value={studentName}
-              onChange={(e) => setStudentName(e.target.value)}
-              placeholder="Digite o nome do aluno"
-              className="h-[42px] px-4 rounded-lg bg-[#f8fafc] border border-[#e5e7eb] text-[#374151] text-[14px] focus:outline-none focus:border-[#3b5ccc]"
+              value={user?.name ?? ""}
+              disabled
+              className="h-[42px] px-4 rounded-lg bg-[#f8fafc] border border-[#e5e7eb] text-[#6b7280] text-[14px] cursor-not-allowed"
             />
           </div>
           <div className="flex flex-col gap-1.5">
             <label className="text-[13px] font-bold text-[#6b7280]">
               Time<span className="text-[#f97316] ml-0.5">*</span>
             </label>
-            <div className="relative">
-              <select
-                value={selectedTeam}
-                onChange={(e) => setSelectedTeam(e.target.value)}
-                className="appearance-none w-full h-[42px] px-4 rounded-lg bg-[#f8fafc] border border-[#e5e7eb] text-[#374151] text-[14px] cursor-pointer focus:outline-none"
-              >
-                <option value="Fluxo AGES 2.0 - Alunos">
-                  Fluxo AGES 2.0 - Alunos
-                </option>
-                <option value="Fluxo AGES 2.0 - Desenvolvedores">
-                  Fluxo AGES 2.0 - Desenvolvedores
-                </option>
-              </select>
-              <ChevronDown
-                size={16}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6b7280] pointer-events-none"
-              />
-            </div>
+            <input
+              type="text"
+              value={currentProject}
+              disabled
+              className="h-[42px] px-4 rounded-lg bg-[#f8fafc] border border-[#e5e7eb] text-[#6b7280] text-[14px] cursor-not-allowed"
+            />
           </div>
         </div>
 
