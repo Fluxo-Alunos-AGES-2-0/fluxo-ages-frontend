@@ -1,18 +1,25 @@
 import { useEffect, useState } from "react";
-import { Plus } from "lucide-react";
+import { LoaderCircle, Plus } from "lucide-react";
 import { api } from "../../services/api";
+import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../context/ToastContext";
 import {
   SprintReportModal,
   type SprintReportFormData,
 } from "./SprintReportModal";
 
-export interface SprintReport {
+interface SprintReportApiResponse {
   id: number;
   sprint: string;
   student: string;
   date: string;
   id_project: number;
+}
+
+type RowStatus = "ENVIANDO" | "ENVIADO";
+
+interface SprintReportRow extends SprintReportApiResponse {
+  status: RowStatus;
 }
 
 interface SprintReportPayload {
@@ -42,18 +49,23 @@ function toPayload(data: SprintReportFormData): SprintReportPayload {
 
 export function SprintTable() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [sprintReports, setSprintReports] = useState<SprintReport[]>([]);
+  const [sprintReports, setSprintReports] = useState<SprintReportRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { user } = useAuth();
   const { showToast } = useToast();
 
   const fetchReports = () => {
     setLoading(true);
     setError(null);
     api
-      .get<SprintReport[]>("/report/me/sprint")
-      .then((data) => setSprintReports(data ?? []))
+      .get<SprintReportApiResponse[]>("/report/me/sprint")
+      .then((data) =>
+        setSprintReports(
+          (data ?? []).map((r) => ({ ...r, status: "ENVIADO" as const })),
+        ),
+      )
       .catch((err) => {
         console.error("Erro ao buscar relatórios de sprint:", err);
         setError("Não foi possível carregar os relatórios de sprint.");
@@ -66,7 +78,20 @@ export function SprintTable() {
   }, []);
 
   const handleSubmit = async (data: SprintReportFormData) => {
+    const optimisticId = -Date.now();
+    const optimisticRow: SprintReportRow = {
+      id: optimisticId,
+      sprint: data.sprint,
+      student: user?.name ?? "",
+      date: new Date().toISOString(),
+      id_project: 0,
+      status: "ENVIANDO",
+    };
+
+    setSprintReports((prev) => [...prev, optimisticRow]);
+    setIsModalOpen(false);
     setIsSubmitting(true);
+
     try {
       await api.post("/report/sprint", toPayload(data));
       showToast({
@@ -74,9 +99,9 @@ export function SprintTable() {
         title: "Relatório enviado",
         message: "Relatório de sprint registrado com sucesso.",
       });
-      setIsModalOpen(false);
       fetchReports();
     } catch (err) {
+      setSprintReports((prev) => prev.filter((r) => r.id !== optimisticId));
       const message =
         err instanceof Error ? err.message : "Erro ao enviar relatório.";
       showToast({
@@ -120,6 +145,7 @@ export function SprintTable() {
                 <th className="px-6 py-4 text-left font-semibold">Sprint</th>
                 <th className="px-6 py-4 text-left font-semibold">Aluno</th>
                 <th className="px-6 py-4 text-left font-semibold">Data</th>
+                <th className="px-6 py-4 text-center font-semibold">Status</th>
               </tr>
             </thead>
 
@@ -137,6 +163,19 @@ export function SprintTable() {
 
                   <td className="px-6 py-4 text-slate-600">
                     {new Date(item.date).toLocaleDateString("pt-BR")}
+                  </td>
+
+                  <td className="px-6 py-4 text-center">
+                    {item.status === "ENVIANDO" ? (
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 border border-blue-100 px-2.5 py-1 text-xs font-bold text-blue-600">
+                        <LoaderCircle size={13} className="animate-spin" />
+                        Enviando
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center rounded-full bg-[#f0fdf4] border border-[#bbf7d0] px-2.5 py-1 text-xs font-bold text-[#22c55e]">
+                        Enviado
+                      </span>
+                    )}
                   </td>
                 </tr>
               ))}
