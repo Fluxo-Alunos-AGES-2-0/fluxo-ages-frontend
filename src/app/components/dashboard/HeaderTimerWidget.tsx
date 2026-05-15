@@ -56,7 +56,7 @@ export const HeaderTimerWidget = () => {
         withInput={true}
         title="Encerrar horas"
         description="Tem certeza de que deseja encerrar o relatório de horas atual?"
-        warningMessage="Uma vez encerrado, o registro não poderá ser editado diretamente. Para realizar alterações, será necessário solicitar a edição."
+        warningMessage="Uma vez encerrado, alterações no registro estarão sujeitas à aprovação."
         confirmText="Encerrar Ponto"
         cancelText="Voltar"
         inputMinLength={MIN_CHARS}
