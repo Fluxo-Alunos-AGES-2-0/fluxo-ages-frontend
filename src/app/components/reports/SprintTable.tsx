@@ -154,7 +154,7 @@ export function SprintTable({ selectedProject = null }: SprintTableProps = {}) {
             <thead className="bg-[#f9fafb] text-[#6b7280] border-b border-[#eef0f4]">
               <tr>
                 <th className="px-6 py-4 text-left font-semibold">Sprint</th>
-                <th className="px-6 py-4 text-left font-semibold">Aluno</th>
+                <th className="px-6 py-4 text-left font-semibold">Estudante</th>
                 <th className="px-6 py-4 text-left font-semibold">Data</th>
                 <th className="px-6 py-4 text-center font-semibold">Status</th>
               </tr>

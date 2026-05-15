@@ -120,7 +120,7 @@ export const ReportUploadModal = ({
         <div className="grid grid-cols-2 gap-4">
           <div className="flex flex-col gap-1.5">
             <label className="text-[13px] font-bold text-[#6b7280]">
-              Aluno
+              Estudante
             </label>
             <input
               type="text"
