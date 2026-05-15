@@ -8,8 +8,8 @@ type HourStatus = "VALIDO" | "INVALIDO" | "REQUISITADO";
 interface HourEntry {
   id: number;
   startTime: string;
-  totalTimeSeconds: number;
-  description: string;
+  sessionTimeSeconds: number;
+  activities: string;
   status?: HourStatus;
 }
 
@@ -46,7 +46,7 @@ export function HoursTable({ data }: HoursTableProps) {
             const status: HourStatus = item.status ?? "VALIDO";
             const isExpanded = expandedId === item.id;
             const isLongDescription =
-              item.description.length > LONG_DESCRIPTION_THRESHOLD;
+              item.activities.length > LONG_DESCRIPTION_THRESHOLD;
 
             return (
               <tr
@@ -61,18 +61,17 @@ export function HoursTable({ data }: HoursTableProps) {
                 <td className="px-6 py-4 whitespace-nowrap align-top">
                   <span className="inline-flex items-center gap-1.5 bg-[#eff6ff] text-[#2563eb] px-3 py-1 rounded-full text-xs font-bold border border-[#dbeafe]">
                     <Clock size={14} />
-                    {formatDuration(item.totalTimeSeconds)}
+                    {formatDuration(item.sessionTimeSeconds)}
                   </span>
                 </td>
 
                 <td className="px-6 py-4 align-top">
                   <div className="flex items-start gap-2 w-full">
                     <p
-                      className={`text-slate-700 leading-relaxed break-all ${
-                        isExpanded ? "whitespace-normal" : "line-clamp-1"
-                      }`}
+                      className={`text-slate-700 leading-relaxed break-all ${isExpanded ? "whitespace-normal" : "line-clamp-1"
+                        }`}
                     >
-                      {item.description}
+                      {item.activities}
                     </p>
 
                     {isLongDescription && (
