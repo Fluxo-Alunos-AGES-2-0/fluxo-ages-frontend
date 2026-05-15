@@ -41,6 +41,11 @@ interface ReportApiResponse {
   feedback: string | null;
 }
 
+interface ProjectOption {
+  id: number;
+  name: string;
+}
+
 function toReportEntry(report: ReportApiResponse): ReportEntry {
   const [year, month, day] = report.date.split("-");
   return {
@@ -53,7 +58,8 @@ function toReportEntry(report: ReportApiResponse): ReportEntry {
 
 export default function RelatoriosPage() {
   const [activeTab, setActiveTab] = useState<TabId>("horas");
-  const [selectedProject, setSelectedProject] = useState("");
+  const [selectedProject, setSelectedProject] = useState<number | "">("");
+  const [projects, setProjects] = useState<ProjectOption[]>([]);
   const [hours, setHours] = useState<HourEntry[]>([]);
   const [progressReport, setProgressReport] = useState<ReportEntry[]>([]);
   const [finalReport, setFinalReport] = useState<ReportEntry[]>([]);
@@ -63,13 +69,26 @@ export default function RelatoriosPage() {
   const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
+    api
+      .get<ProjectOption[]>("/project/me")
+      .then((data) => setProjects(data ?? []))
+      .catch((err) => {
+        console.error("Erro ao buscar projetos:", err);
+      });
+  }, []);
+
+  useEffect(() => {
     let cancelled = false;
 
     if (activeTab === "horas") {
       setLoading(true);
       setError(null);
+      const path =
+        selectedProject === ""
+          ? "/hours/me"
+          : `/hours/me?id_project=${selectedProject}`;
       api
-        .get<HourEntry[]>("/hours/me")
+        .get<HourEntry[]>(path)
         .then((data) => {
           if (cancelled) return;
           setHours(data ?? []);
@@ -125,7 +144,7 @@ export default function RelatoriosPage() {
     return () => {
       cancelled = true;
     };
-  }, [activeTab, refreshKey]);
+  }, [activeTab, refreshKey, selectedProject]);
 
   const currentTab = TABS.find((t) => t.id === activeTab)!;
 
@@ -209,7 +228,11 @@ export default function RelatoriosPage() {
             <div className="relative inline-block">
               <select
                 value={selectedProject}
-                onChange={(e) => setSelectedProject(e.target.value)}
+                onChange={(e) =>
+                  setSelectedProject(
+                    e.target.value === "" ? "" : Number(e.target.value),
+                  )
+                }
                 className="
                   appearance-none h-[38px] pl-4 pr-9 rounded-lg
                   border border-[#e5e7eb] bg-white
@@ -219,6 +242,11 @@ export default function RelatoriosPage() {
                 "
               >
                 <option value="">Filtrar por projeto</option>
+                {projects.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name}
+                  </option>
+                ))}
               </select>
               <ChevronDown
                 size={15}
@@ -248,7 +276,11 @@ export default function RelatoriosPage() {
               )}
             </>
           )}
-          {activeTab === "sprint" && <SprintTable />}
+          {activeTab === "sprint" && (
+            <SprintTable
+              selectedProject={selectedProject === "" ? null : selectedProject}
+            />
+          )}
           {activeTab === "andamento" && renderReportTab(progressReport)}
           {activeTab === "final" && renderReportTab(finalReport)}
         </div>

@@ -47,7 +47,11 @@ function toPayload(data: SprintReportFormData): SprintReportPayload {
   };
 }
 
-export function SprintTable() {
+interface SprintTableProps {
+  selectedProject?: number | null;
+}
+
+export function SprintTable({ selectedProject = null }: SprintTableProps = {}) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sprintReports, setSprintReports] = useState<SprintReportRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -59,8 +63,12 @@ export function SprintTable() {
   const fetchReports = () => {
     setLoading(true);
     setError(null);
+    const path =
+      selectedProject == null
+        ? "/report/me/sprint"
+        : `/report/me/sprint?projectId=${selectedProject}`;
     api
-      .get<SprintReportApiResponse[]>("/report/me/sprint")
+      .get<SprintReportApiResponse[]>(path)
       .then((data) =>
         setSprintReports(
           (data ?? []).map((r) => ({ ...r, status: "ENVIADO" as const })),
@@ -75,7 +83,8 @@ export function SprintTable() {
 
   useEffect(() => {
     fetchReports();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedProject]);
 
   const handleSubmit = async (data: SprintReportFormData) => {
     const optimisticId = -Date.now();
