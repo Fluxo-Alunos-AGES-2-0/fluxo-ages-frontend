@@ -22,8 +22,8 @@ type TabId = "horas" | "sprint" | "andamento" | "final";
 interface HourEntry {
   id: number;
   startTime: string;
-  totalTimeSeconds: number;
-  description: string;
+  sessionTimeSeconds: number;
+  activities: string;
   status?: "VALIDO" | "INVALIDO" | "REQUISITADO";
 }
 

@@ -1,5 +1,5 @@
 interface HourEntry {
-  totalTimeSeconds: number;
+  sessionTimeSeconds: number;
 }
 
 interface HoursSummaryProps {
@@ -10,7 +10,7 @@ interface HoursSummaryProps {
 export function HoursSummary({ data, totalHours = 60 }: HoursSummaryProps) {
   const totalSeconds = totalHours * 3600;
   const doneSeconds = data.reduce(
-    (acc, item) => acc + (item.totalTimeSeconds ?? 0),
+    (acc, item) => acc + (item.sessionTimeSeconds ?? 0),
     0,
   );
   const remainingSeconds = Math.max(totalSeconds - doneSeconds, 0);
