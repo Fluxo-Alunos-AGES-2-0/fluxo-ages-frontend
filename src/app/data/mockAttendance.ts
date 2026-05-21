@@ -44,4 +44,18 @@ export const mockAttendanceData: AttendanceDay[] = [
       { time: "21:00 - 22:30", status: "Presente" },
     ],
   },
+  {
+    date: "11 de Abril",
+    slots: [
+      { time: "19:15 - 20:45", status: "Presente" },
+      { time: "21:00 - 22:30", status: "Presente" },
+    ],
+  },
+  {
+    date: "12 de Abril",
+    slots: [
+      { time: "19:15 - 20:45", status: "Presente" },
+      { time: "21:00 - 22:30", status: "Presente" },
+    ],
+  },
 ];
