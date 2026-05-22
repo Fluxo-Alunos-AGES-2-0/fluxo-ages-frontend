@@ -4,6 +4,7 @@ import { AppLayout } from "./components/dashboard/AppLayout";
 import DashboardPage from "./pages/DashboardPage";
 import RelatoriosPage from "./pages/RelatoriosPage";
 import PasswordRecovery from "./components/passwordRecovery/PasswordRecovery";
+import { ProjetosPage } from "./pages/ProjetosPage";
 
 export const router = createBrowserRouter([
   { path: "/login", Component: LoginPage },
@@ -15,6 +16,7 @@ export const router = createBrowserRouter([
       { index: true, element: <Navigate to="/dashboard" replace /> },
       { path: "dashboard", Component: DashboardPage },
       { path: "relatorios", Component: RelatoriosPage },
+      { path: "projetos", Component: ProjetosPage },
     ],
   },
 ]);
