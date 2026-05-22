@@ -115,6 +115,7 @@ export const ReportUploadModal = ({
           ? "Novo Relatório de Andamento"
           : "Novo Relatório Final"
       }
+      className="!max-w-xl"
     >
       <div className="flex flex-col gap-6 p-2 text-left">
         <div className="grid grid-cols-2 gap-4">
