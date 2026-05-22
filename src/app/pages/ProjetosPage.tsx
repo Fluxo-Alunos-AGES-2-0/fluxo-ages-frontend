@@ -2,7 +2,6 @@ import { Folder, Users, Calendar, ExternalLink, GitBranch, Zap, CircleCheckBig, 
 import { Button } from "@/app/components/ui/Button/Button";
 import { useNavigate } from "react-router";
 
-// Interfaces de Tipo
 type ProjectStatus = "ATIVO" | "CONCLUIDO";
 
 interface Project {
@@ -17,7 +16,6 @@ interface Project {
   repositoryUrl: string;
 }
 
-// 1. Dados Mockados conforme o Print
 const mockProjects: Project[] = [
   {
     id: 1,
