@@ -10,6 +10,7 @@ interface ModalProps {
   data?: string;
   horario?: string;
   categoria?: string;
+  className?: string; 
 }
 
 export function Modal({
@@ -21,6 +22,7 @@ export function Modal({
   data,
   horario,
   categoria,
+  className = "", 
 }: ModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const [show, setShow] = useState(isOpen);
@@ -80,14 +82,14 @@ export function Modal({
 
   return (
     <div
-      className={`fixed inset-0 bg-black/50 flex justify-center items-center z-[9999] transition-opacity duration-300 ${isOpen ? "opacity-100" : "opacity-0"}`}
+      className={`fixed inset-0 bg-black/50 flex justify-center items-center z-[9999] p-4 transition-opacity duration-300 ${isOpen ? "opacity-100" : "opacity-0"}`}
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
       <div
         ref={modalRef}
-        className="relative bg-white p-6 rounded-xl min-w-[420px] z-[10000] shadow-2xl overflow-hidden"
+        className={`relative bg-white p-6 rounded-xl w-full max-w-md z-[10000] shadow-2xl overflow-hidden ${className}`}
       >
         <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#3b5ccc] to-[#5b7ae8] z-10 rounded-t-xl" />
         <div className="flex justify-between items-center">
@@ -98,13 +100,13 @@ export function Modal({
                 {categoria}
               </span>
             )}
-            <button onClick={onClose}>X</button>
+            <button className="text-gray-500 hover:text-black font-bold px-2" onClick={onClose}>X</button>
           </div>
         </div>
 
         <div className="mt-3">
           {data && horario && (
-            <div className="flex gap-6 mt-2">
+            <div className="flex gap-6 mt-2 mb-4">
               <div className="flex items-center gap-2">
                 <div className="w-6 h-6 rounded-md flex items-center justify-center">
                   <Calendar size={16} className="text-slate-500" />
@@ -122,7 +124,7 @@ export function Modal({
           {children}
         </div>
 
-        <div className="flex justify-end">{footer}</div>
+        {footer && <div className="flex justify-end mt-4">{footer}</div>}
       </div>
     </div>
   );

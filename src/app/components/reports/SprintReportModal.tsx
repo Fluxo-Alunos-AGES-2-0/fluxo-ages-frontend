@@ -82,7 +82,12 @@ export function SprintReportModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Relatório de Sprint">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Relatório de Sprint"
+      className="!max-w-2xl"
+    >
       <div className="mt-4 flex max-h-[70vh] w-[640px] max-w-full flex-col">
         <div
           className="
