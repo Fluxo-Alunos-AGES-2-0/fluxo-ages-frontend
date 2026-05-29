@@ -3,14 +3,14 @@ import { ChevronDown, ChevronUp, Clock, Pencil, Trash2 } from "lucide-react";
 
 const LONG_DESCRIPTION_THRESHOLD = 80;
 
-type HourStatus = "VALIDO" | "INVALIDO" | "REQUISITADO";
+type HourStatus = "APPROVED" | "REJECTED" | "PENDING";
 
 interface HourEntry {
   id: number;
   startTime: string;
   sessionTimeSeconds: number;
   activities: string;
-  status?: HourStatus;
+  status: HourStatus;
 }
 
 interface HoursTableProps {
@@ -138,9 +138,9 @@ function formatDuration(seconds: number) {
 
 function formatStatus(status: HourStatus) {
   const labels: Record<HourStatus, string> = {
-    VALIDO: "Válido",
-    INVALIDO: "Inválido",
-    REQUISITADO: "Requisitado",
+    APPROVED: "Válido",
+    REJECTED: "Inválido",
+    PENDING: "Requisitado",
   };
   return labels[status] ?? "Válido";
 }
@@ -149,11 +149,11 @@ function getStatusClass(status: HourStatus) {
   const base =
     "inline-block w-24 px-2 py-1 rounded-full text-[11px] font-bold border";
   switch (status) {
-    case "VALIDO":
+    case "APPROVED":
       return `${base} bg-[#f0fdf4] text-[#22c55e] border-[#bbf7d0]`;
-    case "INVALIDO":
+    case "REJECTED":
       return `${base} bg-[#fef2f2] text-[#ef4444] border-[#fecaca]`;
-    case "REQUISITADO":
+    case "PENDING":
       return `${base} bg-[#fff7ed] text-[#f97316] border-[#fed7aa]`;
     default:
       return `${base} bg-[#f0fdf4] text-[#22c55e] border-[#bbf7d0]`;
