@@ -18,7 +18,7 @@ interface HourEntry {
   startTime: string;
   sessionTimeSeconds: number;
   activities: string;
-  status?: "VALIDO" | "INVALIDO" | "REQUISITADO";
+  status: "APPROVED" | "REJECTED" | "PENDING";
 }
 
 interface Tab {

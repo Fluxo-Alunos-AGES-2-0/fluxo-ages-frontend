@@ -36,9 +36,8 @@ export const ReportUploadModal = ({
     toast.custom(
       (t) => (
         <div
-          className={`${
-            t.visible ? "animate-enter" : "animate-leave"
-          } max-w-[280px] w-full shadow-md pointer-events-auto flex`}
+          className={`${t.visible ? "animate-enter" : "animate-leave"
+            } max-w-[280px] w-full shadow-md pointer-events-auto flex`}
         >
           <div
             className={`flex-1 p-2.5 flex items-center gap-2.5 ${type === "success" ? "bg-[#4caf50]" : "bg-[#e53935]"} rounded-sm`}
@@ -149,11 +148,10 @@ export const ReportUploadModal = ({
           </label>
           <div
             onClick={() => fileInputRef.current?.click()}
-            className={`group relative h-[48px] flex items-center justify-between px-4 rounded-lg border-2 border-dashed transition-all cursor-pointer ${
-              selectedFile
+            className={`group relative h-[48px] flex items-center justify-between px-4 rounded-lg border-2 border-dashed transition-all cursor-pointer ${selectedFile
                 ? "border-[#f97316] bg-[#fff7ed]"
                 : "border-[#e5e7eb] bg-[#f8fafc]"
-            }`}
+              }`}
           >
             <input
               type="file"
@@ -190,11 +188,10 @@ export const ReportUploadModal = ({
             type="button"
             onClick={handleUpload}
             disabled={!selectedFile || isUploading}
-            className={`px-8 py-2.5 rounded-xl font-bold text-[15px] text-white transition-all shadow-md ${
-              !selectedFile || isUploading
+            className={`px-8 py-2.5 rounded-xl font-bold text-[15px] text-white transition-all shadow-md ${!selectedFile || isUploading
                 ? "bg-gray-300 cursor-not-allowed"
                 : "bg-[#f97316] hover:bg-[#ea580c]"
-            }`}
+              }`}
           >
             {isUploading ? "Enviando..." : "Enviar Relatório"}
           </button>
