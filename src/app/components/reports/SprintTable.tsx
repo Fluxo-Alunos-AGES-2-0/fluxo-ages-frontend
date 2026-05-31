@@ -14,6 +14,11 @@ interface SprintReportApiResponse {
   student: string;
   date: string;
   id_project: number;
+  predictedActivity?: string;
+  activityCompleted?: string;
+  problemsEncountered?: string;
+  learnedLessons?: string;
+  nextSteps?: string;
 }
 
 type RowStatus = "ENVIANDO" | "ENVIADO";
@@ -57,6 +62,8 @@ export function SprintTable({ selectedProject = null }: SprintTableProps = {}) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [expandedRowId, setExpandedRowId] = useState<number | null>(null);
+
   const { user } = useAuth();
   const { showToast } = useToast();
 
@@ -95,6 +102,11 @@ export function SprintTable({ selectedProject = null }: SprintTableProps = {}) {
       date: new Date().toISOString(),
       id_project: 0,
       status: "ENVIANDO",
+      predictedActivity: data.plannedActivities,
+      activityCompleted: data.completedActivities,
+      problemsEncountered: data.problems,
+      learnedLessons: data.lessonsLearned,
+      nextSteps: data.nextSteps,
     };
 
     setSprintReports((prev) => [...prev, optimisticRow]);
@@ -125,6 +137,10 @@ export function SprintTable({ selectedProject = null }: SprintTableProps = {}) {
     }
   };
 
+  const toggleRow = (id: number) => {
+    setExpandedRowId((prev) => (prev === id ? null : id));
+  };
+
   return (
     <>
       <div className="mb-4 flex justify-end">
@@ -153,43 +169,79 @@ export function SprintTable({ selectedProject = null }: SprintTableProps = {}) {
           <table className="w-full text-sm border-collapse">
             <thead className="bg-[#f9fafb] text-[#6b7280] border-b border-[#eef0f4]">
               <tr>
-                <th className="px-6 py-4 text-left font-semibold">Sprint</th>
-                <th className="px-6 py-4 text-left font-semibold">Estudante</th>
-                <th className="px-6 py-4 text-left font-semibold">Data</th>
-                <th className="px-6 py-4 text-center font-semibold">Status</th>
+                <th className="px-6 py-4 text-left font-semibold w-1/4">Sprint</th>
+                <th className="px-6 py-4 text-left font-semibold w-1/4">Estudante</th>
+                <th className="px-6 py-4 text-left font-semibold w-1/4">Data</th>
+                <th className="px-6 py-4 text-center font-semibold w-1/4">Status</th>
               </tr>
             </thead>
 
             <tbody className="bg-white">
-              {sprintReports.map((item) => (
-                <tr
-                  key={item.id}
-                  className="border-b border-[#eef0f4] hover:bg-slate-50/30 transition-colors last:border-b-0"
-                >
-                  <td className="px-6 py-4 font-medium text-slate-700">
-                    {item.sprint}
-                  </td>
+              {sprintReports.map((item) => {
+                const isExpanded = expandedRowId === item.id;
 
-                  <td className="px-6 py-4 text-slate-600">{item.student}</td>
+                return (
+                  <>
+                    {/* Listagem de sprints */}
+                    <tr
+                      onClick={() => toggleRow(item.id)}
+                      className={`cursor-pointer transition-colors ${
+                        isExpanded ? "bg-slate-50" : "hover:bg-slate-50/50"
+                      } ${!isExpanded ? "border-b border-[#eef0f4]" : ""}`}
+                    >
+                      <td className="px-6 py-4 font-medium text-slate-700">
+                        {item.sprint}
+                      </td>
+                      <td className="px-6 py-4 text-slate-600">{item.student}</td>
+                      <td className="px-6 py-4 text-slate-600">
+                        {new Date(item.date).toLocaleDateString("pt-BR")}
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        {item.status === "ENVIANDO" ? (
+                          <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 border border-blue-100 px-2.5 py-1 text-xs font-bold text-blue-600">
+                            <LoaderCircle size={13} className="animate-spin" />
+                            Enviando
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center rounded-full bg-[#f0fdf4] border border-[#bbf7d0] px-2.5 py-1 text-xs font-bold text-[#22c55e]">
+                            Enviado
+                          </span>
+                        )}
+                      </td>
+                    </tr>
 
-                  <td className="px-6 py-4 text-slate-600">
-                    {new Date(item.date).toLocaleDateString("pt-BR")}
-                  </td>
-
-                  <td className="px-6 py-4 text-center">
-                    {item.status === "ENVIANDO" ? (
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 border border-blue-100 px-2.5 py-1 text-xs font-bold text-blue-600">
-                        <LoaderCircle size={13} className="animate-spin" />
-                        Enviando
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center rounded-full bg-[#f0fdf4] border border-[#bbf7d0] px-2.5 py-1 text-xs font-bold text-[#22c55e]">
-                        Enviado
-                      </span>
+                    {/* Linha Expandida - detalhes do relatório */}
+                    {isExpanded && (
+                      <tr className="border-b border-[#eef0f4] bg-slate-50">
+                        <td colSpan={4} className="px-6 pb-6 pt-2 text-sm text-slate-700">
+                          <div className="flex flex-col gap-4 animate-in fade-in slide-in-from-top-2 duration-200">
+                            <p className="leading-relaxed text-justify">
+                              <strong className="text-slate-900">Atividades Previstas: </strong>
+                              {item.predictedActivity || "Nenhuma atividade prevista informada."}
+                            </p>
+                            <p className="leading-relaxed text-justify">
+                              <strong className="text-slate-900">Atividades Concluídas: </strong>
+                              {item.activityCompleted || "Nenhuma atividade concluída informada."}
+                            </p>
+                            <p className="leading-relaxed text-justify">
+                              <strong className="text-slate-900">Problemas Encontrados: </strong>
+                              {item.problemsEncountered || "Nenhum problema reportado."}
+                            </p>
+                            <p className="leading-relaxed text-justify">
+                              <strong className="text-slate-900">Lições aprendidas: </strong>
+                              {item.learnedLessons || "Nenhuma lição aprendida reportada."}
+                            </p>
+                            <p className="leading-relaxed text-justify">
+                              <strong className="text-slate-900">Próximos Passos: </strong>
+                              {item.nextSteps || "Nenhum próximo passo informado."}
+                            </p>
+                          </div>
+                        </td>
+                      </tr>
                     )}
-                  </td>
-                </tr>
-              ))}
+                  </>
+                );
+              })}
             </tbody>
           </table>
         </div>
