@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { LoaderCircle, Plus } from "lucide-react";
 import { api } from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
@@ -181,7 +181,7 @@ export function SprintTable({ selectedProject = null }: SprintTableProps = {}) {
                 const isExpanded = expandedRowId === item.id;
 
                 return (
-                  <>
+                  <React.Fragment key={`${item.id_project}/${item.id}`}>
                     {/* Listagem de sprints */}
                     <tr
                       onClick={() => toggleRow(item.id)}
@@ -239,7 +239,7 @@ export function SprintTable({ selectedProject = null }: SprintTableProps = {}) {
                         </td>
                       </tr>
                     )}
-                  </>
+                  </React.Fragment>
                 );
               })}
             </tbody>
