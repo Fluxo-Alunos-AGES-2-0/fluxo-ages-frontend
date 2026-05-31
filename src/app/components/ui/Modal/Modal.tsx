@@ -91,7 +91,7 @@ export function Modal({
         ref={modalRef}
         className={`relative bg-white p-6 rounded-xl w-full max-w-md z-[10000] shadow-2xl overflow-hidden ${className}`}
       >
-        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#3b5ccc] to-[#5b7ae8] z-10 rounded-t-xl" />
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#3b5ccc] to-[#5b7ae8] z-10 rounded-t-xl" />
         <div className="flex justify-between items-center">
           <h2 className="text-[24px] font-bold text-black">{title}</h2>
           <div className="flex items-center gap-2">
@@ -100,7 +100,6 @@ export function Modal({
                 {categoria}
               </span>
             )}
-            <button className="text-gray-500 hover:text-black font-bold px-2" onClick={onClose}>X</button>
           </div>
         </div>
 
