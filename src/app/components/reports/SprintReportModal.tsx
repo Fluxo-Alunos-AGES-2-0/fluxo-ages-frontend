@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Modal } from "../ui/Modal/Modal";
 import { Button } from "../ui/Button/Button";
 import { TextArea } from "../ui/TextArea/TextArea";
+import { Select } from "../ui/Select/Select";
+import { InputField } from "../ui/InputField/InputField";
 
 interface SprintReportModalProps {
   isOpen: boolean;
@@ -101,36 +103,27 @@ export function SprintReportModal({
           "
         >
           <div className="grid grid-cols-2 gap-4">
+            {
+            <InputField label="Projeto" disabled={true} value={DEFAULT_PROJECT} mandatory={true} />
+            }
             <div>
               <label className="mb-1.5 block text-sm font-semibold text-[#6B7280]">
-                Projeto*
+                Sprint<span className="text-[#f47b20]">*</span>
               </label>
 
-              <input
-                value={DEFAULT_PROJECT}
-                disabled
-                className="h-[42px] w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm text-slate-500"
-              />
-            </div>
-
-            <div>
-              <label className="mb-1.5 block text-sm font-semibold text-[#6B7280]">
-                Sprint*
-              </label>
-
-              <select
+              <Select
                 value={sprint}
                 onChange={(e) => setSprint(e.target.value)}
-                className="h-[42px] w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-700 cursor-pointer focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="">Selecione</option>
-                {SPRINT_OPTIONS.map((s) => (
-                  <option key={s} value={s} disabled={usedSet.has(s)}>
-                    {s}
-                    {usedSet.has(s) ? " (já enviada)" : ""}
-                  </option>
-                ))}
-              </select>
+                placeholder="Selecione"
+                wrapperClassName="w-full"
+                className="w-full h-[42px] rounded-2xl" 
+                options={SPRINT_OPTIONS.map((s) => ({
+                  value: s,
+                  label: usedSet.has(s) ? `${s} (já enviada)` : s,
+                  disabled: usedSet.has(s),
+                }))}
+              />
+              
               {availableSprints.length === 0 && (
                 <span className="mt-1 block text-xs text-slate-500">
                   Todas as sprints já possuem relatório.
@@ -140,50 +133,64 @@ export function SprintReportModal({
           </div>
 
           <TextArea
-            label="Atividades Previstas*"
+            label="Atividades Previstas"
             value={plannedActivities}
             onChange={setPlannedActivities}
+            mandatory={true}
           />
 
           <TextArea
-            label="Atividades Concluídas*"
+            label="Atividades Concluídas"
             value={completedActivities}
             onChange={setCompletedActivities}
+            mandatory={true}
           />
 
           <TextArea
-            label="Problemas Encontrados*"
+            label="Problemas Encontrados"
             value={problems}
             onChange={setProblems}
+            mandatory={true}
           />
 
           <TextArea
-            label="Lições Aprendidas*"
+            label="Lições Aprendidas"
             value={lessonsLearned}
             onChange={setLessonsLearned}
+            mandatory={true}
           />
 
           <TextArea
-            label="Próximos Passos*"
+            label="Próximos Passos"
             value={nextSteps}
             onChange={setNextSteps}
+            mandatory={true}
           />
         </div>
 
-        <div className="mt-4 flex justify-end gap-3 border-t border-[#e5e7eb] pt-4">
+        <div className="mt-8 flex items-center gap-4 w-full">
           <Button
             variant="primary"
+            fullWidth
             onClick={handleSubmit}
             disabled={!isFormValid || isSubmitting}
             loading={isSubmitting}
+            className="!bg-[#f47b20]"
           >
             {isSubmitting ? "Enviando..." : "Cadastrar"}
           </Button>
 
-          <Button variant="secondary" onClick={onClose} disabled={isSubmitting}>
+          <Button 
+            variant="secondary" 
+            fullWidth
+            onClick={onClose} 
+            disabled={isSubmitting}
+            className="!border-[#e5e7eb] !text-[#f47b20] !bg-transparent"
+          >
             Fechar
           </Button>
         </div>
+
       </div>
     </Modal>
   );
