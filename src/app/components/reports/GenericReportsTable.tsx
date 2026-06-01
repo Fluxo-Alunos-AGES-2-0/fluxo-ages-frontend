@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { Download, MessageSquare } from "lucide-react";
+import { TeacherFeedbackModal } from "./TeacherFeedbackModal";
 
 export interface ReportEntry {
   date: string;
@@ -12,7 +14,12 @@ interface GenericReportsTableProps {
 }
 
 export function GenericReportsTable({ data }: GenericReportsTableProps) {
-  if (data.length === 0) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedReport, setSelectedReport] = useState<ReportEntry | null>(
+    null,
+  );
+
+  if (!data || !Array.isArray(data) || data.length === 0) {
     return (
       <div className="text-center text-[#6b7280] py-10">
         Nenhum relatório encontrado.
@@ -68,9 +75,12 @@ export function GenericReportsTable({ data }: GenericReportsTableProps) {
               <td className="px-6 py-4 text-center">
                 <button
                   type="button"
-                  disabled
-                  title="Em breve"
-                  className="text-[#3b5ccc] opacity-50 cursor-not-allowed"
+                  title="Ver feedback"
+                  onClick={() => {
+                    setSelectedReport(report);
+                    setIsModalOpen(true);
+                  }}
+                  className="text-[#3b5ccc] hover:text-[#2a459c] transition-colors"
                 >
                   <MessageSquare size={20} />
                 </button>
@@ -90,6 +100,12 @@ export function GenericReportsTable({ data }: GenericReportsTableProps) {
           ))}
         </tbody>
       </table>
+
+      <TeacherFeedbackModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        reportData={selectedReport}
+      />
     </div>
   );
 }
