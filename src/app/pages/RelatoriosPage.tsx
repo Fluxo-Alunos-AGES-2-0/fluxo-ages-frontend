@@ -10,6 +10,7 @@ import {
 import { Button } from "../components/ui/Button/Button";
 import { ReportUploadModal } from "../components/reports/ReportUploadModal";
 import { SprintTable } from "../components/reports/SprintTable";
+import { Select } from "../components/ui/Select/Select";
 
 type TabId = "horas" | "sprint" | "andamento" | "final";
 
@@ -225,34 +226,19 @@ export default function RelatoriosPage() {
         {/* Filtro compartilhado (Horas + Sprint) */}
         {currentTab.hasProjectFilter && (
           <div className="px-6 pt-5">
-            <div className="relative inline-block">
-              <select
-                value={selectedProject}
-                onChange={(e) =>
-                  setSelectedProject(
-                    e.target.value === "" ? "" : Number(e.target.value),
-                  )
-                }
-                className="
-                  appearance-none h-[38px] pl-4 pr-9 rounded-lg
-                  border border-[#e5e7eb] bg-white
-                  text-[13px] text-[#6b7280] font-medium
-                  focus:outline-none focus:ring-2 focus:ring-[#3b5ccc]/30 focus:border-[#3b5ccc]
-                  cursor-pointer transition-colors
-                "
-              >
-                <option value="">Filtrar por projeto</option>
-                {projects.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown
-                size={15}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9ca3af] pointer-events-none"
-              />
-            </div>
+            <Select
+              value={selectedProject ?? ""}
+              onChange={(e) =>
+                setSelectedProject(
+                  e.target.value === "" ? "" : Number(e.target.value)
+                )
+              }
+              placeholder="Filtrar por projeto"
+              options={projects.map((p) => ({
+                value: p.id,
+                label: p.name,
+              }))}
+            />
           </div>
         )}
 
