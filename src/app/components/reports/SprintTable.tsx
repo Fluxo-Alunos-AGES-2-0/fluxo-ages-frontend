@@ -14,11 +14,11 @@ interface SprintReportApiResponse {
   student: string;
   date: string;
   id_project: number;
-  predictedActivity?: string;
-  activityCompleted?: string;
-  problemsEncountered?: string;
-  learnedLessons?: string;
-  nextSteps?: string;
+  predicted_activity?: string;
+  activity_completed?: string;
+  problems_encountered?: string;
+  learned_lessons?: string;
+  next_steps?: string;
 }
 
 type RowStatus = "ENVIANDO" | "ENVIADO";
@@ -102,11 +102,11 @@ export function SprintTable({ selectedProject = null }: SprintTableProps = {}) {
       date: new Date().toISOString(),
       id_project: 0,
       status: "ENVIANDO",
-      predictedActivity: data.plannedActivities,
-      activityCompleted: data.completedActivities,
-      problemsEncountered: data.problems,
-      learnedLessons: data.lessonsLearned,
-      nextSteps: data.nextSteps,
+      predicted_activity: data.plannedActivities,
+      activity_completed: data.completedActivities,
+      problems_encountered: data.problems,
+      learned_lessons: data.lessonsLearned,
+      next_steps: data.nextSteps,
     };
 
     setSprintReports((prev) => [...prev, optimisticRow]);
@@ -141,13 +141,13 @@ export function SprintTable({ selectedProject = null }: SprintTableProps = {}) {
     setExpandedRowId((prev) => (prev === id ? null : id));
   };
 
-  return (
+return (
     <>
-      <div className="mb-4 flex justify-end">
+      <div className="mb-4 mr-1 -mt-[60px] flex justify-end relative z-10 pointer-events-none">
         <button
           type="button"
           onClick={() => setIsModalOpen(true)}
-          className="inline-flex items-center gap-2 rounded-lg bg-[#3b5ccc] px-4 py-2 text-sm font-medium text-white hover:bg-[#2f4bb0] transition-colors cursor-pointer"
+          className="inline-flex items-center gap-2 rounded-lg bg-[#3b5ccc] px-4 py-2 text-sm font-medium text-white hover:bg-[#2f4bb0] transition-colors cursor-pointer pointer-events-auto"
         >
           <Plus size={16} />
           Novo Relatório
@@ -217,23 +217,23 @@ export function SprintTable({ selectedProject = null }: SprintTableProps = {}) {
                           <div className="flex flex-col gap-4 animate-in fade-in slide-in-from-top-2 duration-200">
                             <p className="leading-relaxed text-justify">
                               <strong className="text-slate-900">Atividades Previstas: </strong>
-                              {item.predictedActivity || "Nenhuma atividade prevista informada."}
+                              {item.predicted_activity || "Nenhuma atividade prevista informada."}
                             </p>
                             <p className="leading-relaxed text-justify">
                               <strong className="text-slate-900">Atividades Concluídas: </strong>
-                              {item.activityCompleted || "Nenhuma atividade concluída informada."}
+                              {item.activity_completed || "Nenhuma atividade concluída informada."}
                             </p>
                             <p className="leading-relaxed text-justify">
                               <strong className="text-slate-900">Problemas Encontrados: </strong>
-                              {item.problemsEncountered || "Nenhum problema reportado."}
+                              {item.problems_encountered || "Nenhum problema reportado."}
                             </p>
                             <p className="leading-relaxed text-justify">
                               <strong className="text-slate-900">Lições aprendidas: </strong>
-                              {item.learnedLessons || "Nenhuma lição aprendida reportada."}
+                              {item.learned_lessons || "Nenhuma lição aprendida reportada."}
                             </p>
                             <p className="leading-relaxed text-justify">
                               <strong className="text-slate-900">Próximos Passos: </strong>
-                              {item.nextSteps || "Nenhum próximo passo informado."}
+                              {item.next_steps || "Nenhum próximo passo informado."}
                             </p>
                           </div>
                         </td>

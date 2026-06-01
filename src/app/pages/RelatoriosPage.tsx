@@ -1,6 +1,6 @@
 import { api } from "../services/api";
 import { useEffect, useState } from "react";
-import { FileText, ChevronDown, FileDown, UploadCloud } from "lucide-react";
+import { FileText, FileDown, UploadCloud } from "lucide-react"; 
 import { HoursTable } from "../components/reports/HoursTable";
 import { HoursSummary } from "../components/reports/HoursSummary";
 import {
@@ -66,6 +66,7 @@ export default function RelatoriosPage() {
   const [finalReport, setFinalReport] = useState<ReportEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -185,7 +186,6 @@ export default function RelatoriosPage() {
 
   return (
     <div className="flex flex-col gap-5">
-      {/* Cabeçalho */}
       <div className="flex items-center gap-2.5">
         <FileText size={20} className="text-[#3b5ccc]" strokeWidth={1.8} />
         <h2 className="text-[18px] font-bold text-[#1f2937] m-0 leading-none">
@@ -193,9 +193,7 @@ export default function RelatoriosPage() {
         </h2>
       </div>
 
-      {/* Card container */}
       <div className="bg-white rounded-2xl border border-[#e5e7eb]">
-        {/* Barra de abas */}
         <div className="sticky top-0 z-10 flex items-center border-b border-[#e5e7eb] px-6 bg-white rounded-t-2xl">
           <nav className="flex flex-1 gap-1" role="tablist">
             {TABS.map((tab) => {
@@ -223,10 +221,11 @@ export default function RelatoriosPage() {
           </nav>
         </div>
 
-        {/* Filtro compartilhado (Horas + Sprint) */}
         {currentTab.hasProjectFilter && (
           <div className="px-6 pt-5">
             <Select
+              wrapperClassName="w-[220px]"
+              className="w-[220px]"
               value={selectedProject ?? ""}
               onChange={(e) =>
                 setSelectedProject(
@@ -242,18 +241,11 @@ export default function RelatoriosPage() {
           </div>
         )}
 
-        {/* Slot – cada aba renderiza seu componente filho */}
         <div role="tabpanel" className="p-6">
           {activeTab === "horas" && (
             <>
-              {loading && (
-                <div className="text-center text-[#6b7280] py-10">
-                  Carregando registros...
-                </div>
-              )}
-              {!loading && error && (
-                <div className="text-center text-red-600 py-10">{error}</div>
-              )}
+              {loading && <div className="text-center text-[#6b7280] py-10">Carregando registros...</div>}
+              {!loading && error && <div className="text-center text-red-600 py-10">{error}</div>}
               {!loading && !error && (
                 <>
                   <HoursSummary data={hours} />
@@ -263,9 +255,7 @@ export default function RelatoriosPage() {
             </>
           )}
           {activeTab === "sprint" && (
-            <SprintTable
-              selectedProject={selectedProject === "" ? null : selectedProject}
-            />
+            <SprintTable selectedProject={selectedProject === "" ? null : selectedProject} />
           )}
           {activeTab === "andamento" && renderReportTab(progressReport)}
           {activeTab === "final" && renderReportTab(finalReport)}
@@ -277,9 +267,7 @@ export default function RelatoriosPage() {
         onClose={() => setIsUploadModalOpen(false)}
         reportType={activeTab === "final" ? "final" : "andamento"}
         currentProject={projects[0]?.name ?? ""}
-        onSuccess={() => {
-          setRefreshKey((k) => k + 1);
-        }}
+        onSuccess={() => setRefreshKey((k) => k + 1)}
       />
     </div>
   );
