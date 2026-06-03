@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { LoaderCircle, Plus } from "lucide-react";
+import { LoaderCircle } from "lucide-react";
 import { api } from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../context/ToastContext";
@@ -49,10 +49,20 @@ function toPayload(data: SprintReportFormData): SprintReportPayload {
 
 interface SprintTableProps {
   selectedProject?: number | null;
+  currentProjectId?: number | null;
+  currentProjectName?: string;
+  /** Permite que a página pai abra o modal externamente */
+  externalModalOpen?: boolean;
+  onExternalModalClose?: () => void;
 }
 
-export function SprintTable({ selectedProject = null }: SprintTableProps = {}) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+export function SprintTable({
+  selectedProject = null,
+  currentProjectId = null,
+  currentProjectName = "",
+  externalModalOpen = false,
+  onExternalModalClose,
+}: SprintTableProps = {}) {
   const [sprintReports, setSprintReports] = useState<SprintReportRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -93,12 +103,12 @@ export function SprintTable({ selectedProject = null }: SprintTableProps = {}) {
       sprint: data.sprint,
       student: user?.name ?? "",
       date: new Date().toISOString(),
-      id_project: 0,
+      id_project: currentProjectId ?? 0,
       status: "ENVIANDO",
     };
 
     setSprintReports((prev) => [...prev, optimisticRow]);
-    setIsModalOpen(false);
+    onExternalModalClose?.();
     setIsSubmitting(true);
 
     try {
@@ -127,17 +137,6 @@ export function SprintTable({ selectedProject = null }: SprintTableProps = {}) {
 
   return (
     <>
-      <div className="mb-4 flex justify-end">
-        <button
-          type="button"
-          onClick={() => setIsModalOpen(true)}
-          className="inline-flex items-center gap-2 rounded-lg bg-[#3b5ccc] px-4 py-2 text-sm font-medium text-white hover:bg-[#2f4bb0] transition-colors cursor-pointer"
-        >
-          <Plus size={16} />
-          Novo Relatório
-        </button>
-      </div>
-
       {loading ? (
         <div className="text-center text-[#6b7280] py-10">
           Carregando relatórios...
@@ -196,11 +195,12 @@ export function SprintTable({ selectedProject = null }: SprintTableProps = {}) {
       )}
 
       <SprintReportModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        isOpen={externalModalOpen}
+        onClose={() => onExternalModalClose?.()}
         onSubmit={handleSubmit}
         isSubmitting={isSubmitting}
         usedSprints={sprintReports.map((r) => r.sprint)}
+        projectName={currentProjectName}
       />
     </>
   );

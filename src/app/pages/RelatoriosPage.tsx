@@ -1,6 +1,6 @@
 import { api } from "../services/api";
 import { useEffect, useState } from "react";
-import { FileText, ChevronDown, FileDown, UploadCloud } from "lucide-react";
+import { FileText, ChevronDown, FileDown, UploadCloud, Plus } from "lucide-react";
 import { HoursTable } from "../components/reports/HoursTable";
 import { HoursSummary } from "../components/reports/HoursSummary";
 import {
@@ -58,7 +58,7 @@ function toReportEntry(report: ReportApiResponse): ReportEntry {
 
 export default function RelatoriosPage() {
   const [activeTab, setActiveTab] = useState<TabId>("horas");
-  const [selectedProject, setSelectedProject] = useState<number | "">("");
+  const [selectedProject, setSelectedProject] = useState<number | null>(null);
   const [projects, setProjects] = useState<ProjectOption[]>([]);
   const [hours, setHours] = useState<HourEntry[]>([]);
   const [progressReport, setProgressReport] = useState<ReportEntry[]>([]);
@@ -66,12 +66,33 @@ export default function RelatoriosPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [isSprintModalOpen, setIsSprintModalOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const currentProject = projects[0] ?? null;
+
+
+  // MOCK — remover antes de subir
+useEffect(() => {
+  const mockProjects = [
+    { id: 1, name: "Fluxo AGES 2.0 - Alunos" },
+    { id: 2, name: "Projeto Anterior" },
+  ];
+  setProjects(mockProjects);
+  setSelectedProject(mockProjects[0].id);
+  setLoading(false);
+}, []);
 
   useEffect(() => {
     api
       .get<ProjectOption[]>("/project/me")
-      .then((data) => setProjects(data ?? []))
+      .then((data) => {
+        const list = data ?? [];
+        setProjects(list);
+
+        if (list.length > 0) {
+          setSelectedProject(list[0].id);
+        }
+      })
       .catch((err) => {
         console.error("Erro ao buscar projetos:", err);
       });
@@ -84,7 +105,7 @@ export default function RelatoriosPage() {
       setLoading(true);
       setError(null);
       const path =
-        selectedProject === ""
+        selectedProject == null
           ? "/hours/me"
           : `/hours/me?id_project=${selectedProject}`;
       api
@@ -147,6 +168,9 @@ export default function RelatoriosPage() {
   }, [activeTab, refreshKey, selectedProject]);
 
   const currentTab = TABS.find((t) => t.id === activeTab)!;
+
+  const isCurrentProjectSelected =
+    currentProject == null || selectedProject === currentProject.id;
 
   const renderReportTab = (data: ReportEntry[]) => (
     <div className="flex flex-col gap-6">
@@ -222,26 +246,24 @@ export default function RelatoriosPage() {
           </nav>
         </div>
 
-        {/* Filtro compartilhado (Horas + Sprint) */}
         {currentTab.hasProjectFilter && (
-          <div className="px-6 pt-5">
+          <div className="px-6 pt-5 flex items-center justify-between">
             <div className="relative inline-block">
               <select
-                value={selectedProject}
+                value={selectedProject ?? ""}
                 onChange={(e) =>
                   setSelectedProject(
-                    e.target.value === "" ? "" : Number(e.target.value),
+                    e.target.value === "" ? null : Number(e.target.value),
                   )
                 }
                 className="
                   appearance-none h-[38px] pl-4 pr-9 rounded-lg
                   border border-[#e5e7eb] bg-white
-                  text-[13px] text-[#6b7280] font-medium
+                  text-[13px] text-[#374151] font-medium
                   focus:outline-none focus:ring-2 focus:ring-[#3b5ccc]/30 focus:border-[#3b5ccc]
                   cursor-pointer transition-colors
                 "
               >
-                <option value="">Filtrar por projeto</option>
                 {projects.map((p) => (
                   <option key={p.id} value={p.id}>
                     {p.name}
@@ -253,10 +275,20 @@ export default function RelatoriosPage() {
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9ca3af] pointer-events-none"
               />
             </div>
+
+            {activeTab === "sprint" && isCurrentProjectSelected && (
+              <button
+                type="button"
+                onClick={() => setIsSprintModalOpen(true)}
+                className="inline-flex items-center gap-2 rounded-lg bg-[#3b5ccc] px-4 py-2 text-sm font-medium text-white hover:bg-[#2f4bb0] transition-colors cursor-pointer"
+              >
+                <Plus size={16} />
+                Novo Relatório
+              </button>
+            )}
           </div>
         )}
 
-        {/* Slot – cada aba renderiza seu componente filho */}
         <div role="tabpanel" className="p-6">
           {activeTab === "horas" && (
             <>
@@ -270,7 +302,10 @@ export default function RelatoriosPage() {
               )}
               {!loading && !error && (
                 <>
-                  <HoursSummary data={hours} />
+                  <HoursSummary
+                    data={hours}
+                    isCurrentProject={isCurrentProjectSelected}
+                  />
                   <HoursTable data={hours} />
                 </>
               )}
@@ -278,7 +313,11 @@ export default function RelatoriosPage() {
           )}
           {activeTab === "sprint" && (
             <SprintTable
-              selectedProject={selectedProject === "" ? null : selectedProject}
+              selectedProject={selectedProject}
+              currentProjectId={currentProject?.id ?? null}
+              currentProjectName={currentProject?.name ?? ""}
+              externalModalOpen={isSprintModalOpen}
+              onExternalModalClose={() => setIsSprintModalOpen(false)}
             />
           )}
           {activeTab === "andamento" && renderReportTab(progressReport)}
@@ -290,7 +329,7 @@ export default function RelatoriosPage() {
         isOpen={isUploadModalOpen}
         onClose={() => setIsUploadModalOpen(false)}
         reportType={activeTab === "final" ? "final" : "andamento"}
-        currentProject={projects[0]?.name ?? ""}
+        currentProject={currentProject?.name ?? ""}
         onSuccess={() => {
           setRefreshKey((k) => k + 1);
         }}

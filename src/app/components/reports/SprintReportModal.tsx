@@ -9,6 +9,7 @@ interface SprintReportModalProps {
   onSubmit?: (data: SprintReportFormData) => void | Promise<void>;
   isSubmitting?: boolean;
   usedSprints?: string[];
+  projectName?: string;
 }
 
 export interface SprintReportFormData {
@@ -36,6 +37,7 @@ export function SprintReportModal({
   onSubmit,
   isSubmitting = false,
   usedSprints = [],
+  projectName = DEFAULT_PROJECT,
 }: SprintReportModalProps) {
   const [sprint, setSprint] = useState("");
   const [plannedActivities, setPlannedActivities] = useState("");
@@ -71,7 +73,7 @@ export function SprintReportModal({
     if (!isFormValid || isSubmitting) return;
 
     onSubmit?.({
-      project: DEFAULT_PROJECT,
+      project: projectName,
       sprint,
       plannedActivities,
       completedActivities,
@@ -107,7 +109,7 @@ export function SprintReportModal({
               </label>
 
               <input
-                value={DEFAULT_PROJECT}
+                value={projectName}
                 disabled
                 className="h-[42px] w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm text-slate-500"
               />
@@ -124,12 +126,20 @@ export function SprintReportModal({
                 className="h-[42px] w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-700 cursor-pointer focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="">Selecione</option>
-                {SPRINT_OPTIONS.map((s) => (
-                  <option key={s} value={s} disabled={usedSet.has(s)}>
-                    {s}
-                    {usedSet.has(s) ? " (já enviada)" : ""}
-                  </option>
-                ))}
+                {SPRINT_OPTIONS.map((s) => {
+                  const isUsed = usedSet.has(s);
+                  return (
+                    <option
+                      key={s}
+                      value={s}
+                      disabled={isUsed}
+                      className={isUsed ? "text-slate-400 italic" : ""}
+                    >
+                      {s}
+                      {isUsed ? " (já enviada)" : ""}
+                    </option>
+                  );
+                })}
               </select>
               {availableSprints.length === 0 && (
                 <span className="mt-1 block text-xs text-slate-500">
