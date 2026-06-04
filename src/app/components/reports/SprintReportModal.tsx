@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Modal } from "../ui/Modal/Modal";
 import { Button } from "../ui/Button/Button";
 import { TextArea } from "../ui/TextArea/TextArea";
+import { SprintReportFormData, SprintReportRow } from "@/app/types/sprintReport";
 
 interface SprintReportModalProps {
   isOpen: boolean;
@@ -9,16 +10,7 @@ interface SprintReportModalProps {
   onSubmit?: (data: SprintReportFormData) => void | Promise<void>;
   isSubmitting?: boolean;
   usedSprints?: string[];
-}
-
-export interface SprintReportFormData {
-  project: string;
-  sprint: string;
-  plannedActivities: string;
-  completedActivities: string;
-  problems: string;
-  lessonsLearned: string;
-  nextSteps: string;
+  initialData?: SprintReportRow | null;
 }
 
 const DEFAULT_PROJECT = "Fluxo AGES 2.0 - Alunos";
@@ -36,6 +28,7 @@ export function SprintReportModal({
   onSubmit,
   isSubmitting = false,
   usedSprints = [],
+  initialData = null,
 }: SprintReportModalProps) {
   const [sprint, setSprint] = useState("");
   const [plannedActivities, setPlannedActivities] = useState("");
@@ -45,7 +38,14 @@ export function SprintReportModal({
   const [nextSteps, setNextSteps] = useState("");
 
   useEffect(() => {
-    if (!isOpen) {
+    if (isOpen) {
+      setSprint(initialData?.sprint ?? "");
+      setPlannedActivities(initialData?.predicted_activity ?? "");
+      setCompletedActivities(initialData?.activity_completed ?? "");
+      setProblems(initialData?.problems_encountered ?? "");
+      setLessonsLearned(initialData?.learned_lessons ?? "");
+      setNextSteps(initialData?.next_steps ?? "");
+    } else {
       setSprint("");
       setPlannedActivities("");
       setCompletedActivities("");
@@ -53,7 +53,7 @@ export function SprintReportModal({
       setLessonsLearned("");
       setNextSteps("");
     }
-  }, [isOpen]);
+  }, [isOpen, initialData]);
 
   const usedSet = new Set(usedSprints);
   const availableSprints = SPRINT_OPTIONS.filter((s) => !usedSet.has(s));
@@ -85,10 +85,10 @@ export function SprintReportModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Relatório de Sprint"
-      className="!max-w-2xl"
+      title={initialData ? "Atualizar Relatório de Sprint" : "Relatório de Sprint"}
+      className="!w-[550px] !max-w-[550px]"
     >
-      <div className="mt-4 flex max-h-[70vh] w-[640px] max-w-full flex-col">
+      <div className="mt-4 flex h-[640px] max-h-[70vh] max-w-full flex-col">
         <div
           className="
             flex flex-col gap-4 overflow-y-auto pr-2
@@ -121,7 +121,8 @@ export function SprintReportModal({
               <select
                 value={sprint}
                 onChange={(e) => setSprint(e.target.value)}
-                className="h-[42px] w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-700 cursor-pointer focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                disabled={!!initialData}
+                className="h-[42px] w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-700 cursor-pointer focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed"
               >
                 <option value="">Selecione</option>
                 {SPRINT_OPTIONS.map((s) => (
@@ -131,7 +132,7 @@ export function SprintReportModal({
                   </option>
                 ))}
               </select>
-              {availableSprints.length === 0 && (
+              {!initialData && availableSprints.length === 0 && (
                 <span className="mt-1 block text-xs text-slate-500">
                   Todas as sprints já possuem relatório.
                 </span>
@@ -170,17 +171,17 @@ export function SprintReportModal({
           />
         </div>
 
-        <div className="mt-4 flex justify-end gap-3 border-t border-[#e5e7eb] pt-4">
+        <div className="mt-4 grid grid-cols-2 gap-3 border-t border-[#e5e7eb] pt-4">
           <Button
-            variant="primary"
+            variant="accent"
             onClick={handleSubmit}
             disabled={!isFormValid || isSubmitting}
             loading={isSubmitting}
           >
-            {isSubmitting ? "Enviando..." : "Cadastrar"}
+            {isSubmitting ? "Enviando..." : initialData ? "Atualizar Relatório" : "Cadastrar"}
           </Button>
 
-          <Button variant="secondary" onClick={onClose} disabled={isSubmitting}>
+          <Button variant="accent-secondary" onClick={onClose} disabled={isSubmitting}>
             Fechar
           </Button>
         </div>
