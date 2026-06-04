@@ -3,6 +3,7 @@ import { Modal } from "../ui/Modal/Modal";
 import { Upload, Check, XCircle } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/AuthContext";
+import { api } from "../../services/api";
 
 const MAX_FILE_SIZE_BYTES = 25 * 1024 * 1024;
 
@@ -91,15 +92,20 @@ export const ReportUploadModal = ({
     if (!selectedFile) return;
     setIsUploading(true);
     try {
-      // TODO: integrar com endpoint real de upload quando o backend estiver pronto
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      showToast("success", "Relatório enviado!");
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+      
+      const endpoint = reportType === "final" ? "/report/final" : "/report/progress";
+      
+      await api.post(endpoint, formData);
+      
+      showToast("success", "Relatório enviado com sucesso!");
       onSuccess();
       onClose();
       setSelectedFile(null);
     } catch (error) {
       console.error("Erro ao enviar relatório:", error);
-      showToast("error", "Falha no envio.");
+      showToast("error", "Falha no envio do relatório.");
     } finally {
       setIsUploading(false);
     }
@@ -180,7 +186,7 @@ export const ReportUploadModal = ({
           <button
             type="button"
             onClick={onClose}
-            className="px-8 py-2.5 rounded-xl border border-[#e5e7eb] text-[#f97316] font-bold text-[15px] hover:bg-gray-50 transition-colors"
+            className="px-8 py-2.5 rounded-xl border border-[#e5e7eb] text-[#f97316] font-bold text-[15px] hover:bg-gray-50 transition-colors cursor-pointer"
           >
             Fechar
           </button>
@@ -190,7 +196,7 @@ export const ReportUploadModal = ({
             disabled={!selectedFile || isUploading}
             className={`px-8 py-2.5 rounded-xl font-bold text-[15px] text-white transition-all shadow-md ${!selectedFile || isUploading
                 ? "bg-gray-300 cursor-not-allowed"
-                : "bg-[#f97316] hover:bg-[#ea580c]"
+                : "bg-[#f97316] hover:bg-[#ea580c] cursor-pointer"
               }`}
           >
             {isUploading ? "Enviando..." : "Enviar Relatório"}
