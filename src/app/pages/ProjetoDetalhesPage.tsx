@@ -1,4 +1,5 @@
 import {
+  ChevronRight,
   CircleCheckBig,
   ExternalLink,
   GitBranch,
@@ -292,7 +293,7 @@ function AgesStudents({ title, students }: AgesStudentsProps) {
     <details className="group">
       <summary className="flex items-center gap-1 cursor-pointer list-none text-sm font-bold text-[#1F2937]">
         <span className="text-[#3B5CCC] transition-transform group-open:rotate-90">
-          ▶
+          <ChevronRight />
         </span>
         {title}
       </summary>
