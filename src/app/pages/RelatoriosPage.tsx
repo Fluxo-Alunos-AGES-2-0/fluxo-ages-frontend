@@ -70,18 +70,6 @@ export default function RelatoriosPage() {
   const [refreshKey, setRefreshKey] = useState(0);
   const currentProject = projects[0] ?? null;
 
-
-  // MOCK — remover antes de subir
-useEffect(() => {
-  const mockProjects = [
-    { id: 1, name: "Fluxo AGES 2.0 - Alunos" },
-    { id: 2, name: "Projeto Anterior" },
-  ];
-  setProjects(mockProjects);
-  setSelectedProject(mockProjects[0].id);
-  setLoading(false);
-}, []);
-
   useEffect(() => {
     api
       .get<ProjectOption[]>("/project/me")
