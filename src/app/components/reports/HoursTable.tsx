@@ -1,15 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Calendar,
   ChevronDown,
   ChevronUp,
   Clock,
+  MessageSquare,
   Pencil,
   Timer,
   Trash2,
   TriangleAlert,
 } from "lucide-react";
 import { Modal } from "@/app/components/ui/Modal/Modal";
+import { RejectionJustificationModal } from "./RejectionJustificationModal";
 
 const LONG_DESCRIPTION_THRESHOLD = 80;
 
@@ -21,6 +23,7 @@ interface HourEntry {
   sessionTimeSeconds: number;
   activities: string;
   status: HourStatus;
+  rejectionJustification?: string | null;
 }
 
 interface HoursTableProps {
@@ -30,6 +33,9 @@ interface HoursTableProps {
 export function HoursTable({ data }: HoursTableProps) {
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [hours, setHours] = useState<HourEntry[]>(data);
+  const [justificationModalText, setJustificationModalText] = useState<
+    string | null
+  >(null);
 
   const [editingItem, setEditingItem] = useState<HourEntry | null>(null);
   const [editDescription, setEditDescription] = useState("");
@@ -38,6 +44,10 @@ export function HoursTable({ data }: HoursTableProps) {
   const [editEndTime, setEditEndTime] = useState("");
 
   const [deletingItem, setDeletingItem] = useState<HourEntry | null>(null);
+
+  useEffect(() => {
+    setHours(data);
+  }, [data]);
 
   function handleOpenEditModal(item: HourEntry) {
     const startDate = new Date(item.startTime);
@@ -84,14 +94,6 @@ export function HoursTable({ data }: HoursTableProps) {
     setDeletingItem(null);
   }
 
-  if (hours.length === 0) {
-    return (
-      <div className="text-center text-[#6b7280] py-10">
-        Nenhum registro de horas encontrado.
-      </div>
-    );
-  }
-
   const handleDateChange = (value: string) => {
     const numbers = value.replace(/\D/g, "").slice(0, 8);
 
@@ -107,6 +109,14 @@ export function HoursTable({ data }: HoursTableProps) {
 
     setEditDate(formatted);
   };
+
+  if (hours.length === 0) {
+    return (
+      <div className="text-center text-[#6b7280] py-10">
+        Nenhum registro de horas encontrado.
+      </div>
+    );
+  }
 
   return (
     <>
@@ -180,9 +190,25 @@ export function HoursTable({ data }: HoursTableProps) {
                   </td>
 
                   <td className="px-6 py-4 text-center align-top">
-                    <span className={getStatusClass(status)}>
-                      {formatStatus(status)}
-                    </span>
+                    <div className="flex items-center justify-center gap-2">
+                      <span className={getStatusClass(status)}>
+                        {formatStatus(status)}
+                      </span>
+                      {status === "REJECTED" && item.rejectionJustification && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setJustificationModalText(
+                              item.rejectionJustification ?? null,
+                            )
+                          }
+                          className="text-[#9ca3af] hover:text-blue-600 transition-colors"
+                          title="Ver justificativa"
+                        >
+                          <MessageSquare size={18} />
+                        </button>
+                      )}
+                    </div>
                   </td>
 
                   <td className="px-6 py-4 text-right align-top">
@@ -355,6 +381,12 @@ export function HoursTable({ data }: HoursTableProps) {
           </div>
         </Modal>
       )}
+
+      <RejectionJustificationModal
+        isOpen={!!justificationModalText}
+        onClose={() => setJustificationModalText(null)}
+        justification={justificationModalText}
+      />
     </>
   );
 }
