@@ -12,7 +12,7 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const headers: Record<string, string> = {
     ...((options.headers as Record<string, string>) ?? {}),
   };
-  
+
   if (!(options.body instanceof FormData) && !headers["Content-Type"]) {
     headers["Content-Type"] = "application/json";
   }
@@ -41,6 +41,13 @@ export const api = {
     const isFormData = body instanceof FormData;
     return request<T>(path, {
       method: "POST",
+      body: isFormData ? body : JSON.stringify(body),
+    });
+  },
+  put: <T>(path: string, body: unknown) => {
+    const isFormData = body instanceof FormData;
+    return request<T>(path, {
+      method: "PUT",
       body: isFormData ? body : JSON.stringify(body),
     });
   },

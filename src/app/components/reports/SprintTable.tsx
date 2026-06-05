@@ -1,35 +1,15 @@
 import { useEffect, useState } from "react";
-import { LoaderCircle, Plus } from "lucide-react";
+import { Pencil, LoaderCircle, Plus } from "lucide-react";
 import { api } from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../context/ToastContext";
+import { SprintReportModal } from "./SprintReportModal";
 import {
-  SprintReportModal,
-  type SprintReportFormData,
-} from "./SprintReportModal";
-
-interface SprintReportApiResponse {
-  id: number;
-  sprint: string;
-  student: string;
-  date: string;
-  id_project: number;
-}
-
-type RowStatus = "ENVIANDO" | "ENVIADO";
-
-interface SprintReportRow extends SprintReportApiResponse {
-  status: RowStatus;
-}
-
-interface SprintReportPayload {
-  sprint: number;
-  predictedActivity: string;
-  activityCompleted: string;
-  problemsEncountered: string;
-  learnedLessons: string;
-  nextSteps: string;
-}
+  SprintReportApiResponse,
+  SprintReportFormData,
+  SprintReportPayload,
+  SprintReportRow,
+} from "@/app/types/sprintReport";
 
 function parseSprintNumber(value: string): number {
   const match = value.match(/\d+/);
@@ -47,6 +27,16 @@ function toPayload(data: SprintReportFormData): SprintReportPayload {
   };
 }
 
+function toEditPayload(data: SprintReportFormData) {
+  return {
+    predictedActivity: data.plannedActivities,
+    activityCompleted: data.completedActivities,
+    problemsEncountered: data.problems,
+    learnedLessons: data.lessonsLearned,
+    nextSteps: data.nextSteps,
+  };
+}
+
 interface SprintTableProps {
   selectedProject?: number | null;
 }
@@ -54,6 +44,7 @@ interface SprintTableProps {
 export function SprintTable({ selectedProject = null }: SprintTableProps = {}) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sprintReports, setSprintReports] = useState<SprintReportRow[]>([]);
+  const [reportToEdit, setReportToEdit] = useState<SprintReportRow | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -86,7 +77,12 @@ export function SprintTable({ selectedProject = null }: SprintTableProps = {}) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedProject]);
 
-  const handleSubmit = async (data: SprintReportFormData) => {
+  const handleUpdate = (report: SprintReportRow) => {
+    setReportToEdit(report);
+    setIsModalOpen(true);
+  };
+
+  const handleCreateReport = async (data: SprintReportFormData) => {
     const optimisticId = -Date.now();
     const optimisticRow: SprintReportRow = {
       id: optimisticId,
@@ -95,6 +91,11 @@ export function SprintTable({ selectedProject = null }: SprintTableProps = {}) {
       date: new Date().toISOString(),
       id_project: 0,
       status: "ENVIANDO",
+      predicted_activity: "",
+      activity_completed: "",
+      problems_encountered: "",
+      learned_lessons: "",
+      next_steps: "",
     };
 
     setSprintReports((prev) => [...prev, optimisticRow]);
@@ -102,8 +103,6 @@ export function SprintTable({ selectedProject = null }: SprintTableProps = {}) {
     setIsSubmitting(true);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 3000));
-
       await api.post("/report/sprint", toPayload(data));
       showToast({
         variant: "success",
@@ -122,6 +121,40 @@ export function SprintTable({ selectedProject = null }: SprintTableProps = {}) {
       });
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleEditReport = async (data: SprintReportFormData) => {
+    setIsModalOpen(false);
+    setIsSubmitting(true);
+
+    try {
+      await api.put(`/report/sprint/${reportToEdit?.id}`, toEditPayload(data));
+      showToast({
+        variant: "success",
+        title: "Relatório atualizado",
+        message: "Relatório de sprint atualizado com sucesso.",
+      });
+      fetchReports();
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Erro ao atualizar relatório.";
+      showToast({
+        variant: "error",
+        title: "Erro ao atualizar",
+        message,
+      });
+    } finally {
+      setIsSubmitting(false);
+      setReportToEdit(null);
+    }
+  };
+
+  const handleSubmit = (data: SprintReportFormData) => {
+    if (reportToEdit) {
+      handleEditReport(data);
+    } else {
+      handleCreateReport(data);
     }
   };
 
@@ -157,6 +190,7 @@ export function SprintTable({ selectedProject = null }: SprintTableProps = {}) {
                 <th className="px-6 py-4 text-left font-semibold">Estudante</th>
                 <th className="px-6 py-4 text-left font-semibold">Data</th>
                 <th className="px-6 py-4 text-center font-semibold">Status</th>
+                <th className="px-6 py-4 text-center font-semibold">Ações</th>
               </tr>
             </thead>
 
@@ -188,6 +222,17 @@ export function SprintTable({ selectedProject = null }: SprintTableProps = {}) {
                       </span>
                     )}
                   </td>
+
+                  <td className="px-6 py-4 text-center">
+                    <button
+                      type="button"
+                      onClick={() => handleUpdate(item)}
+                      disabled={item.status === "ENVIANDO"}
+                      className="px-3 py-1 text-xs font-medium text-[#3b5ccc] cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      <Pencil size={20} strokeWidth={3} />
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -197,10 +242,14 @@ export function SprintTable({ selectedProject = null }: SprintTableProps = {}) {
 
       <SprintReportModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => {
+          setIsModalOpen(false);
+          setTimeout(() => setReportToEdit(null), 300);
+        }}
         onSubmit={handleSubmit}
         isSubmitting={isSubmitting}
         usedSprints={sprintReports.map((r) => r.sprint)}
+        initialData={reportToEdit}
       />
     </>
   );
