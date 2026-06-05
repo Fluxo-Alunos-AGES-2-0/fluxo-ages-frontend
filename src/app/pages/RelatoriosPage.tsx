@@ -98,7 +98,7 @@ export default function RelatoriosPage() {
 
   useEffect(() => {
     api
-      .get<ProjectOption[]>("/project/me")
+      .get<ProjectOption[]>("/projects")
       .then((data) => {
         const list = data ?? [];
         setProjects(list);
