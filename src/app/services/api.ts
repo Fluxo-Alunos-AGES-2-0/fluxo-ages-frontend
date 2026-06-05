@@ -51,4 +51,21 @@ export const api = {
       body: isFormData ? body : JSON.stringify(body),
     });
   },
+  delete: <T>(path: string) => request<T>(path, { method: "DELETE" }),
+  blob: async (path: string): Promise<Blob> => {
+    const token = localStorage.getItem("token");
+    const headers: Record<string, string> = {};
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+
+    const res = await fetch(`${BASE_URL}${path}`, { headers });
+
+    if (res.status === 401 && token) {
+      handleUnauthorized();
+      throw new Error("Sessão expirada. Faça login novamente.");
+    }
+
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    return res.blob();
+  },
 };

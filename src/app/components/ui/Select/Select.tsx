@@ -1,5 +1,5 @@
-import React, { SelectHTMLAttributes, forwardRef } from 'react';
-import { ChevronDown } from 'lucide-react';
+import React, { SelectHTMLAttributes, forwardRef } from "react";
+import { ChevronDown } from "lucide-react";
 
 export interface SelectOption {
   value: string | number;
@@ -13,18 +13,16 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   wrapperClassName?: string;
 }
 
-export const Select = forwardRef<HTMLSelectElement, SelectProps>(({
-  options,
-  placeholder,
-  wrapperClassName = '',
-  className = '',
-  ...props
-}, ref) => {
-  return (
-    <div className={`relative inline-block ${wrapperClassName}`}>
-      <select
-        ref={ref}
-        className={`
+export const Select = forwardRef<HTMLSelectElement, SelectProps>(
+  (
+    { options, placeholder, wrapperClassName = "", className = "", ...props },
+    ref,
+  ) => {
+    return (
+      <div className={`relative inline-block ${wrapperClassName}`}>
+        <select
+          ref={ref}
+          className={`
           appearance-none pl-4 pr-9 rounded-lg h-[38px] 
           border border-[#e5e7eb] bg-white
           text-[13px] text-[#6b7280] font-medium
@@ -32,25 +30,32 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(({
           cursor-pointer transition-colors
           ${className}
         `}
-        {...props}
-      >
-        {placeholder && (
-          <option value="">{placeholder}</option>
-        )}
-        
-        {options.map((option) => (
-            <option key={option.value} value={option.value} disabled={option.disabled}>
-                {option.label}
+          {...props}
+        >
+          {placeholder && (
+            <option value="" disabled hidden>
+              {placeholder}
             </option>
-        ))}
-      </select>
-      
-      <ChevronDown
-        size={15}
-        className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9ca3af] pointer-events-none"
-      />
-    </div>
-  );
-});
+          )}
 
-Select.displayName = 'Select';
+          {options.map((option) => (
+            <option
+              key={option.value}
+              value={option.value}
+              disabled={option.disabled}
+            >
+              {option.label}
+            </option>
+          ))}
+        </select>
+
+        <ChevronDown
+          size={15}
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9ca3af] pointer-events-none"
+        />
+      </div>
+    );
+  },
+);
+
+Select.displayName = "Select";

@@ -11,6 +11,7 @@ import { Button } from "../components/ui/Button/Button";
 import { ReportUploadModal } from "../components/reports/ReportUploadModal";
 import { SprintTable } from "../components/reports/SprintTable";
 import { Select } from "../components/ui/Select/Select";
+import { useToast } from "../context/ToastContext";
 
 type TabId = "horas" | "sprint" | "andamento" | "final";
 
@@ -49,9 +50,8 @@ interface ProjectOption {
 }
 
 function toReportEntry(report: ReportApiResponse): ReportEntry {
-  const [year, month, day] = report.date.split("-");
   return {
-    date: `${day}/${month}/${year}`,
+    date: new Date(report.date).toLocaleDateString("pt-BR"),
     project: report.project,
     grade: report.grade,
     feedback: report.feedback ?? "",
@@ -70,8 +70,31 @@ export default function RelatoriosPage() {
 
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isSprintModalOpen, setIsSprintModalOpen] = useState(false);
+  const [isDownloadingTemplate, setIsDownloadingTemplate] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const { showToast } = useToast();
   const currentProject = projects[0] ?? null;
+
+  const handleDownloadTemplate = async () => {
+    setIsDownloadingTemplate(true);
+    try {
+      const blob = await api.blob("/report/template");
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = "modelo-relatorio.docx";
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Erro ao baixar o modelo.";
+      showToast({ variant: "error", title: "Erro ao baixar", message });
+    } finally {
+      setIsDownloadingTemplate(false);
+    }
+  };
 
   useEffect(() => {
     api
@@ -169,6 +192,9 @@ export default function RelatoriosPage() {
         <div className="relative">
           <Button
             variant="secondary"
+            onClick={handleDownloadTemplate}
+            loading={isDownloadingTemplate}
+            disabled={isDownloadingTemplate}
             className="flex items-center gap-2 text-[#3b5ccc] font-bold text-[15px] px-1 rounded-none border-t-0 border-x-0 border-b-2 border-[#3b5ccc] bg-transparent hover:bg-transparent shadow-none"
           >
             <FileDown size={20} strokeWidth={2.5} />
@@ -282,7 +308,10 @@ export default function RelatoriosPage() {
                     data={hours}
                     isCurrentProject={isCurrentProjectSelected}
                   />
-                  <HoursTable data={hours} />
+                  <HoursTable
+                    data={hours}
+                    onChanged={() => setRefreshKey((k) => k + 1)}
+                  />
                 </>
               )}
             </>

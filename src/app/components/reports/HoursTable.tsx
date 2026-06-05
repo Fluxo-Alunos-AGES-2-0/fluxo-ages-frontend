@@ -12,8 +12,18 @@ import {
 } from "lucide-react";
 import { Modal } from "@/app/components/ui/Modal/Modal";
 import { RejectionJustificationModal } from "./RejectionJustificationModal";
+import { api } from "../../services/api";
+import { useToast } from "../../context/ToastContext";
 
 const LONG_DESCRIPTION_THRESHOLD = 80;
+
+function partsToDate(dateStr: string, timeStr: string): Date | null {
+  const [day, month, year] = dateStr.split("/").map(Number);
+  const [hours = 0, minutes = 0, seconds = 0] = timeStr.split(":").map(Number);
+  if ([day, month, year].some(Number.isNaN)) return null;
+  const date = new Date(year, month - 1, day, hours, minutes, seconds);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
 
 type HourStatus = "APPROVED" | "REJECTED" | "PENDING";
 
@@ -28,9 +38,10 @@ interface HourEntry {
 
 interface HoursTableProps {
   data: HourEntry[];
+  onChanged?: () => void;
 }
 
-export function HoursTable({ data }: HoursTableProps) {
+export function HoursTable({ data, onChanged }: HoursTableProps) {
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [hours, setHours] = useState<HourEntry[]>(data);
   const [justificationModalText, setJustificationModalText] = useState<
@@ -44,6 +55,9 @@ export function HoursTable({ data }: HoursTableProps) {
   const [editEndTime, setEditEndTime] = useState("");
 
   const [deletingItem, setDeletingItem] = useState<HourEntry | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const { showToast } = useToast();
 
   useEffect(() => {
     setHours(data);
@@ -62,36 +76,74 @@ export function HoursTable({ data }: HoursTableProps) {
     setEditEndTime(endDate.toLocaleTimeString("pt-BR"));
   }
 
-  function handleSaveEdit() {
+  async function handleSaveEdit() {
     if (!editingItem) return;
 
-    setHours((currentHours) =>
-      currentHours.map((hour) =>
-        hour.id === editingItem.id
-          ? {
-              ...hour,
-              activities: editDescription,
-              status: "PENDING",
-            }
-          : hour,
-      ),
-    );
+    const description = editDescription.trim();
+    const entry = partsToDate(editDate, editStartTime);
+    const exit = partsToDate(editDate, editEndTime);
 
-    setEditingItem(null);
-    setEditDescription("");
-    setEditDate("");
-    setEditStartTime("");
-    setEditEndTime("");
+    if (!description || !entry || !exit) {
+      showToast({
+        variant: "error",
+        title: "Campos obrigatórios",
+        message: "Preencha descrição, data e horários corretamente.",
+      });
+      return;
+    }
+
+    // sessão que cruza a meia-noite: saída no dia seguinte
+    if (exit <= entry) {
+      exit.setDate(exit.getDate() + 1);
+    }
+
+    setIsSaving(true);
+    try {
+      await api.put(`/hours/report/${editingItem.id}`, {
+        entryTime: entry.toISOString(),
+        exitTime: exit.toISOString(),
+        activities: description,
+      });
+      showToast({
+        variant: "success",
+        title: "Relatório atualizado",
+        message: "Relatório de horas atualizado com sucesso.",
+      });
+      setEditingItem(null);
+      setEditDescription("");
+      setEditDate("");
+      setEditStartTime("");
+      setEditEndTime("");
+      onChanged?.();
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Erro ao atualizar relatório.";
+      showToast({ variant: "error", title: "Erro ao atualizar", message });
+    } finally {
+      setIsSaving(false);
+    }
   }
 
-  function handleDelete() {
+  async function handleDelete() {
     if (!deletingItem) return;
 
-    setHours((currentHours) =>
-      currentHours.filter((hour) => hour.id !== deletingItem.id),
-    );
-
-    setDeletingItem(null);
+    setIsDeleting(true);
+    try {
+      await api.delete(`/report/${deletingItem.id}`);
+      showToast({
+        variant: "success",
+        title: "Relatório deletado",
+        message: "Relatório de horas deletado com sucesso.",
+      });
+      setDeletingItem(null);
+      onChanged?.();
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Erro ao deletar relatório.";
+      showToast({ variant: "error", title: "Erro ao deletar", message });
+    } finally {
+      setIsDeleting(false);
+    }
   }
 
   const handleDateChange = (value: string) => {
@@ -324,15 +376,17 @@ export function HoursTable({ data }: HoursTableProps) {
               <button
                 type="button"
                 onClick={handleSaveEdit}
-                className="h-14 rounded-xl bg-[#F47B20] text-white font-bold text-xl hover:opacity-90 cursor-pointer"
+                disabled={isSaving}
+                className="h-14 rounded-xl bg-[#F47B20] text-white font-bold text-xl hover:opacity-90 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Salvar
+                {isSaving ? "Salvando..." : "Salvar"}
               </button>
 
               <button
                 type="button"
                 onClick={() => setEditingItem(null)}
-                className="h-14 rounded-xl border border-slate-200 text-[#F47B20] font-bold text-xl hover:bg-slate-50 cursor-pointer"
+                disabled={isSaving}
+                className="h-14 rounded-xl border border-slate-200 text-[#F47B20] font-bold text-xl hover:bg-slate-50 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Fechar
               </button>
@@ -365,7 +419,8 @@ export function HoursTable({ data }: HoursTableProps) {
               <button
                 type="button"
                 onClick={() => setDeletingItem(null)}
-                className="h-14 rounded-xl border border-slate-200 text-[#F47B20] font-bold text-xl hover:bg-slate-50 cursor-pointer"
+                disabled={isDeleting}
+                className="h-14 rounded-xl border border-slate-200 text-[#F47B20] font-bold text-xl hover:bg-slate-50 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Cancelar
               </button>
@@ -373,9 +428,10 @@ export function HoursTable({ data }: HoursTableProps) {
               <button
                 type="button"
                 onClick={handleDelete}
-                className="h-14 rounded-xl bg-[#F2994A] text-white font-bold text-xl hover:opacity-90 cursor-pointer"
+                disabled={isDeleting}
+                className="h-14 rounded-xl bg-[#F2994A] text-white font-bold text-xl hover:opacity-90 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Deletar
+                {isDeleting ? "Deletando..." : "Deletar"}
               </button>
             </div>
           </div>

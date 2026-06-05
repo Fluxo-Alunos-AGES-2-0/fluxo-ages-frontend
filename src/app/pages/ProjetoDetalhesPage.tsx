@@ -1,137 +1,89 @@
 import {
-  ChevronRight,
   CircleCheckBig,
   ExternalLink,
+  FolderOpen,
   GitBranch,
   Users,
   X,
   Zap,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { Button } from "@/app/components/ui/Button/Button";
+import { api } from "../services/api";
+import { toAgesLevel } from "../utils/agesLevel";
 
-type ProjectStatus = "ATIVO" | "CONCLUIDO";
-
-interface Project {
+interface ProjectTeacher {
   id: number;
   name: string;
-  scheduleCode: string;
-  semester: string;
-  agesLevel: string;
-  membersCount: number;
-  description: string;
-  status: ProjectStatus;
-  repositoryUrl: string;
-  imageUrl: string;
-  clients: string;
-  advisor: string;
-  studentsByAges: {
-    agesI: string[];
-    agesII: string[];
-    agesIII: string[];
-    agesIV: string[];
-  };
 }
 
-const mockProjects: Project[] = [
-  {
-    id: 1,
-    name: "FluxoAGES 2.0",
-    scheduleCode: "6LMNP",
-    semester: "2026/1",
-    agesLevel: "AGES IV",
-    membersCount: 14,
-    description:
-      "O Fluxo AGES é uma plataforma web que centraliza a gestão acadêmica e de portfólio dos alunos da AGES, oferecendo um ambiente único para alunos, professores e equipe administrativa. O objetivo é modernizar o sistema com uma arquitetura escalável e boa usabilidade, respeitando as regras da PUCRS e da AGES.",
-    status: "ATIVO",
-    repositoryUrl: "https://github.com",
-    imageUrl:
-      "https://images.unsplash.com/photo-1556761175-b413da4baf72?q=80&w=1200&auto=format&fit=crop",
-    clients: "Willian Albeche e Marcelo Yamaguti",
-    advisor: "Dilnei Venturini",
-    studentsByAges: {
-      agesI: ["Lucas Fernandes", "Higor Silva", "Ana Beatriz"],
-      agesII: ["Mariana Costa", "Pedro Henrique", "João Victor"],
-      agesIII: ["Gabriel Souza", "Camila Rocha", "Rafael Martins"],
-      agesIV: ["Vinicius Pacheco", "Lucas Fernandes", "Augusto Oliveira"],
-    },
-  },
-  {
-    id: 2,
-    name: "ClinAgenda",
-    scheduleCode: "2LM 4LM",
-    semester: "2025/2",
-    agesLevel: "AGES III",
-    membersCount: 10,
-    description:
-      "Sistema de agendamento online para clínicas e consultórios. Gestão de pacientes, agenda médica e notificações automáticas por e-mail e SMS.",
-    status: "CONCLUIDO",
-    repositoryUrl: "https://github.com",
-    imageUrl:
-      "https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=1200&auto=format&fit=crop",
-    clients: "Clínica Modelo",
-    advisor: "Professor Orientador",
-    studentsByAges: {
-      agesI: ["Lucas Fernandes", "Higor Silva", "Ana Beatriz"],
-      agesII: ["Mariana Costa", "Pedro Henrique", "João Victor"],
-      agesIII: ["Gabriel Souza", "Camila Rocha", "Rafael Martins"],
-      agesIV: ["Vinicius Pacheco", "Lucas Fernandes", "Augusto Oliveira"],
-    },
-  },
-  {
-    id: 3,
-    name: "EduTrack",
-    scheduleCode: "3JK 5JK",
-    semester: "2025/1",
-    agesLevel: "AGES II",
-    membersCount: 11,
-    description:
-      "Ferramenta de acompanhamento de aprendizagem para professores e alunos. Dashboard de desempenho, gamificação e relatórios pedagógicos.",
-    status: "CONCLUIDO",
-    repositoryUrl: "https://github.com",
-    imageUrl:
-      "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1200&auto=format&fit=crop",
-    clients: "Instituição de Ensino",
-    advisor: "Professor Orientador",
-    studentsByAges: {
-      agesI: ["Lucas Fernandes", "Higor Silva", "Ana Beatriz"],
-      agesII: ["Mariana Costa", "Pedro Henrique", "João Victor"],
-      agesIII: ["Gabriel Souza", "Camila Rocha", "Rafael Martins"],
-      agesIV: ["Vinicius Pacheco", "Lucas Fernandes", "Augusto Oliveira"],
-    },
-  },
-  {
-    id: 4,
-    name: "StockWise",
-    scheduleCode: "2JK 4JK",
-    semester: "2024/2",
-    agesLevel: "AGES I",
-    membersCount: 13,
-    description:
-      "Gerenciador de estoque inteligente para pequenas e médias empresas. Controle de produtos, alertas de reposição e integração com notas fiscais.",
-    status: "CONCLUIDO",
-    repositoryUrl: "https://github.com",
-    imageUrl:
-      "https://images.unsplash.com/photo-1553413077-190dd305871c?q=80&w=1200&auto=format&fit=crop",
-    clients: "Empresa Parceira",
-    advisor: "Professor Orientador",
-    studentsByAges: {
-      agesI: ["Lucas Fernandes", "Higor Silva", "Ana Beatriz"],
-      agesII: ["Mariana Costa", "Pedro Henrique", "João Victor"],
-      agesIII: ["Gabriel Souza", "Camila Rocha", "Rafael Martins"],
-      agesIV: ["Vinicius Pacheco", "Lucas Fernandes", "Augusto Oliveira"],
-    },
-  },
-];
+interface ProjectTeamMember {
+  id: number;
+  name: string;
+  avatarUrl: string | null;
+}
+
+interface ProjectDetails {
+  id: number;
+  name: string;
+  description: string | null;
+  projectStatus: string;
+  period: string | null;
+  semesterYear: string | null;
+  agesLevel: number | null;
+  membersCount: number;
+  gitLabLink: string | null;
+  teacher: ProjectTeacher | null;
+  team: ProjectTeamMember[];
+  technologies: string[];
+  thumbnailUrl: string | null;
+  groupPhotoUrl: string | null;
+}
 
 export default function ProjetoDetalhesPage() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const project = mockProjects.find((item) => item.id === Number(id));
-  const isAtivo = project?.status === "ATIVO";
+  const [project, setProject] = useState<ProjectDetails | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  if (!project) {
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+
+    api
+      .get<ProjectDetails>(`/projects/${id}`)
+      .then((data) => {
+        if (!cancelled) setProject(data);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        console.error("Erro ao buscar detalhes do projeto:", err);
+        setError("Não foi possível carregar os detalhes do projeto.");
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="w-full flex flex-col gap-6 font-sans">
+        <div className="bg-white rounded-2xl border border-[#6B728030] p-6 shadow-sm text-center text-[#6B7280] py-10">
+          Carregando detalhes do projeto...
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !project) {
     return (
       <div className="w-full flex flex-col gap-6 font-sans">
         <div className="bg-white rounded-2xl border border-[#6B728030] p-6 shadow-sm">
@@ -139,7 +91,7 @@ export default function ProjetoDetalhesPage() {
             Projeto não encontrado
           </h2>
           <p className="text-sm text-[#6B7280] mt-1">
-            O projeto solicitado não existe ou não está disponível.
+            {error ?? "O projeto solicitado não existe ou não está disponível."}
           </p>
 
           <Button
@@ -154,8 +106,12 @@ export default function ProjetoDetalhesPage() {
     );
   }
 
+  const isAtivo = project.projectStatus === "EM_ANDAMENTO";
+  const imageUrl = project.thumbnailUrl ?? project.groupPhotoUrl ?? "";
+
   const handleRepositoryClick = () => {
-    window.open(project.repositoryUrl, "_blank", "noopener,noreferrer");
+    if (!project.gitLabLink) return;
+    window.open(project.gitLabLink, "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -167,9 +123,11 @@ export default function ProjetoDetalhesPage() {
               {project.name}
             </h2>
 
-            <span className="text-sm text-[#6B7280] mb-[2px]">
-              {project.scheduleCode}
-            </span>
+            {project.period && (
+              <span className="text-sm text-[#6B7280] mb-[2px]">
+                {project.period}
+              </span>
+            )}
           </div>
 
           <div className="flex items-center gap-6">
@@ -207,30 +165,59 @@ export default function ProjetoDetalhesPage() {
         <div className="p-6 grid grid-cols-1 lg:grid-cols-5 gap-8">
           <div className="lg:col-span-3 flex flex-col gap-8">
             <div className="rounded-xl overflow-hidden border-b-4 border-[#F47B20]">
-              <img
-                src={project.imageUrl}
-                alt={`Imagem do projeto ${project.name}`}
-                className="w-full h-[260px] object-cover"
-              />
+              {imageUrl ? (
+                <img
+                  src={imageUrl}
+                  alt={`Imagem do projeto ${project.name}`}
+                  className="w-full h-[260px] object-cover"
+                />
+              ) : (
+                <div className="w-full h-[260px] bg-[#EEF3FF] flex items-center justify-center text-[#3B5CCC]">
+                  <FolderOpen size={48} />
+                </div>
+              )}
             </div>
 
-            <div className="flex flex-col gap-4">
-              <AgesStudents
-                title="AGES I"
-                students={project.studentsByAges.agesI}
-              />
-              <AgesStudents
-                title="AGES II"
-                students={project.studentsByAges.agesII}
-              />
-              <AgesStudents
-                title="AGES III"
-                students={project.studentsByAges.agesIII}
-              />
-              <AgesStudents
-                title="AGES IV"
-                students={project.studentsByAges.agesIV}
-              />
+            <div className="flex flex-col gap-3">
+              <h3 className="flex items-center gap-2 text-sm font-bold text-[#1F2937]">
+                <Users size={16} className="text-[#3B5CCC]" />
+                Equipe
+              </h3>
+
+              <div className="flex flex-wrap gap-2">
+                {project.team.length > 0 ? (
+                  project.team.map((member) => (
+                    <span
+                      key={member.id}
+                      className="px-3 py-1.5 rounded-full bg-[#6B728010] border border-[#6B728030] text-xs font-semibold text-[#6B7280]"
+                    >
+                      {member.name}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-xs text-[#6B7280]">
+                    Nenhum membro cadastrado.
+                  </span>
+                )}
+              </div>
+
+              {project.technologies.length > 0 && (
+                <div className="mt-4 flex flex-col gap-3">
+                  <h3 className="text-sm font-bold text-[#1F2937]">
+                    Tecnologias
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {project.technologies.map((tech) => (
+                      <span
+                        key={tech}
+                        className="px-3 py-1.5 rounded-full bg-[#3B5CCC10] border border-[#3B5CCC30] text-xs font-semibold text-[#3B5CCC]"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -242,25 +229,21 @@ export default function ProjetoDetalhesPage() {
                 </p>
 
                 <div className="flex flex-col gap-3 text-sm text-[#6B7280]">
-                  <p>
-                    <span className="font-semibold text-[#6B7280]">
-                      Clientes AGES:
-                    </span>{" "}
-                    {project.clients}
-                  </p>
-
-                  <p>
-                    <span className="font-semibold text-[#6B7280]">
-                      Orientador(a):
-                    </span>{" "}
-                    {project.advisor}
-                  </p>
+                  {project.teacher && (
+                    <p>
+                      <span className="font-semibold text-[#6B7280]">
+                        Orientador(a):
+                      </span>{" "}
+                      {project.teacher.name}
+                    </p>
+                  )}
 
                   <p className="flex items-center gap-1">
                     <Users size={15} />
                     <span>
-                      {project.agesLevel} · {project.membersCount} membros ·{" "}
-                      {project.semester}
+                      {toAgesLevel(project.agesLevel ?? undefined)} ·{" "}
+                      {project.membersCount} membros
+                      {project.semesterYear ? ` · ${project.semesterYear}` : ""}
                     </span>
                   </p>
                 </div>
@@ -269,6 +252,7 @@ export default function ProjetoDetalhesPage() {
               <Button
                 variant="primary"
                 onClick={handleRepositoryClick}
+                disabled={!project.gitLabLink}
                 className="self-center mt-8 px-10 !bg-[#3B5CCC] hover:!bg-[#2f4fb8] flex items-center gap-2 font-bold"
               >
                 <GitBranch size={16} />
@@ -280,40 +264,5 @@ export default function ProjetoDetalhesPage() {
         </div>
       </div>
     </div>
-  );
-}
-
-interface AgesStudentsProps {
-  title: string;
-  students: string[];
-}
-
-function AgesStudents({ title, students }: AgesStudentsProps) {
-  return (
-    <details className="group">
-      <summary className="flex items-center gap-1 cursor-pointer list-none text-sm font-bold text-[#1F2937]">
-        <span className="text-[#3B5CCC] transition-transform group-open:rotate-90">
-          <ChevronRight size={16} />
-        </span>
-        {title}
-      </summary>
-
-      <div className="mt-3 ml-5 flex flex-wrap gap-2">
-        {students.length > 0 ? (
-          students.map((student) => (
-            <span
-              key={student}
-              className="px-3 py-1.5 rounded-full bg-[#6B728010] border border-[#6B728030] text-xs font-semibold text-[#6B7280]"
-            >
-              {student}
-            </span>
-          ))
-        ) : (
-          <span className="text-xs text-[#6B7280]">
-            Nenhum aluno cadastrado.
-          </span>
-        )}
-      </div>
-    </details>
   );
 }
