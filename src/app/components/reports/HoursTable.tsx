@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { ChevronDown, ChevronUp, Clock, Pencil, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronUp, Clock, Pencil, Trash2, MessageSquare } from "lucide-react";
+import { RejectionJustificationModal } from "./RejectionJustificationModal";
 
 const LONG_DESCRIPTION_THRESHOLD = 80;
 
@@ -11,6 +12,7 @@ interface HourEntry {
   sessionTimeSeconds: number;
   activities: string;
   status: HourStatus;
+  rejectionJustification?: string | null;
 }
 
 interface HoursTableProps {
@@ -19,6 +21,7 @@ interface HoursTableProps {
 
 export function HoursTable({ data }: HoursTableProps) {
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [justificationModalText, setJustificationModalText] = useState<string | null>(null);
 
   if (data.length === 0) {
     return (
@@ -93,9 +96,21 @@ export function HoursTable({ data }: HoursTableProps) {
                 </td>
 
                 <td className="px-6 py-4 text-center align-top">
-                  <span className={getStatusClass(status)}>
-                    {formatStatus(status)}
-                  </span>
+                  <div className="flex items-center justify-center gap-2">
+                    <span className={getStatusClass(status)}>
+                      {formatStatus(status)}
+                    </span>
+                    {status === "REJECTED" && item.rejectionJustification && (
+                      <button
+                        type="button"
+                        onClick={() => setJustificationModalText(item.rejectionJustification ?? null)}
+                        className="text-[#9ca3af] hover:text-blue-600 transition-colors"
+                        title="Ver justificativa"
+                      >
+                        <MessageSquare size={18} />
+                      </button>
+                    )}
+                  </div>
                 </td>
 
                 <td className="px-6 py-4 text-right align-top">
@@ -125,6 +140,12 @@ export function HoursTable({ data }: HoursTableProps) {
           })}
         </tbody>
       </table>
+      
+      <RejectionJustificationModal
+        isOpen={!!justificationModalText}
+        onClose={() => setJustificationModalText(null)}
+        justification={justificationModalText}
+      />
     </div>
   );
 }
