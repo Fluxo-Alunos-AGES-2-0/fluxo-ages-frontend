@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { Download, MessageSquare } from "lucide-react";
 import { TeacherFeedbackModal } from "./TeacherFeedbackModal";
+import { resolveFileUrl } from "../../services/api";
 
 export interface ReportEntry {
   date: string;
   project: string;
   grade: number;
   feedback: string;
+  urlArchive?: string | null;
 }
 
 interface GenericReportsTableProps {
@@ -87,14 +89,26 @@ export function GenericReportsTable({ data }: GenericReportsTableProps) {
               </td>
 
               <td className="px-6 py-4 text-center">
-                <button
-                  type="button"
-                  disabled
-                  title="Em breve"
-                  className="text-[#3b5ccc] opacity-50 cursor-not-allowed"
-                >
-                  <Download size={20} />
-                </button>
+                {report.urlArchive ? (
+                  <a
+                    href={resolveFileUrl(report.urlArchive)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="Baixar relatório"
+                    className="inline-flex text-[#3b5ccc] hover:text-[#2a459c] transition-colors"
+                  >
+                    <Download size={20} />
+                  </a>
+                ) : (
+                  <button
+                    type="button"
+                    disabled
+                    title="Sem arquivo disponível"
+                    className="text-[#3b5ccc] opacity-50 cursor-not-allowed"
+                  >
+                    <Download size={20} />
+                  </button>
+                )}
               </td>
             </tr>
           ))}

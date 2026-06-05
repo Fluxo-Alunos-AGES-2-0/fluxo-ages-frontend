@@ -1,6 +1,6 @@
 import { api } from "../services/api";
 import { useEffect, useState } from "react";
-import { FileText, ChevronDown, FileDown, UploadCloud } from "lucide-react";
+import { FileText, FileDown, UploadCloud, Plus } from "lucide-react";
 import { HoursTable } from "../components/reports/HoursTable";
 import { HoursSummary } from "../components/reports/HoursSummary";
 import {
@@ -10,6 +10,8 @@ import {
 import { Button } from "../components/ui/Button/Button";
 import { ReportUploadModal } from "../components/reports/ReportUploadModal";
 import { SprintTable } from "../components/reports/SprintTable";
+import { Select } from "../components/ui/Select/Select";
+import { useToast } from "../context/ToastContext";
 
 type TabId = "horas" | "sprint" | "andamento" | "final";
 
@@ -40,6 +42,7 @@ interface ReportApiResponse {
   project: string;
   grade: number;
   feedback: string | null;
+  urlArchive: string | null;
 }
 
 interface ProjectOption {
@@ -48,31 +51,64 @@ interface ProjectOption {
 }
 
 function toReportEntry(report: ReportApiResponse): ReportEntry {
-  const [year, month, day] = report.date.split("-");
   return {
-    date: `${day}/${month}/${year}`,
+    date: new Date(report.date).toLocaleDateString("pt-BR"),
     project: report.project,
     grade: report.grade,
     feedback: report.feedback ?? "",
+    urlArchive: report.urlArchive ?? null,
   };
 }
 
 export default function RelatoriosPage() {
   const [activeTab, setActiveTab] = useState<TabId>("horas");
-  const [selectedProject, setSelectedProject] = useState<number | "">("");
+  const [selectedProject, setSelectedProject] = useState<number | null>(null);
   const [projects, setProjects] = useState<ProjectOption[]>([]);
   const [hours, setHours] = useState<HourEntry[]>([]);
   const [progressReport, setProgressReport] = useState<ReportEntry[]>([]);
   const [finalReport, setFinalReport] = useState<ReportEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [isSprintModalOpen, setIsSprintModalOpen] = useState(false);
+  const [isDownloadingTemplate, setIsDownloadingTemplate] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const { showToast } = useToast();
+  const currentProject = projects[0] ?? null;
+
+  const handleDownloadTemplate = async () => {
+    setIsDownloadingTemplate(true);
+    try {
+      const blob = await api.blob("/report/template");
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = "modelo-relatorio.docx";
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Erro ao baixar o modelo.";
+      showToast({ variant: "error", title: "Erro ao baixar", message });
+    } finally {
+      setIsDownloadingTemplate(false);
+    }
+  };
 
   useEffect(() => {
     api
-      .get<ProjectOption[]>("/project/me")
-      .then((data) => setProjects(data ?? []))
+      .get<ProjectOption[]>("/projects")
+      .then((data) => {
+        const list = data ?? [];
+        setProjects(list);
+
+        if (list.length > 0) {
+          setSelectedProject(list[0].id);
+        }
+      })
       .catch((err) => {
         console.error("Erro ao buscar projetos:", err);
       });
@@ -85,7 +121,7 @@ export default function RelatoriosPage() {
       setLoading(true);
       setError(null);
       const path =
-        selectedProject === ""
+        selectedProject == null
           ? "/hours/me"
           : `/hours/me?id_project=${selectedProject}`;
       api
@@ -149,12 +185,18 @@ export default function RelatoriosPage() {
 
   const currentTab = TABS.find((t) => t.id === activeTab)!;
 
+  const isCurrentProjectSelected =
+    currentProject == null || selectedProject === currentProject.id;
+
   const renderReportTab = (data: ReportEntry[]) => (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between border-b border-[#e5e7eb] pb-4">
         <div className="relative">
           <Button
             variant="secondary"
+            onClick={handleDownloadTemplate}
+            loading={isDownloadingTemplate}
+            disabled={isDownloadingTemplate}
             className="flex items-center gap-2 text-[#3b5ccc] font-bold text-[15px] px-1 rounded-none border-t-0 border-x-0 border-b-2 border-[#3b5ccc] bg-transparent hover:bg-transparent shadow-none"
           >
             <FileDown size={20} strokeWidth={2.5} />
@@ -185,7 +227,6 @@ export default function RelatoriosPage() {
 
   return (
     <div className="flex flex-col gap-5">
-      {/* Cabeçalho */}
       <div className="flex items-center gap-2.5">
         <FileText size={20} className="text-[#3b5ccc]" strokeWidth={1.8} />
         <h2 className="text-[18px] font-bold text-[#1f2937] m-0 leading-none">
@@ -193,9 +234,7 @@ export default function RelatoriosPage() {
         </h2>
       </div>
 
-      {/* Card container */}
       <div className="bg-white rounded-2xl border border-[#e5e7eb]">
-        {/* Barra de abas */}
         <div className="sticky top-0 z-10 flex items-center border-b border-[#e5e7eb] px-6 bg-white rounded-t-2xl">
           <nav className="flex flex-1 gap-1" role="tablist">
             {TABS.map((tab) => {
@@ -223,41 +262,37 @@ export default function RelatoriosPage() {
           </nav>
         </div>
 
-        {/* Filtro compartilhado (Horas + Sprint) */}
         {currentTab.hasProjectFilter && (
-          <div className="px-6 pt-5">
-            <div className="relative inline-block">
-              <select
-                value={selectedProject}
-                onChange={(e) =>
-                  setSelectedProject(
-                    e.target.value === "" ? "" : Number(e.target.value),
-                  )
-                }
-                className="
-                  appearance-none h-[38px] pl-4 pr-9 rounded-lg
-                  border border-[#e5e7eb] bg-white
-                  text-[13px] text-[#6b7280] font-medium
-                  focus:outline-none focus:ring-2 focus:ring-[#3b5ccc]/30 focus:border-[#3b5ccc]
-                  cursor-pointer transition-colors
-                "
+          <div className="px-6 pt-5 flex items-center justify-between">
+            <Select
+              wrapperClassName="w-[220px]"
+              className="w-[220px]"
+              value={selectedProject ?? ""}
+              onChange={(e) =>
+                setSelectedProject(
+                  e.target.value === "" ? null : Number(e.target.value),
+                )
+              }
+              placeholder="Filtrar por projeto"
+              options={projects.map((p) => ({
+                value: p.id,
+                label: p.name,
+              }))}
+            />
+
+            {activeTab === "sprint" && isCurrentProjectSelected && (
+              <button
+                type="button"
+                onClick={() => setIsSprintModalOpen(true)}
+                className="inline-flex items-center gap-2 rounded-lg bg-[#3b5ccc] px-4 py-2 text-sm font-medium text-white hover:bg-[#2f4bb0] transition-colors cursor-pointer"
               >
-                <option value="">Filtrar por projeto</option>
-                {projects.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown
-                size={15}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9ca3af] pointer-events-none"
-              />
-            </div>
+                <Plus size={16} />
+                Novo Relatório
+              </button>
+            )}
           </div>
         )}
 
-        {/* Slot – cada aba renderiza seu componente filho */}
         <div role="tabpanel" className="p-6">
           {activeTab === "horas" && (
             <>
@@ -271,15 +306,25 @@ export default function RelatoriosPage() {
               )}
               {!loading && !error && (
                 <>
-                  <HoursSummary data={hours} />
-                  <HoursTable data={hours} />
+                  <HoursSummary
+                    data={hours}
+                    isCurrentProject={isCurrentProjectSelected}
+                  />
+                  <HoursTable
+                    data={hours}
+                    onChanged={() => setRefreshKey((k) => k + 1)}
+                  />
                 </>
               )}
             </>
           )}
           {activeTab === "sprint" && (
             <SprintTable
-              selectedProject={selectedProject === "" ? null : selectedProject}
+              selectedProject={selectedProject}
+              currentProjectId={currentProject?.id ?? null}
+              currentProjectName={currentProject?.name ?? ""}
+              externalModalOpen={isSprintModalOpen}
+              onExternalModalClose={() => setIsSprintModalOpen(false)}
             />
           )}
           {activeTab === "andamento" && renderReportTab(progressReport)}
@@ -291,7 +336,7 @@ export default function RelatoriosPage() {
         isOpen={isUploadModalOpen}
         onClose={() => setIsUploadModalOpen(false)}
         reportType={activeTab === "final" ? "final" : "andamento"}
-        currentProject={projects[0]?.name ?? ""}
+        currentProject={currentProject?.name ?? ""}
         onSuccess={() => {
           setRefreshKey((k) => k + 1);
         }}
