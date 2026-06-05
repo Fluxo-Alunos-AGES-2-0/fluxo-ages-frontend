@@ -16,6 +16,7 @@ interface SprintReportModalProps {
   isSubmitting?: boolean;
   usedSprints?: string[];
   initialData?: SprintReportRow | null;
+  projectName?: string;
 }
 
 const DEFAULT_PROJECT = "Fluxo AGES 2.0 - Alunos";
@@ -34,6 +35,7 @@ export function SprintReportModal({
   isSubmitting = false,
   usedSprints = [],
   initialData = null,
+  projectName = DEFAULT_PROJECT,
 }: SprintReportModalProps) {
   const [sprint, setSprint] = useState("");
   const [plannedActivities, setPlannedActivities] = useState("");
@@ -76,7 +78,7 @@ export function SprintReportModal({
     if (!isFormValid || isSubmitting) return;
 
     onSubmit?.({
-      project: DEFAULT_PROJECT,
+      project: projectName,
       sprint,
       plannedActivities,
       completedActivities,
@@ -111,7 +113,7 @@ export function SprintReportModal({
             <InputField
               label="Projeto"
               disabled
-              value={DEFAULT_PROJECT}
+              value={projectName}
               mandatory
             />
 

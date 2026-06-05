@@ -1,6 +1,6 @@
 import { api } from "../services/api";
 import { useEffect, useState } from "react";
-import { FileText, FileDown, UploadCloud } from "lucide-react"; 
+import { FileText, FileDown, UploadCloud, Plus } from "lucide-react";
 import { HoursTable } from "../components/reports/HoursTable";
 import { HoursSummary } from "../components/reports/HoursSummary";
 import {
@@ -60,21 +60,30 @@ function toReportEntry(report: ReportApiResponse): ReportEntry {
 
 export default function RelatoriosPage() {
   const [activeTab, setActiveTab] = useState<TabId>("horas");
-  const [selectedProject, setSelectedProject] = useState<number | "">("");
+  const [selectedProject, setSelectedProject] = useState<number | null>(null);
   const [projects, setProjects] = useState<ProjectOption[]>([]);
   const [hours, setHours] = useState<HourEntry[]>([]);
   const [progressReport, setProgressReport] = useState<ReportEntry[]>([]);
   const [finalReport, setFinalReport] = useState<ReportEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [isSprintModalOpen, setIsSprintModalOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const currentProject = projects[0] ?? null;
 
   useEffect(() => {
     api
       .get<ProjectOption[]>("/project/me")
-      .then((data) => setProjects(data ?? []))
+      .then((data) => {
+        const list = data ?? [];
+        setProjects(list);
+
+        if (list.length > 0) {
+          setSelectedProject(list[0].id);
+        }
+      })
       .catch((err) => {
         console.error("Erro ao buscar projetos:", err);
       });
@@ -87,7 +96,7 @@ export default function RelatoriosPage() {
       setLoading(true);
       setError(null);
       const path =
-        selectedProject === ""
+        selectedProject == null
           ? "/hours/me"
           : `/hours/me?id_project=${selectedProject}`;
       api
@@ -150,6 +159,9 @@ export default function RelatoriosPage() {
   }, [activeTab, refreshKey, selectedProject]);
 
   const currentTab = TABS.find((t) => t.id === activeTab)!;
+
+  const isCurrentProjectSelected =
+    currentProject == null || selectedProject === currentProject.id;
 
   const renderReportTab = (data: ReportEntry[]) => (
     <div className="flex flex-col gap-6">
@@ -223,14 +235,14 @@ export default function RelatoriosPage() {
         </div>
 
         {currentTab.hasProjectFilter && (
-          <div className="px-6 pt-5">
+          <div className="px-6 pt-5 flex items-center justify-between">
             <Select
               wrapperClassName="w-[220px]"
               className="w-[220px]"
               value={selectedProject ?? ""}
               onChange={(e) =>
                 setSelectedProject(
-                  e.target.value === "" ? "" : Number(e.target.value)
+                  e.target.value === "" ? null : Number(e.target.value),
                 )
               }
               placeholder="Filtrar por projeto"
@@ -239,24 +251,50 @@ export default function RelatoriosPage() {
                 label: p.name,
               }))}
             />
+
+            {activeTab === "sprint" && isCurrentProjectSelected && (
+              <button
+                type="button"
+                onClick={() => setIsSprintModalOpen(true)}
+                className="inline-flex items-center gap-2 rounded-lg bg-[#3b5ccc] px-4 py-2 text-sm font-medium text-white hover:bg-[#2f4bb0] transition-colors cursor-pointer"
+              >
+                <Plus size={16} />
+                Novo Relatório
+              </button>
+            )}
           </div>
         )}
 
         <div role="tabpanel" className="p-6">
           {activeTab === "horas" && (
             <>
-              {loading && <div className="text-center text-[#6b7280] py-10">Carregando registros...</div>}
-              {!loading && error && <div className="text-center text-red-600 py-10">{error}</div>}
+              {loading && (
+                <div className="text-center text-[#6b7280] py-10">
+                  Carregando registros...
+                </div>
+              )}
+              {!loading && error && (
+                <div className="text-center text-red-600 py-10">{error}</div>
+              )}
               {!loading && !error && (
                 <>
-                  <HoursSummary data={hours} />
+                  <HoursSummary
+                    data={hours}
+                    isCurrentProject={isCurrentProjectSelected}
+                  />
                   <HoursTable data={hours} />
                 </>
               )}
             </>
           )}
           {activeTab === "sprint" && (
-            <SprintTable selectedProject={selectedProject === "" ? null : selectedProject} />
+            <SprintTable
+              selectedProject={selectedProject}
+              currentProjectId={currentProject?.id ?? null}
+              currentProjectName={currentProject?.name ?? ""}
+              externalModalOpen={isSprintModalOpen}
+              onExternalModalClose={() => setIsSprintModalOpen(false)}
+            />
           )}
           {activeTab === "andamento" && renderReportTab(progressReport)}
           {activeTab === "final" && renderReportTab(finalReport)}
@@ -267,8 +305,10 @@ export default function RelatoriosPage() {
         isOpen={isUploadModalOpen}
         onClose={() => setIsUploadModalOpen(false)}
         reportType={activeTab === "final" ? "final" : "andamento"}
-        currentProject={projects[0]?.name ?? ""}
-        onSuccess={() => setRefreshKey((k) => k + 1)}
+        currentProject={currentProject?.name ?? ""}
+        onSuccess={() => {
+          setRefreshKey((k) => k + 1);
+        }}
       />
     </div>
   );

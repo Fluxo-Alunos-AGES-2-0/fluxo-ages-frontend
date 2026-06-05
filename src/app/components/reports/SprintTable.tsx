@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Pencil, LoaderCircle, Plus } from "lucide-react";
+import { Pencil, LoaderCircle } from "lucide-react";
 import { api } from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../context/ToastContext";
@@ -39,10 +39,20 @@ function toEditPayload(data: SprintReportFormData) {
 
 interface SprintTableProps {
   selectedProject?: number | null;
+  currentProjectId?: number | null;
+  currentProjectName?: string;
+  /** Permite que a página pai abra o modal de novo relatório externamente */
+  externalModalOpen?: boolean;
+  onExternalModalClose?: () => void;
 }
 
-export function SprintTable({ selectedProject = null }: SprintTableProps = {}) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+export function SprintTable({
+  selectedProject = null,
+  currentProjectId = null,
+  currentProjectName = "",
+  externalModalOpen = false,
+  onExternalModalClose,
+}: SprintTableProps = {}) {
   const [sprintReports, setSprintReports] = useState<SprintReportRow[]>([]);
   const [reportToEdit, setReportToEdit] = useState<SprintReportRow | null>(
     null,
@@ -53,6 +63,8 @@ export function SprintTable({ selectedProject = null }: SprintTableProps = {}) {
   const [expandedRowId, setExpandedRowId] = useState<number | null>(null);
   const { user } = useAuth();
   const { showToast } = useToast();
+
+  const isModalOpen = externalModalOpen || reportToEdit !== null;
 
   const fetchReports = () => {
     setLoading(true);
@@ -84,9 +96,13 @@ export function SprintTable({ selectedProject = null }: SprintTableProps = {}) {
     setExpandedRowId((prev) => (prev === id ? null : id));
   };
 
+  const closeModal = () => {
+    onExternalModalClose?.();
+    setReportToEdit(null);
+  };
+
   const handleUpdate = (report: SprintReportRow) => {
     setReportToEdit(report);
-    setIsModalOpen(true);
   };
 
   const handleCreateReport = async (data: SprintReportFormData) => {
@@ -96,7 +112,7 @@ export function SprintTable({ selectedProject = null }: SprintTableProps = {}) {
       sprint: data.sprint,
       student: user?.name ?? "",
       date: new Date().toISOString(),
-      id_project: 0,
+      id_project: currentProjectId ?? 0,
       status: "ENVIANDO",
       predicted_activity: data.plannedActivities,
       activity_completed: data.completedActivities,
@@ -106,7 +122,7 @@ export function SprintTable({ selectedProject = null }: SprintTableProps = {}) {
     };
 
     setSprintReports((prev) => [...prev, optimisticRow]);
-    setIsModalOpen(false);
+    onExternalModalClose?.();
     setIsSubmitting(true);
 
     try {
@@ -132,11 +148,12 @@ export function SprintTable({ selectedProject = null }: SprintTableProps = {}) {
   };
 
   const handleEditReport = async (data: SprintReportFormData) => {
-    setIsModalOpen(false);
+    const editingId = reportToEdit?.id;
+    setReportToEdit(null);
     setIsSubmitting(true);
 
     try {
-      await api.put(`/report/sprint/${reportToEdit?.id}`, toEditPayload(data));
+      await api.put(`/report/sprint/${editingId}`, toEditPayload(data));
       showToast({
         variant: "success",
         title: "Relatório atualizado",
@@ -153,7 +170,6 @@ export function SprintTable({ selectedProject = null }: SprintTableProps = {}) {
       });
     } finally {
       setIsSubmitting(false);
-      setReportToEdit(null);
     }
   };
 
@@ -167,17 +183,6 @@ export function SprintTable({ selectedProject = null }: SprintTableProps = {}) {
 
   return (
     <>
-      <div className="mb-4 flex justify-end">
-        <button
-          type="button"
-          onClick={() => setIsModalOpen(true)}
-          className="inline-flex items-center gap-2 rounded-lg bg-[#3b5ccc] px-4 py-2 text-sm font-medium text-white hover:bg-[#2f4bb0] transition-colors cursor-pointer"
-        >
-          <Plus size={16} />
-          Novo Relatório
-        </button>
-      </div>
-
       {loading ? (
         <div className="text-center text-[#6b7280] py-10">
           Carregando relatórios...
@@ -309,14 +314,12 @@ export function SprintTable({ selectedProject = null }: SprintTableProps = {}) {
 
       <SprintReportModal
         isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false);
-          setTimeout(() => setReportToEdit(null), 300);
-        }}
+        onClose={closeModal}
         onSubmit={handleSubmit}
         isSubmitting={isSubmitting}
         usedSprints={sprintReports.map((r) => r.sprint)}
         initialData={reportToEdit}
+        projectName={currentProjectName}
       />
     </>
   );
