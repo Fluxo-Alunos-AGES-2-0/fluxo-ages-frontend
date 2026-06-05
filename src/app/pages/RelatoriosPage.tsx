@@ -42,6 +42,7 @@ interface ReportApiResponse {
   project: string;
   grade: number;
   feedback: string | null;
+  urlArchive: string | null;
 }
 
 interface ProjectOption {
@@ -55,6 +56,7 @@ function toReportEntry(report: ReportApiResponse): ReportEntry {
     project: report.project,
     grade: report.grade,
     feedback: report.feedback ?? "",
+    urlArchive: report.urlArchive ?? null,
   };
 }
 

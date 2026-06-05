@@ -1,4 +1,10 @@
-const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8081";
+export const BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8081";
+
+/** Resolve uma URL de arquivo retornada pela API (relativa /uploads/... ou absoluta). */
+export function resolveFileUrl(url: string): string {
+  return /^https?:\/\//.test(url) ? url : `${BASE_URL}${url}`;
+}
 
 function handleUnauthorized() {
   localStorage.removeItem("token");
