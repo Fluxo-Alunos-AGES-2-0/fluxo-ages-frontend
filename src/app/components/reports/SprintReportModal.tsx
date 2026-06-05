@@ -2,7 +2,12 @@ import { useEffect, useState } from "react";
 import { Modal } from "../ui/Modal/Modal";
 import { Button } from "../ui/Button/Button";
 import { TextArea } from "../ui/TextArea/TextArea";
-import { SprintReportFormData, SprintReportRow } from "@/app/types/sprintReport";
+import { Select } from "../ui/Select/Select";
+import { InputField } from "../ui/InputField/InputField";
+import {
+  SprintReportFormData,
+  SprintReportRow,
+} from "@/app/types/sprintReport";
 
 interface SprintReportModalProps {
   isOpen: boolean;
@@ -85,10 +90,12 @@ export function SprintReportModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={initialData ? "Atualizar Relatório de Sprint" : "Relatório de Sprint"}
-      className="!w-[550px] !max-w-[550px]"
+      title={
+        initialData ? "Atualizar Relatório de Sprint" : "Relatório de Sprint"
+      }
+      className="!max-w-2xl"
     >
-      <div className="mt-4 flex h-[640px] max-h-[70vh] max-w-full flex-col">
+      <div className="mt-4 flex max-h-[70vh] w-[640px] max-w-full flex-col">
         <div
           className="
             flex flex-col gap-4 overflow-y-auto pr-2
@@ -101,37 +108,32 @@ export function SprintReportModal({
           "
         >
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="mb-1.5 block text-sm font-semibold text-[#6B7280]">
-                Projeto*
-              </label>
-
-              <input
-                value={DEFAULT_PROJECT}
-                disabled
-                className="h-[42px] w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm text-slate-500"
-              />
-            </div>
+            <InputField
+              label="Projeto"
+              disabled
+              value={DEFAULT_PROJECT}
+              mandatory
+            />
 
             <div>
               <label className="mb-1.5 block text-sm font-semibold text-[#6B7280]">
-                Sprint*
+                Sprint<span className="text-[#f47b20]">*</span>
               </label>
 
-              <select
+              <Select
                 value={sprint}
                 onChange={(e) => setSprint(e.target.value)}
                 disabled={!!initialData}
-                className="h-[42px] w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-700 cursor-pointer focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed"
-              >
-                <option value="">Selecione</option>
-                {SPRINT_OPTIONS.map((s) => (
-                  <option key={s} value={s} disabled={usedSet.has(s)}>
-                    {s}
-                    {usedSet.has(s) ? " (já enviada)" : ""}
-                  </option>
-                ))}
-              </select>
+                placeholder="Selecione"
+                wrapperClassName="w-full"
+                className="w-full h-[42px] rounded-2xl"
+                options={SPRINT_OPTIONS.map((s) => ({
+                  value: s,
+                  label: usedSet.has(s) ? `${s} (já enviada)` : s,
+                  disabled: usedSet.has(s),
+                }))}
+              />
+
               {!initialData && availableSprints.length === 0 && (
                 <span className="mt-1 block text-xs text-slate-500">
                   Todas as sprints já possuem relatório.
@@ -141,47 +143,62 @@ export function SprintReportModal({
           </div>
 
           <TextArea
-            label="Atividades Previstas*"
+            label="Atividades Previstas"
             value={plannedActivities}
             onChange={setPlannedActivities}
+            mandatory
           />
 
           <TextArea
-            label="Atividades Concluídas*"
+            label="Atividades Concluídas"
             value={completedActivities}
             onChange={setCompletedActivities}
+            mandatory
           />
 
           <TextArea
-            label="Problemas Encontrados*"
+            label="Problemas Encontrados"
             value={problems}
             onChange={setProblems}
+            mandatory
           />
 
           <TextArea
-            label="Lições Aprendidas*"
+            label="Lições Aprendidas"
             value={lessonsLearned}
             onChange={setLessonsLearned}
+            mandatory
           />
 
           <TextArea
-            label="Próximos Passos*"
+            label="Próximos Passos"
             value={nextSteps}
             onChange={setNextSteps}
+            mandatory
           />
         </div>
 
-        <div className="mt-4 grid grid-cols-2 gap-3 border-t border-[#e5e7eb] pt-4">
+        <div className="mt-8 grid grid-cols-2 gap-4">
           <Button
             variant="accent"
+            fullWidth
             onClick={handleSubmit}
             disabled={!isFormValid || isSubmitting}
             loading={isSubmitting}
           >
-            {isSubmitting ? "Enviando..." : initialData ? "Atualizar Relatório" : "Cadastrar"}
+            {isSubmitting
+              ? "Enviando..."
+              : initialData
+                ? "Atualizar Relatório"
+                : "Cadastrar"}
           </Button>
 
-          <Button variant="accent-secondary" onClick={onClose} disabled={isSubmitting}>
+          <Button
+            variant="accent-secondary"
+            fullWidth
+            onClick={onClose}
+            disabled={isSubmitting}
+          >
             Fechar
           </Button>
         </div>

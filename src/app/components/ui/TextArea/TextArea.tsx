@@ -6,6 +6,7 @@ interface TextAreaFieldProps extends Omit<TextareaHTMLAttributes<HTMLTextAreaEle
   onChange?: (value: string) => void;
   value?: string;
   maxLength?: number;
+  mandatory?: boolean;
 }
 
 export const TextArea: React.FC<TextAreaFieldProps> = ({
@@ -16,6 +17,7 @@ export const TextArea: React.FC<TextAreaFieldProps> = ({
   onChange,
   value = '',
   maxLength = 1250,
+  mandatory = false,
   ...props
 }) => {
   const [isFocused, setIsFocused] = useState(false);
@@ -40,7 +42,11 @@ export const TextArea: React.FC<TextAreaFieldProps> = ({
   return (
     <div className={`flex flex-col w-full font-sans ${className}`}>
       <label className="mb-1.5 text-sm font-semibold text-[#6B7280] cursor-text">
-        {label}
+        {
+          mandatory 
+          ? <>{label}<span className="text-[#f47b20]">*</span></>
+          : <>{label}</>
+        }
       </label>
 
       <div className={`

@@ -1,6 +1,6 @@
 import { api } from "../services/api";
 import { useEffect, useState } from "react";
-import { FileText, ChevronDown, FileDown, UploadCloud } from "lucide-react";
+import { FileText, FileDown, UploadCloud } from "lucide-react"; 
 import { HoursTable } from "../components/reports/HoursTable";
 import { HoursSummary } from "../components/reports/HoursSummary";
 import {
@@ -10,6 +10,7 @@ import {
 import { Button } from "../components/ui/Button/Button";
 import { ReportUploadModal } from "../components/reports/ReportUploadModal";
 import { SprintTable } from "../components/reports/SprintTable";
+import { Select } from "../components/ui/Select/Select";
 
 type TabId = "horas" | "sprint" | "andamento" | "final";
 
@@ -66,6 +67,7 @@ export default function RelatoriosPage() {
   const [finalReport, setFinalReport] = useState<ReportEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -185,7 +187,6 @@ export default function RelatoriosPage() {
 
   return (
     <div className="flex flex-col gap-5">
-      {/* Cabeçalho */}
       <div className="flex items-center gap-2.5">
         <FileText size={20} className="text-[#3b5ccc]" strokeWidth={1.8} />
         <h2 className="text-[18px] font-bold text-[#1f2937] m-0 leading-none">
@@ -193,9 +194,7 @@ export default function RelatoriosPage() {
         </h2>
       </div>
 
-      {/* Card container */}
       <div className="bg-white rounded-2xl border border-[#e5e7eb]">
-        {/* Barra de abas */}
         <div className="sticky top-0 z-10 flex items-center border-b border-[#e5e7eb] px-6 bg-white rounded-t-2xl">
           <nav className="flex flex-1 gap-1" role="tablist">
             {TABS.map((tab) => {
@@ -223,52 +222,31 @@ export default function RelatoriosPage() {
           </nav>
         </div>
 
-        {/* Filtro compartilhado (Horas + Sprint) */}
         {currentTab.hasProjectFilter && (
           <div className="px-6 pt-5">
-            <div className="relative inline-block">
-              <select
-                value={selectedProject}
-                onChange={(e) =>
-                  setSelectedProject(
-                    e.target.value === "" ? "" : Number(e.target.value),
-                  )
-                }
-                className="
-                  appearance-none h-[38px] pl-4 pr-9 rounded-lg
-                  border border-[#e5e7eb] bg-white
-                  text-[13px] text-[#6b7280] font-medium
-                  focus:outline-none focus:ring-2 focus:ring-[#3b5ccc]/30 focus:border-[#3b5ccc]
-                  cursor-pointer transition-colors
-                "
-              >
-                <option value="">Filtrar por projeto</option>
-                {projects.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown
-                size={15}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9ca3af] pointer-events-none"
-              />
-            </div>
+            <Select
+              wrapperClassName="w-[220px]"
+              className="w-[220px]"
+              value={selectedProject ?? ""}
+              onChange={(e) =>
+                setSelectedProject(
+                  e.target.value === "" ? "" : Number(e.target.value)
+                )
+              }
+              placeholder="Filtrar por projeto"
+              options={projects.map((p) => ({
+                value: p.id,
+                label: p.name,
+              }))}
+            />
           </div>
         )}
 
-        {/* Slot – cada aba renderiza seu componente filho */}
         <div role="tabpanel" className="p-6">
           {activeTab === "horas" && (
             <>
-              {loading && (
-                <div className="text-center text-[#6b7280] py-10">
-                  Carregando registros...
-                </div>
-              )}
-              {!loading && error && (
-                <div className="text-center text-red-600 py-10">{error}</div>
-              )}
+              {loading && <div className="text-center text-[#6b7280] py-10">Carregando registros...</div>}
+              {!loading && error && <div className="text-center text-red-600 py-10">{error}</div>}
               {!loading && !error && (
                 <>
                   <HoursSummary data={hours} />
@@ -278,9 +256,7 @@ export default function RelatoriosPage() {
             </>
           )}
           {activeTab === "sprint" && (
-            <SprintTable
-              selectedProject={selectedProject === "" ? null : selectedProject}
-            />
+            <SprintTable selectedProject={selectedProject === "" ? null : selectedProject} />
           )}
           {activeTab === "andamento" && renderReportTab(progressReport)}
           {activeTab === "final" && renderReportTab(finalReport)}
@@ -292,9 +268,7 @@ export default function RelatoriosPage() {
         onClose={() => setIsUploadModalOpen(false)}
         reportType={activeTab === "final" ? "final" : "andamento"}
         currentProject={projects[0]?.name ?? ""}
-        onSuccess={() => {
-          setRefreshKey((k) => k + 1);
-        }}
+        onSuccess={() => setRefreshKey((k) => k + 1)}
       />
     </div>
   );
