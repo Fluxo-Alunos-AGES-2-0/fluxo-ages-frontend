@@ -20,6 +20,7 @@ interface HourEntry {
   sessionTimeSeconds: number;
   activities: string;
   status: "APPROVED" | "REJECTED" | "PENDING";
+  rejectionJustification?: string | null;
 }
 
 interface Tab {

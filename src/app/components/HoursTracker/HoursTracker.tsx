@@ -49,6 +49,14 @@ export const HoursTracker = ({ hours, loading, error }: HoursTrackerProps) => {
             </p>
           </div>
           <div className="w-full h-full border-r border-[#e5e7eb] flex flex-col items-center justify-center">
+            <span className="text-[#f47b20] text-2xl font-bold leading-8">
+              {toHHMMSS(hours.owingSeconds)}
+            </span>
+            <p className="text-[#6b7280] text-center text-[11px] font-normal leading-[16.5px] m-0">
+              Devendo
+            </p>
+          </div>
+          <div className="w-full h-full border-r border-[#e5e7eb] flex flex-col items-center justify-center">
             <span className="text-[#1f2937] text-2xl font-bold leading-8">
               {toHHMMSS(hours.totalSeconds)}
             </span>

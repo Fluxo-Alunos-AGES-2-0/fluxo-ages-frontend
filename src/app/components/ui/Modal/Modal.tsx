@@ -83,7 +83,7 @@ export function Modal({
   return (
     <div
       className={`fixed inset-0 bg-black/50 flex justify-center items-center z-[9999] p-4 transition-opacity duration-300 ${isOpen ? "opacity-100" : "opacity-0"}`}
-      onClick={(e) => {
+      onMouseDown={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >

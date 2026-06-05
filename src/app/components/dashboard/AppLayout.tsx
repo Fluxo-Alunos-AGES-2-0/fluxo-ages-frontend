@@ -24,9 +24,9 @@ export function AppLayout() {
     <ThemeProvider>
       <AuthProvider>
         <TimerProvider>
-          <div className="grid grid-cols-[272px_1fr] min-h-screen">
+          <div className="grid grid-cols-[272px_1fr] h-screen overflow-hidden">
             <Sidebar />
-            <div className="flex flex-col min-h-screen">
+            <div className="flex flex-col h-screen overflow-hidden">
               <TopBar />
               <div className="flex-1 p-6 overflow-y-auto bg-[#f3f4f6]">
                 <Outlet />
