@@ -1,35 +1,15 @@
-import { useEffect, useState } from "react";
-import { LoaderCircle } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Pencil, LoaderCircle } from "lucide-react";
 import { api } from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../context/ToastContext";
+import { SprintReportModal } from "./SprintReportModal";
 import {
-  SprintReportModal,
-  type SprintReportFormData,
-} from "./SprintReportModal";
-
-interface SprintReportApiResponse {
-  id: number;
-  sprint: string;
-  student: string;
-  date: string;
-  id_project: number;
-}
-
-type RowStatus = "ENVIANDO" | "ENVIADO";
-
-interface SprintReportRow extends SprintReportApiResponse {
-  status: RowStatus;
-}
-
-interface SprintReportPayload {
-  sprint: number;
-  predictedActivity: string;
-  activityCompleted: string;
-  problemsEncountered: string;
-  learnedLessons: string;
-  nextSteps: string;
-}
+  SprintReportApiResponse,
+  SprintReportFormData,
+  SprintReportPayload,
+  SprintReportRow,
+} from "@/app/types/sprintReport";
 
 function parseSprintNumber(value: string): number {
   const match = value.match(/\d+/);
@@ -47,11 +27,21 @@ function toPayload(data: SprintReportFormData): SprintReportPayload {
   };
 }
 
+function toEditPayload(data: SprintReportFormData) {
+  return {
+    predictedActivity: data.plannedActivities,
+    activityCompleted: data.completedActivities,
+    problemsEncountered: data.problems,
+    learnedLessons: data.lessonsLearned,
+    nextSteps: data.nextSteps,
+  };
+}
+
 interface SprintTableProps {
   selectedProject?: number | null;
   currentProjectId?: number | null;
   currentProjectName?: string;
-  /** Permite que a página pai abra o modal externamente */
+  /** Permite que a página pai abra o modal de novo relatório externamente */
   externalModalOpen?: boolean;
   onExternalModalClose?: () => void;
 }
@@ -64,11 +54,17 @@ export function SprintTable({
   onExternalModalClose,
 }: SprintTableProps = {}) {
   const [sprintReports, setSprintReports] = useState<SprintReportRow[]>([]);
+  const [reportToEdit, setReportToEdit] = useState<SprintReportRow | null>(
+    null,
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [expandedRowId, setExpandedRowId] = useState<number | null>(null);
   const { user } = useAuth();
   const { showToast } = useToast();
+
+  const isModalOpen = externalModalOpen || reportToEdit !== null;
 
   const fetchReports = () => {
     setLoading(true);
@@ -96,7 +92,20 @@ export function SprintTable({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedProject]);
 
-  const handleSubmit = async (data: SprintReportFormData) => {
+  const toggleRow = (id: number) => {
+    setExpandedRowId((prev) => (prev === id ? null : id));
+  };
+
+  const closeModal = () => {
+    onExternalModalClose?.();
+    setReportToEdit(null);
+  };
+
+  const handleUpdate = (report: SprintReportRow) => {
+    setReportToEdit(report);
+  };
+
+  const handleCreateReport = async (data: SprintReportFormData) => {
     const optimisticId = -Date.now();
     const optimisticRow: SprintReportRow = {
       id: optimisticId,
@@ -105,6 +114,11 @@ export function SprintTable({
       date: new Date().toISOString(),
       id_project: currentProjectId ?? 0,
       status: "ENVIANDO",
+      predicted_activity: data.plannedActivities,
+      activity_completed: data.completedActivities,
+      problems_encountered: data.problems,
+      learned_lessons: data.lessonsLearned,
+      next_steps: data.nextSteps,
     };
 
     setSprintReports((prev) => [...prev, optimisticRow]);
@@ -112,8 +126,6 @@ export function SprintTable({
     setIsSubmitting(true);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 3000));
-
       await api.post("/report/sprint", toPayload(data));
       showToast({
         variant: "success",
@@ -132,6 +144,40 @@ export function SprintTable({
       });
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleEditReport = async (data: SprintReportFormData) => {
+    const editingId = reportToEdit?.id;
+    setReportToEdit(null);
+    setIsSubmitting(true);
+
+    try {
+      await api.put(`/report/sprint/${editingId}`, toEditPayload(data));
+      showToast({
+        variant: "success",
+        title: "Relatório atualizado",
+        message: "Relatório de sprint atualizado com sucesso.",
+      });
+      fetchReports();
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Erro ao atualizar relatório.";
+      showToast({
+        variant: "error",
+        title: "Erro ao atualizar",
+        message,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleSubmit = (data: SprintReportFormData) => {
+    if (reportToEdit) {
+      handleEditReport(data);
+    } else {
+      handleCreateReport(data);
     }
   };
 
@@ -156,50 +202,123 @@ export function SprintTable({
                 <th className="px-6 py-4 text-left font-semibold">Estudante</th>
                 <th className="px-6 py-4 text-left font-semibold">Data</th>
                 <th className="px-6 py-4 text-center font-semibold">Status</th>
+                <th className="px-6 py-4 text-center font-semibold">Ações</th>
               </tr>
             </thead>
 
             <tbody className="bg-white">
-              {sprintReports.map((item) => (
-                <tr
-                  key={item.id}
-                  className="border-b border-[#eef0f4] hover:bg-slate-50/30 transition-colors last:border-b-0"
-                >
-                  <td className="px-6 py-4 font-medium text-slate-700">
-                    {item.sprint}
-                  </td>
+              {sprintReports.map((item) => {
+                const isExpanded = expandedRowId === item.id;
 
-                  <td className="px-6 py-4 text-slate-600">{item.student}</td>
+                return (
+                  <React.Fragment key={item.id}>
+                    <tr
+                      onClick={() => toggleRow(item.id)}
+                      className={`cursor-pointer transition-colors ${
+                        isExpanded ? "bg-slate-50" : "hover:bg-slate-50/50"
+                      } ${!isExpanded ? "border-b border-[#eef0f4]" : ""}`}
+                    >
+                      <td className="px-6 py-4 font-medium text-slate-700">
+                        {item.sprint}
+                      </td>
 
-                  <td className="px-6 py-4 text-slate-600">
-                    {new Date(item.date).toLocaleDateString("pt-BR")}
-                  </td>
+                      <td className="px-6 py-4 text-slate-600">
+                        {item.student}
+                      </td>
 
-                  <td className="px-6 py-4 text-center">
-                    {item.status === "ENVIANDO" ? (
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 border border-blue-100 px-2.5 py-1 text-xs font-bold text-blue-600">
-                        <LoaderCircle size={13} className="animate-spin" />
-                        Enviando
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center rounded-full bg-[#f0fdf4] border border-[#bbf7d0] px-2.5 py-1 text-xs font-bold text-[#22c55e]">
-                        Enviado
-                      </span>
+                      <td className="px-6 py-4 text-slate-600">
+                        {new Date(item.date).toLocaleDateString("pt-BR")}
+                      </td>
+
+                      <td className="px-6 py-4 text-center">
+                        {item.status === "ENVIANDO" ? (
+                          <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 border border-blue-100 px-2.5 py-1 text-xs font-bold text-blue-600">
+                            <LoaderCircle size={13} className="animate-spin" />
+                            Enviando
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center rounded-full bg-[#f0fdf4] border border-[#bbf7d0] px-2.5 py-1 text-xs font-bold text-[#22c55e]">
+                            Enviado
+                          </span>
+                        )}
+                      </td>
+
+                      <td className="px-6 py-4 text-center">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleUpdate(item);
+                          }}
+                          disabled={item.status === "ENVIANDO"}
+                          className="px-3 py-1 text-xs font-medium text-[#3b5ccc] cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                        >
+                          <Pencil size={20} strokeWidth={3} />
+                        </button>
+                      </td>
+                    </tr>
+
+                    {isExpanded && (
+                      <tr className="border-b border-[#eef0f4] bg-slate-50">
+                        <td
+                          colSpan={5}
+                          className="px-6 pb-6 pt-2 text-sm text-slate-700"
+                        >
+                          <div className="flex flex-col gap-4 animate-in fade-in slide-in-from-top-2 duration-200">
+                            <p className="leading-relaxed text-justify">
+                              <strong className="text-slate-900">
+                                Atividades Previstas:{" "}
+                              </strong>
+                              {item.predicted_activity ||
+                                "Nenhuma atividade prevista informada."}
+                            </p>
+                            <p className="leading-relaxed text-justify">
+                              <strong className="text-slate-900">
+                                Atividades Concluídas:{" "}
+                              </strong>
+                              {item.activity_completed ||
+                                "Nenhuma atividade concluída informada."}
+                            </p>
+                            <p className="leading-relaxed text-justify">
+                              <strong className="text-slate-900">
+                                Problemas Encontrados:{" "}
+                              </strong>
+                              {item.problems_encountered ||
+                                "Nenhum problema reportado."}
+                            </p>
+                            <p className="leading-relaxed text-justify">
+                              <strong className="text-slate-900">
+                                Lições aprendidas:{" "}
+                              </strong>
+                              {item.learned_lessons ||
+                                "Nenhuma lição aprendida reportada."}
+                            </p>
+                            <p className="leading-relaxed text-justify">
+                              <strong className="text-slate-900">
+                                Próximos Passos:{" "}
+                              </strong>
+                              {item.next_steps ||
+                                "Nenhum próximo passo informado."}
+                            </p>
+                          </div>
+                        </td>
+                      </tr>
                     )}
-                  </td>
-                </tr>
-              ))}
+                  </React.Fragment>
+                );
+              })}
             </tbody>
           </table>
         </div>
       )}
 
       <SprintReportModal
-        isOpen={externalModalOpen}
-        onClose={() => onExternalModalClose?.()}
+        isOpen={isModalOpen}
+        onClose={closeModal}
         onSubmit={handleSubmit}
         isSubmitting={isSubmitting}
         usedSprints={sprintReports.map((r) => r.sprint)}
+        initialData={reportToEdit}
         projectName={currentProjectName}
       />
     </>
