@@ -10,7 +10,9 @@ const pageTitles: Record<string, string> = {
 
 export function TopBar() {
   const { pathname } = useLocation();
-  const title = pageTitles[pathname] || "Dashboard";
+  const title = pathname.startsWith("/projetos/")
+    ? "Mapa de Projetos > Detalhes do Projeto"
+    : pageTitles[pathname] || "Dashboard";
   const showTimerWidget = pathname !== "/dashboard";
 
   return (

@@ -1,16 +1,18 @@
 import { useState } from "react";
-import { ChevronDown, ChevronUp, Clock, Pencil, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronUp, Clock, Pencil, Trash2, MessageSquare } from "lucide-react";
+import { RejectionJustificationModal } from "./RejectionJustificationModal";
 
 const LONG_DESCRIPTION_THRESHOLD = 80;
 
-type HourStatus = "VALIDO" | "INVALIDO" | "REQUISITADO";
+type HourStatus = "APPROVED" | "REJECTED" | "PENDING";
 
 interface HourEntry {
   id: number;
   startTime: string;
   sessionTimeSeconds: number;
   activities: string;
-  status?: HourStatus;
+  status: HourStatus;
+  rejectionJustification?: string | null;
 }
 
 interface HoursTableProps {
@@ -19,6 +21,7 @@ interface HoursTableProps {
 
 export function HoursTable({ data }: HoursTableProps) {
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [justificationModalText, setJustificationModalText] = useState<string | null>(null);
 
   if (data.length === 0) {
     return (
@@ -93,9 +96,21 @@ export function HoursTable({ data }: HoursTableProps) {
                 </td>
 
                 <td className="px-6 py-4 text-center align-top">
-                  <span className={getStatusClass(status)}>
-                    {formatStatus(status)}
-                  </span>
+                  <div className="flex items-center justify-center gap-2">
+                    <span className={getStatusClass(status)}>
+                      {formatStatus(status)}
+                    </span>
+                    {status === "REJECTED" && item.rejectionJustification && (
+                      <button
+                        type="button"
+                        onClick={() => setJustificationModalText(item.rejectionJustification ?? null)}
+                        className="text-[#9ca3af] hover:text-blue-600 transition-colors"
+                        title="Ver justificativa"
+                      >
+                        <MessageSquare size={18} />
+                      </button>
+                    )}
+                  </div>
                 </td>
 
                 <td className="px-6 py-4 text-right align-top">
@@ -125,6 +140,12 @@ export function HoursTable({ data }: HoursTableProps) {
           })}
         </tbody>
       </table>
+      
+      <RejectionJustificationModal
+        isOpen={!!justificationModalText}
+        onClose={() => setJustificationModalText(null)}
+        justification={justificationModalText}
+      />
     </div>
   );
 }
@@ -138,9 +159,9 @@ function formatDuration(seconds: number) {
 
 function formatStatus(status: HourStatus) {
   const labels: Record<HourStatus, string> = {
-    VALIDO: "Válido",
-    INVALIDO: "Inválido",
-    REQUISITADO: "Requisitado",
+    APPROVED: "Válido",
+    REJECTED: "Inválido",
+    PENDING: "Requisitado",
   };
   return labels[status] ?? "Válido";
 }
@@ -149,11 +170,11 @@ function getStatusClass(status: HourStatus) {
   const base =
     "inline-block w-24 px-2 py-1 rounded-full text-[11px] font-bold border";
   switch (status) {
-    case "VALIDO":
+    case "APPROVED":
       return `${base} bg-[#f0fdf4] text-[#22c55e] border-[#bbf7d0]`;
-    case "INVALIDO":
+    case "REJECTED":
       return `${base} bg-[#fef2f2] text-[#ef4444] border-[#fecaca]`;
-    case "REQUISITADO":
+    case "PENDING":
       return `${base} bg-[#fff7ed] text-[#f97316] border-[#fed7aa]`;
     default:
       return `${base} bg-[#f0fdf4] text-[#22c55e] border-[#bbf7d0]`;

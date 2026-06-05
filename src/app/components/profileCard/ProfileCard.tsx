@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { Card } from "../Card/Card";
 import { Folder, GraduationCap, CircleStar } from "lucide-react";
 import { ProfileData } from "../../types/dashboard";
 import { toAgesLevel } from "@/app/utils/agesLevel";
+import { FrequenciaModal } from "../profileCard/FrequenciaModal";
 
 interface ProfileCardProps {
   profile: ProfileData | null;
@@ -10,6 +12,8 @@ interface ProfileCardProps {
 }
 
 function ProfileCard({ profile, loading, error }: ProfileCardProps) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const nome = profile?.name || "Usuário";
   const email = profile?.email || "";
   const projeto = profile?.currentProject?.name || "Sis. Gestão Acadêmica";
@@ -41,15 +45,10 @@ function ProfileCard({ profile, loading, error }: ProfileCardProps) {
       <Card title="Perfil do Estudante">
         <div className="flex flex-col gap-3 animate-pulse">
           <div className="w-14 h-14 rounded-full bg-gray-200" />
-
           <div className="w-3/5 h-4 rounded bg-gray-200" />
-
           <div className="w-2/5 h-3 rounded bg-gray-200" />
-
           <div className="w-full h-3.5 rounded bg-gray-200" />
-
           <div className="w-full h-3.5 rounded bg-gray-200" />
-
           <div className="w-full h-3.5 rounded bg-gray-200" />
         </div>
       </Card>
@@ -82,7 +81,6 @@ function ProfileCard({ profile, loading, error }: ProfileCardProps) {
             <small className="text-xs text-muted-foreground">
               PROJETO ATUAL
             </small>
-
             <p className="font-medium">{projeto}</p>
           </div>
         </div>
@@ -94,7 +92,6 @@ function ProfileCard({ profile, loading, error }: ProfileCardProps) {
 
           <div>
             <small className="text-xs text-muted-foreground">PROFESSOR</small>
-
             <p className="font-medium">{professor}</p>
           </div>
         </div>
@@ -106,7 +103,6 @@ function ProfileCard({ profile, loading, error }: ProfileCardProps) {
 
           <div>
             <small className="text-xs text-muted-foreground">NÍVEL AGES</small>
-
             <p className="font-medium">{agesLevel}</p>
           </div>
         </div>
@@ -114,8 +110,8 @@ function ProfileCard({ profile, loading, error }: ProfileCardProps) {
         <hr />
 
         <button
-          className="opacity-70 flex justify-between items-center gap-3 p-3 rounded-lg cursor-pointer border-none bg-transparent w-full"
-          onClick={() => console.log("clicou")}
+          className="opacity-70 flex justify-between items-center gap-3 p-3 rounded-lg cursor-pointer border-none bg-transparent w-full hover:opacity-100 hover:bg-slate-50 transition-all"
+          onClick={() => setIsModalOpen(true)}
         >
           <div className="flex flex-col items-center">
             <span>Aulas</span>
@@ -133,6 +129,11 @@ function ProfileCard({ profile, loading, error }: ProfileCardProps) {
           </div>
         </button>
       </div>
+
+      <FrequenciaModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+      />
     </Card>
   );
 }

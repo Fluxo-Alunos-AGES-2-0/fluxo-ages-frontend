@@ -32,6 +32,11 @@ const TimerCardContent = ({ onConfirmFinish }: TimerCardContentProps) => {
     try {
       await startTimer();
       setError(undefined);
+      showToast({
+        variant: "success",
+        title: "Registro iniciado!",
+        message: "Um e-mail de confirmação foi enviado para o seu endereço cadastrado.",
+      });
     } catch (err) {
       const msg =
         err instanceof Error
