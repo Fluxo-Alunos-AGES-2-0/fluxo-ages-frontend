@@ -26,11 +26,9 @@ export function ResetOnboardingModal({
         className="bg-white rounded-2xl w-full max-w-[440px] shadow-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* gradient bar */}
         <div className="h-1 w-full bg-gradient-to-r from-[#3b5ccc] to-[#5b7ae8]" />
 
         <div className="p-6">
-          {/* Header */}
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-[#eef1fb] flex items-center justify-center text-[#3b5ccc]">

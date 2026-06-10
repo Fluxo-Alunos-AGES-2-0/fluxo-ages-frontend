@@ -9,7 +9,7 @@ import { X, ChevronLeft, ChevronRight, CheckCheck } from "lucide-react";
 import { useOnboarding } from "@/app/components/Onboarding/OnboardingContext";
 
 export interface OnboardingStep {
-  target: string; // CSS selector
+  target: string; 
   title: string;
   description: string;
   placement?: "top" | "bottom" | "left" | "right";
@@ -30,7 +30,7 @@ interface SpotlightRect {
 
 const PADDING = 12;
 const TOOLTIP_W = 320;
-const TOOLTIP_H = 180; // approximate
+const TOOLTIP_H = 180; 
 
 function getPlacement(
   rect: DOMRect,
@@ -153,7 +153,6 @@ export function OnboardingTooltip({ steps }: Props) {
     return () => window.removeEventListener("resize", onResize);
   }, [isActive, reposition]);
 
-  // Trap focus inside tooltip
   useEffect(() => {
     if (visible && tooltipRef.current) {
       tooltipRef.current.focus();
@@ -170,9 +169,8 @@ export function OnboardingTooltip({ steps }: Props) {
 
   const vw = window.innerWidth;
   const vh = window.innerHeight;
-  const r = 8; // border-radius do recorte
+  const r = 8; 
 
-  // SVG path: retângulo externo (tela toda) com buraco retangular arredondado no centro
   const cutout = [
     `M 0 0 H ${vw} V ${vh} H 0 Z`,
     `M ${spotlight.left + r} ${spotlight.top}`,
@@ -197,7 +195,7 @@ export function OnboardingTooltip({ steps }: Props) {
 
   return (
     <>
-      {/* Overlay SVG com recorte retangular limpo — sem efeito de lanterna */}
+
       <svg
         className="fixed inset-0 z-[9990] pointer-events-none transition-all duration-300"
         width={vw}
@@ -211,13 +209,11 @@ export function OnboardingTooltip({ steps }: Props) {
         />
       </svg>
 
-      {/* Skip backdrop click area */}
       <div
         className="fixed inset-0 z-[9992] cursor-default"
         onClick={skipOnboarding}
       />
 
-      {/* Tooltip */}
       <div
         ref={tooltipRef}
         tabIndex={-1}
@@ -231,11 +227,9 @@ export function OnboardingTooltip({ steps }: Props) {
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Gradient top bar */}
         <div className="h-1 w-full rounded-t-2xl bg-gradient-to-r from-[#3b5ccc] to-[#5b7ae8]" />
 
         <div className="p-5">
-          {/* Header */}
           <div className="flex items-start justify-between gap-2 mb-3">
             <div>
               <div className="flex items-center gap-2 mb-1">
@@ -256,12 +250,10 @@ export function OnboardingTooltip({ steps }: Props) {
             </button>
           </div>
 
-          {/* Description */}
           <p className="text-[13px] text-[#4b5563] leading-relaxed m-0 mb-4">
             {step.description}
           </p>
 
-          {/* Progress dots */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5">
               {steps.map((_, i) => (
@@ -309,7 +301,6 @@ export function OnboardingTooltip({ steps }: Props) {
           </div>
         </div>
 
-        {/* Arrow */}
         <div className={arrowClasses[tooltipPos.placement]} />
       </div>
     </>
