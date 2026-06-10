@@ -2,6 +2,7 @@ import { Navigate, Outlet } from "react-router";
 import { AuthProvider } from "@/app/context/AuthContext";
 import { ThemeProvider } from "@/app/context/ThemeContext";
 import { TimerProvider } from "@/app/context/TimerContext";
+import { OnboardingProvider } from "@/app/components/Onboarding/OnboardingContext";
 import { Sidebar } from "./Sidebar";
 import { TopBar } from "./TopBar";
 
@@ -24,15 +25,17 @@ export function AppLayout() {
     <ThemeProvider>
       <AuthProvider>
         <TimerProvider>
-          <div className="grid grid-cols-[272px_1fr] h-screen overflow-hidden">
-            <Sidebar />
-            <div className="flex flex-col h-screen overflow-hidden">
-              <TopBar />
-              <div className="flex-1 p-6 overflow-y-auto bg-[#f3f4f6]">
-                <Outlet />
+          <OnboardingProvider>
+            <div className="grid grid-cols-[272px_1fr] h-screen overflow-hidden">
+              <Sidebar />
+              <div className="flex flex-col h-screen overflow-hidden">
+                <TopBar />
+                <div className="flex-1 p-6 overflow-y-auto bg-[#f3f4f6]">
+                  <Outlet />
+                </div>
               </div>
             </div>
-          </div>
+          </OnboardingProvider>
         </TimerProvider>
       </AuthProvider>
     </ThemeProvider>

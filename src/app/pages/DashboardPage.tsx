@@ -11,6 +11,39 @@ import {
   HoursData,
   DashboardResponse,
 } from "../types/dashboard";
+import { OnboardingTooltip } from "../components/Onboarding/OnboardingTooltip";
+import { usePageOnboarding } from "../components/Onboarding/usePageOnboarding";
+
+const DASHBOARD_STEPS = [
+  {
+    target: "[data-onboarding='sidebar-nav']",
+    title: "Navegação Principal",
+    description:
+      "Use o menu lateral para navegar entre o Dashboard, Relatórios e o Mapa de Projetos. O ícone de cronômetro ativo aparece no topo quando uma sessão está em andamento.",
+    placement: "right" as const,
+  },
+  {
+    target: "[data-onboarding='profile-card']",
+    title: "Seu Perfil",
+    description:
+      "Aqui estão seus dados do semestre: projeto atual, professor responsável e frequência nas aulas. Clique em Frequência para ver o detalhamento.",
+    placement: "right" as const,
+  },
+  {
+    target: "[data-onboarding='timer-card']",
+    title: "Contagem de Horas",
+    description:
+      "Registre suas horas de trabalho com o cronômetro. Inicie uma sessão, trabalhe no projeto, e finalize com uma descrição das atividades realizadas.",
+    placement: "left" as const,
+  },
+  {
+    target: "[data-onboarding='hours-tracker']",
+    title: "Controle de Horas",
+    description:
+      "Acompanhe seu progresso em tempo real: horas concluídas, pendentes e o total exigido no semestre. Os círculos mostram o percentual de cada categoria.",
+    placement: "top" as const,
+  },
+];
 
 export default function DashboardPage() {
   const { updateUser } = useAuth();
@@ -20,6 +53,8 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [hoursLoading, setHoursLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  usePageOnboarding("dashboard", DASHBOARD_STEPS);
 
   useEffect(() => {
     api
@@ -57,22 +92,26 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 lg:rows-[auto_1fr] lg:h-full gap-6">
-      <div className="lg:col-span-1 flex flex-col">
-        <ProfileCard profile={profile} loading={loading} error={error} />
-      </div>
+    <>
+      <OnboardingTooltip steps={DASHBOARD_STEPS} />
 
-      <div className="lg:col-span-2 flex flex-col">
-        <TimerCard onConfirmFinish={refreshHours} />
-      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 lg:rows-[auto_1fr] lg:h-full gap-6">
+        <div className="lg:col-span-1 flex flex-col" data-onboarding="profile-card">
+          <ProfileCard profile={profile} loading={loading} error={error} />
+        </div>
 
-      <div className="lg:col-span-3">
-        <HoursTracker
-          hours={hours}
-          loading={loading || hoursLoading}
-          error={error}
-        />
+        <div className="lg:col-span-2 flex flex-col" data-onboarding="timer-card">
+          <TimerCard onConfirmFinish={refreshHours} />
+        </div>
+
+        <div className="lg:col-span-3" data-onboarding="hours-tracker">
+          <HoursTracker
+            hours={hours}
+            loading={loading || hoursLoading}
+            error={error}
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
 }
