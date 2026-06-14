@@ -1,5 +1,17 @@
 import { X, Code2 } from "lucide-react";
 import { useNavigate } from "react-router";
+import groupPhoto from "../../assets/AGES.jpg";
+
+const TEAM = {
+  AGES1: ["Ana Lech", "Ellen Miranda", "Luiza Pereira", "Paulo Trevisan"],
+  AGES2: ["Guilherme Ghise", "João Pedro Dal Agnol", "Nero Bratti", "Sérgio Krautheim"],
+  AGES3: ["Felipe Seelend", "Thales Xavier", "Théo Miguel"],
+  AGES4: ["Davi Iasculski", "Giuliano Roy", "Gustavo Pasquali"],
+  PROFESSOR: ["Dilnei Venturini"],
+  STAKEHOLDERS: ["Marcelo Yamaguti", "Willian Albeche"],
+};
+
+const TECNOLOGIES = ["TypeScript", "React", "Java", "Spring Boot", "PostgreSQL"]
 
 export default function SobrePage() {
   const navigate = useNavigate();
@@ -65,7 +77,7 @@ export default function SobrePage() {
               Tecnologias Utilizadas
             </h2>
             <div className="flex flex-wrap gap-4">
-              {['React', 'Java', 'Spring Boot', 'PostgreSQL'].map(tech => (
+              {TECNOLOGIES.map(tech => (
                 <div key={tech} className="flex items-center gap-2.5 px-5 py-2.5 bg-[#f8fafc] border border-[#e2e8f0] rounded-lg text-[#475569] font-medium text-[15px]">
                   <Code2 size={18} className="text-[#3b5ccc]" />
                   {tech}
@@ -74,11 +86,11 @@ export default function SobrePage() {
             </div>
           </section>
 
-          {/* Histórico & Equipe */}
+          {/* Histórico & equipe */}
           <section>
             <h2 className="text-[22px] font-bold text-[#1f2937] flex items-center gap-3 mb-4">
               <span className="w-[5px] h-[26px] bg-[#3b5ccc] rounded-full block"></span>
-              Histórico da Equipe de Desenvolvimento
+              Histórico da equipe de Desenvolvimento
             </h2>
             <p className="text-[15px] text-[#6b7280] leading-relaxed mb-6">
               O Fluxo AGES nasceu em 2015 e passou por diversas migrações ao longo de uma década. Em 2026/1, o sistema foi totalmente reescrito e modernizado pela equipe atual, trazendo uma interface focada em usabilidade e uma arquitetura escalável e robusta.
@@ -86,22 +98,57 @@ export default function SobrePage() {
             
             <div className="border border-[#e2e8f0] rounded-xl overflow-hidden mt-6">
               {/* Placeholder da Foto */}
-              <div className="h-[250px] bg-[#f1f5f9] flex flex-col items-center justify-center border-b border-[#e2e8f0]">
-                <span className="text-[#94a3b8] font-semibold text-lg flex flex-col items-center gap-3">
-                  📷 [Inserir Foto da Equipe Aqui]
-                </span>
+              <div className=" bg-[#f1f5f9] flex flex-col items-center justify-center border-b border-[#e2e8f0]">
+                <img src={groupPhoto} />
               </div>
               
-              {/* Cargos */}
+              {/* TEAM do Semestre */}
               <div className="p-8 bg-white">
-                <h3 className="text-[16px] font-bold text-[#1f2937] mb-6">Atribuições do Semestre</h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-y-6 gap-x-8 text-[14px]">
-                  <div><strong className="text-[#334155] block mb-1">AGES I</strong> <span className="text-[#64748b]">Desenvolvimento Base & UX/UI</span></div>
-                  <div><strong className="text-[#334155] block mb-1">AGES II</strong> <span className="text-[#64748b]">Desenvolvimento Fullstack</span></div>
-                  <div><strong className="text-[#334155] block mb-1">AGES III</strong> <span className="text-[#64748b]">Arquitetura & Code Review</span></div>
-                  <div><strong className="text-[#334155] block mb-1">AGES IV</strong> <span className="text-[#64748b]">Gestão de Projetos & DevOps</span></div>
-                  <div><strong className="text-[#334155] block mb-1">Professor Orientador</strong> <span className="text-[#64748b]">Diretrizes e Mentoria Técnica</span></div>
-                  <div><strong className="text-[#334155] block mb-1">Stakeholders</strong> <span className="text-[#64748b]">Validação das Regras de Negócio</span></div>
+                <h3 className="text-[16px] font-bold text-[#1f2937] mb-6">Equipe responsável</h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-y-8 gap-x-8 text-[14px]">
+                  
+                  <div>
+                    <strong className="text-[#334155] block mb-2">AGES I</strong>
+                    <div className="flex flex-col gap-1 text-[#64748b]">
+                      {TEAM.AGES1.map(nome => <span key={nome}>{nome}</span>)}
+                    </div>
+                  </div>
+
+                  <div>
+                    <strong className="text-[#334155] block mb-2">AGES II</strong>
+                    <div className="flex flex-col gap-1 text-[#64748b]">
+                      {TEAM.AGES2.map(nome => <span key={nome}>{nome}</span>)}
+                    </div>
+                  </div>
+
+                  <div>
+                    <strong className="text-[#334155] block mb-2">AGES III</strong>
+                    <div className="flex flex-col gap-1 text-[#64748b]">
+                      {TEAM.AGES3.map(nome => <span key={nome}>{nome}</span>)}
+                    </div>
+                  </div>
+
+                  <div>
+                    <strong className="text-[#334155] block mb-2">AGES IV</strong>
+                    <div className="flex flex-col gap-1 text-[#64748b]">
+                      {TEAM.AGES4.map(nome => <span key={nome}>{nome}</span>)}
+                    </div>
+                  </div>
+
+                  <div>
+                    <strong className="text-[#334155] block mb-2">Professor Orientador</strong>
+                    <div className="flex flex-col gap-1 text-[#64748b]">
+                      {TEAM.PROFESSOR.map(nome => <span key={nome}>{nome}</span>)}
+                    </div>
+                  </div>
+
+                  <div>
+                    <strong className="text-[#334155] block mb-2">Stakeholders</strong>
+                    <div className="flex flex-col gap-1 text-[#64748b]">
+                      {TEAM.STAKEHOLDERS.map(nome => <span key={nome}>{nome}</span>)}
+                    </div>
+                  </div>
+
                 </div>
               </div>
             </div>
