@@ -12,6 +12,8 @@ import { ReportUploadModal } from "../components/reports/ReportUploadModal";
 import { SprintTable } from "../components/reports/SprintTable";
 import { Select } from "../components/ui/Select/Select";
 import { useToast } from "../context/ToastContext";
+import { OnboardingTooltip } from "../components/Onboarding/OnboardingTooltip";
+import { usePageOnboarding } from "../components/Onboarding/usePageOnboarding";
 
 type TabId = "horas" | "sprint" | "andamento" | "final";
 
@@ -60,6 +62,37 @@ function toReportEntry(report: ReportApiResponse): ReportEntry {
   };
 }
 
+const RELATORIOS_STEPS = [
+  {
+    target: "[data-onboarding='report-tabs']",
+    title: "Abas de Relatórios",
+    description:
+      "Navegue entre as quatro categorias: Horas (seus registros de tempo), Sprint (entregas por sprint), Andamento (relatórios intermediários) e Final.",
+    placement: "bottom" as const,
+  },
+  {
+    target: "[data-onboarding='report-project-filter']",
+    title: "Filtro por Projeto",
+    description:
+      "Selecione um projeto específico para filtrar os registros de horas e relatórios de sprint.",
+    placement: "bottom" as const,
+  },
+  {
+    target: "[data-onboarding='report-hours-summary']",
+    title: "Resumo de Horas",
+    description:
+      "Veja o total de horas aprovadas, pendentes e rejeitadas do projeto selecionado em um resumo rápido antes da tabela detalhada.",
+    placement: "bottom" as const,
+  },
+  {
+    target: "[data-onboarding='report-table']",
+    title: "Tabela de Registros",
+    description:
+      "Cada linha representa uma sessão de trabalho. Registros pendentes aguardam aprovação do professor; rejeitados mostram a justificativa ao clicar.",
+    placement: "top" as const,
+  },
+];
+
 export default function RelatoriosPage() {
   const [activeTab, setActiveTab] = useState<TabId>("horas");
   const [selectedProject, setSelectedProject] = useState<number | null>(null);
@@ -76,6 +109,8 @@ export default function RelatoriosPage() {
   const [refreshKey, setRefreshKey] = useState(0);
   const { showToast } = useToast();
   const currentProject = projects[0] ?? null;
+
+  usePageOnboarding("relatorios", RELATORIOS_STEPS);
 
   const handleDownloadTemplate = async () => {
     setIsDownloadingTemplate(true);
@@ -104,7 +139,6 @@ export default function RelatoriosPage() {
       .then((data) => {
         const list = data ?? [];
         setProjects(list);
-
         if (list.length > 0) {
           setSelectedProject(list[0].id);
         }
@@ -226,121 +260,135 @@ export default function RelatoriosPage() {
   );
 
   return (
-    <div className="flex flex-col gap-5">
-      <div className="flex items-center gap-2.5">
-        <FileText size={20} className="text-[#3b5ccc]" strokeWidth={1.8} />
-        <h2 className="text-[18px] font-bold text-[#1f2937] m-0 leading-none">
-          Relatórios
-        </h2>
-      </div>
+    <>
+      <OnboardingTooltip steps={RELATORIOS_STEPS} />
 
-      <div className="bg-white rounded-2xl border border-[#e5e7eb]">
-        <div className="sticky top-0 z-10 flex items-center border-b border-[#e5e7eb] px-6 bg-white rounded-t-2xl">
-          <nav className="flex flex-1 gap-1" role="tablist">
-            {TABS.map((tab) => {
-              const isActive = tab.id === activeTab;
-              return (
-                <button
-                  key={tab.id}
-                  role="tab"
-                  aria-selected={isActive}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={[
-                    "relative px-4 py-4 text-[14px] font-medium transition-colors focus:outline-none cursor-pointer",
-                    isActive
-                      ? "text-[#3b5ccc]"
-                      : "text-[#6b7280] hover:text-[#374151]",
-                  ].join(" ")}
-                >
-                  {tab.label}
-                  {isActive && (
-                    <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#3b5ccc] rounded-t-full" />
-                  )}
-                </button>
-              );
-            })}
-          </nav>
+      <div className="flex flex-col gap-5">
+        <div className="flex items-center gap-2.5">
+          <FileText size={20} className="text-[#3b5ccc]" strokeWidth={1.8} />
+          <h2 className="text-[18px] font-bold text-[#1f2937] m-0 leading-none">
+            Relatórios
+          </h2>
         </div>
 
-        {currentTab.hasProjectFilter && (
-          <div className="px-6 pt-5 flex items-center justify-between">
-            <Select
-              wrapperClassName="w-[220px]"
-              className="w-[220px]"
-              value={selectedProject ?? ""}
-              onChange={(e) =>
-                setSelectedProject(
-                  e.target.value === "" ? null : Number(e.target.value),
-                )
-              }
-              placeholder="Filtrar por projeto"
-              options={projects.map((p) => ({
-                value: p.id,
-                label: p.name,
-              }))}
-            />
-
-            {activeTab === "sprint" && isCurrentProjectSelected && (
-              <button
-                type="button"
-                onClick={() => setIsSprintModalOpen(true)}
-                className="inline-flex items-center gap-2 rounded-lg bg-[#3b5ccc] px-4 py-2 text-sm font-medium text-white hover:bg-[#2f4bb0] transition-colors cursor-pointer"
-              >
-                <Plus size={16} />
-                Novo Relatório
-              </button>
-            )}
+        <div className="bg-white rounded-2xl border border-[#e5e7eb]">
+          <div
+            className="sticky top-0 z-10 flex items-center border-b border-[#e5e7eb] px-6 bg-white rounded-t-2xl"
+            data-onboarding="report-tabs"
+          >
+            <nav className="flex flex-1 gap-1" role="tablist">
+              {TABS.map((tab) => {
+                const isActive = tab.id === activeTab;
+                return (
+                  <button
+                    key={tab.id}
+                    role="tab"
+                    aria-selected={isActive}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={[
+                      "relative px-4 py-4 text-[14px] font-medium transition-colors focus:outline-none cursor-pointer",
+                      isActive
+                        ? "text-[#3b5ccc]"
+                        : "text-[#6b7280] hover:text-[#374151]",
+                    ].join(" ")}
+                  >
+                    {tab.label}
+                    {isActive && (
+                      <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#3b5ccc] rounded-t-full" />
+                    )}
+                  </button>
+                );
+              })}
+            </nav>
           </div>
-        )}
 
-        <div role="tabpanel" className="p-6">
-          {activeTab === "horas" && (
-            <>
-              {loading && (
-                <div className="text-center text-[#6b7280] py-10">
-                  Carregando registros...
-                </div>
+          {currentTab.hasProjectFilter && (
+            <div
+              className="px-6 pt-5 flex items-center justify-between"
+              data-onboarding="report-project-filter"
+            >
+              <Select
+                wrapperClassName="w-[220px]"
+                className="w-[220px]"
+                value={selectedProject ?? ""}
+                onChange={(e) =>
+                  setSelectedProject(
+                    e.target.value === "" ? null : Number(e.target.value),
+                  )
+                }
+                placeholder="Filtrar por projeto"
+                options={projects.map((p) => ({
+                  value: p.id,
+                  label: p.name,
+                }))}
+              />
+
+              {activeTab === "sprint" && isCurrentProjectSelected && (
+                <button
+                  type="button"
+                  onClick={() => setIsSprintModalOpen(true)}
+                  className="inline-flex items-center gap-2 rounded-lg bg-[#3b5ccc] px-4 py-2 text-sm font-medium text-white hover:bg-[#2f4bb0] transition-colors cursor-pointer"
+                >
+                  <Plus size={16} />
+                  Novo Relatório
+                </button>
               )}
-              {!loading && error && (
-                <div className="text-center text-red-600 py-10">{error}</div>
-              )}
-              {!loading && !error && (
-                <>
-                  <HoursSummary
-                    data={hours}
-                    isCurrentProject={isCurrentProjectSelected}
-                  />
-                  <HoursTable
-                    data={hours}
-                    onChanged={() => setRefreshKey((k) => k + 1)}
-                  />
-                </>
-              )}
-            </>
+            </div>
           )}
-          {activeTab === "sprint" && (
-            <SprintTable
-              selectedProject={selectedProject}
-              currentProjectId={currentProject?.id ?? null}
-              currentProjectName={currentProject?.name ?? ""}
-              externalModalOpen={isSprintModalOpen}
-              onExternalModalClose={() => setIsSprintModalOpen(false)}
-            />
-          )}
-          {activeTab === "andamento" && renderReportTab(progressReport)}
-          {activeTab === "final" && renderReportTab(finalReport)}
+
+          <div role="tabpanel" className="p-6">
+            {activeTab === "horas" && (
+              <>
+                {loading && (
+                  <div className="text-center text-[#6b7280] py-10">
+                    Carregando registros...
+                  </div>
+                )}
+                {!loading && error && (
+                  <div className="text-center text-red-600 py-10">{error}</div>
+                )}
+                {!loading && !error && (
+                  <>
+                    <div data-onboarding="report-hours-summary">
+                      <HoursSummary
+                        data={hours}
+                        isCurrentProject={isCurrentProjectSelected}
+                      />
+                    </div>
+                    <div data-onboarding="report-table">
+                      <HoursTable
+                        data={hours}
+                        onChanged={() => setRefreshKey((k) => k + 1)}
+                      />
+                    </div>
+                  </>
+                )}
+              </>
+            )}
+            {activeTab === "sprint" && (
+              <SprintTable
+                selectedProject={selectedProject}
+                currentProjectId={currentProject?.id ?? null}
+                currentProjectName={currentProject?.name ?? ""}
+                externalModalOpen={isSprintModalOpen}
+                onExternalModalClose={() => setIsSprintModalOpen(false)}
+              />
+            )}
+            {activeTab === "andamento" && renderReportTab(progressReport)}
+            {activeTab === "final" && renderReportTab(finalReport)}
+          </div>
         </div>
-      </div>
 
-      <ReportUploadModal
-        isOpen={isUploadModalOpen}
-        onClose={() => setIsUploadModalOpen(false)}
-        reportType={activeTab === "final" ? "final" : "andamento"}
-        currentProject={currentProject?.name ?? ""}
-        onSuccess={() => {
-          setRefreshKey((k) => k + 1);
-        }}
-      />
-    </div>
+        <ReportUploadModal
+          isOpen={isUploadModalOpen}
+          onClose={() => setIsUploadModalOpen(false)}
+          reportType={activeTab === "final" ? "final" : "andamento"}
+          currentProject={currentProject?.name ?? ""}
+          onSuccess={() => {
+            setRefreshKey((k) => k + 1);
+          }}
+        />
+      </div>
+    </>
   );
 }
