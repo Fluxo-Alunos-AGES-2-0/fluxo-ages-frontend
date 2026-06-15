@@ -1,15 +1,17 @@
 import { Info, Sun } from "lucide-react";
-import { useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { HeaderTimerWidget } from "./HeaderTimerWidget";
 
 const pageTitles: Record<string, string> = {
   "/dashboard": "Dashboard",
   "/relatorios": "Relatórios",
   "/projetos": "Mapa de Projetos",
+  "/sobre": "Sobre",
 };
 
 export function TopBar() {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const title = pathname.startsWith("/projetos/")
     ? "Mapa de Projetos > Detalhes do Projeto"
     : pageTitles[pathname] || "Dashboard";
@@ -30,6 +32,7 @@ export function TopBar() {
         <button
           className="w-[30px] h-[30px] flex items-center justify-center rounded-full border-[1.5px] border-[#e5e7eb] bg-transparent text-[#6b7280] cursor-pointer hover:bg-gray-50 transition-colors"
           aria-label="Informações"
+          onClick={() => {navigate("/sobre")}}
         >
           <Info size={18} />
         </button>
