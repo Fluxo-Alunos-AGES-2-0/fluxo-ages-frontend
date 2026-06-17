@@ -4,6 +4,7 @@ import { Folder, GraduationCap, CircleStar } from "lucide-react";
 import { ProfileData } from "../../types/dashboard";
 import { toAgesLevel } from "@/app/utils/agesLevel";
 import { FrequenciaModal } from "../profileCard/FrequenciaModal";
+import { ProfileEditModal } from "../ProfileEditModal/ProfileEditModal";
 
 interface ProfileCardProps {
   profile: ProfileData | null;
@@ -13,6 +14,7 @@ interface ProfileCardProps {
 
 function ProfileCard({ profile, loading, error }: ProfileCardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const nome = profile?.name || "Usuário";
   const email = profile?.email || "";
@@ -56,7 +58,7 @@ function ProfileCard({ profile, loading, error }: ProfileCardProps) {
   }
 
   return (
-    <Card title="Perfil do Estudante" headerAction={<button>Editar</button>}>
+    <Card title="Perfil do Estudante" headerAction={<button>Editar</button>} headerActionOnClick={() => setIsEditModalOpen(true)}>
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-3">
           <div
@@ -133,6 +135,10 @@ function ProfileCard({ profile, loading, error }: ProfileCardProps) {
       <FrequenciaModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
+      />
+      <ProfileEditModal
+        isOpen={isEditModalOpen} 
+        onClose={() => setIsEditModalOpen(false)} 
       />
     </Card>
   );
