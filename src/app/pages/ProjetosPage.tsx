@@ -12,6 +12,32 @@ import { Button } from "@/app/components/ui/Button/Button";
 import { useNavigate } from "react-router";
 import { api } from "../services/api";
 import { toAgesLevel } from "../utils/agesLevel";
+import { OnboardingTooltip } from "../components/Onboarding/OnboardingTooltip";
+import { usePageOnboarding } from "../components/Onboarding/usePageOnboarding";
+
+const PROJETOS_STEPS = [
+  {
+    target: "[data-onboarding='projetos-header']",
+    title: "Mapa de Projetos",
+    description:
+      "Visualize todos os projetos em que você participou ao longo do curso.",
+    placement: "bottom" as const,
+  },
+  {
+    target: "[data-onboarding='projetos-status-badges']",
+    title: "Status dos Projetos",
+    description:
+      "Os badges laranja indicam projetos ativos; os verdes mostram projetos concluídos. A cor da barra no topo de cada card reflete o status.",
+    placement: "bottom" as const,
+  },
+  {
+    target: "[data-onboarding='projetos-grid']",
+    title: "Cards de Projeto",
+    description:
+      "Cada card exibe o nome, semestre, tecnologias utilizadas e membros da equipe. Clique em 'Ver detalhes' para acessar o cronograma e entregas do projeto.",
+    placement: "top" as const,
+  },
+];
 
 interface ProjectListItem {
   id: number;
@@ -58,6 +84,8 @@ export function ProjetosPage() {
     };
   }, []);
 
+  usePageOnboarding("projetos", PROJETOS_STEPS);
+
   const activeCount = projects.filter(
     (p) => p.projectStatus === "EM_ANDAMENTO",
   ).length;
@@ -66,10 +94,13 @@ export function ProjetosPage() {
   ).length;
 
   return (
-    <div className="w-full flex flex-col gap-6 font-sans">
+    <>
+      <OnboardingTooltip steps={PROJETOS_STEPS} />
+
+      <div className="w-full flex flex-col gap-6 font-sans">
       {/* Header Superior de Visão Geral */}
-      <div className="bg-white rounded-2xl border border-[#6B728030] p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
-        <div className="flex items-center gap-3">
+      <div className="bg-white rounded-2xl border border-[#6B728030] p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm" data-onboarding="projetos-header">
+        <div className="flex items-center gap-3" data-onboarding="projetos-status-badges">
           <div className="p-3 bg-[#3B5CCC15] text-[#3B5CCC] rounded-2xl">
             <FolderOpen size={24} />
           </div>
@@ -113,13 +144,14 @@ export function ProjetosPage() {
       )}
 
       {!loading && !error && projects.length > 0 && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-10" data-onboarding="projetos-grid">
           {projects.map((project) => (
             <ProjectCard key={project.id} project={project} />
           ))}
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }
 

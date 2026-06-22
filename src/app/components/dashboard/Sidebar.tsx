@@ -132,7 +132,7 @@ export function Sidebar() {
         <p className="text-[11px] font-semibold uppercase tracking-wider text-[#9ca3af] px-4 pt-5 pb-3 m-0">
           Menu Principal
         </p>
-        <div className="flex flex-col gap-0.5">
+        <div className="flex flex-col gap-0.5" data-onboarding="sidebar-nav">
           {menuItems.map((item) => (
             <NavItem
               key={item.path}
