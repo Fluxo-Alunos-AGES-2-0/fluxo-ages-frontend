@@ -7,85 +7,100 @@ import {
   CircleCheckBig,
   FolderOpen,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Button } from "@/app/components/ui/Button/Button";
 import { useNavigate } from "react-router";
+import { api } from "../services/api";
+import { toAgesLevel } from "../utils/agesLevel";
+import { OnboardingTooltip } from "../components/Onboarding/OnboardingTooltip";
+import { usePageOnboarding } from "../components/Onboarding/usePageOnboarding";
 
-type ProjectStatus = "ATIVO" | "CONCLUIDO";
-
-interface Project {
-  id: number;
-  name: string;
-  semester: string;
-  agesLevel: string;
-  membersCount: number;
-  description: string;
-  status: ProjectStatus;
-  tags: string[];
-  repositoryUrl: string;
-}
-
-const mockProjects: Project[] = [
+const PROJETOS_STEPS = [
   {
-    id: 1,
-    name: "FluxoAGES",
-    semester: "2026/1",
-    agesLevel: "AGES IV",
-    membersCount: 14,
+    target: "[data-onboarding='projetos-header']",
+    title: "Mapa de Projetos",
     description:
-      "Plataforma web de gestão acadêmica para estudantes universitários. Controle de horas, relatórios de sprint e acompanhamento de projetos em tempo real.",
-    status: "ATIVO",
-    tags: ["React", "TypeScript", "Tailwind"],
-    repositoryUrl: "https://github.com",
+      "Visualize todos os projetos em que você participou ao longo do curso.",
+    placement: "bottom" as const,
   },
   {
-    id: 2,
-    name: "ClinAgenda",
-    semester: "2025/2",
-    agesLevel: "AGES III",
-    membersCount: 10,
+    target: "[data-onboarding='projetos-status-badges']",
+    title: "Status dos Projetos",
     description:
-      "Sistema de agendamento online para clínicas e consultórios. Gestão de pacientes, agenda médica e notificações automáticas por e-mail e SMS.",
-    status: "CONCLUIDO",
-    tags: ["Vue.js", "Node.js", "PostgreSQL"],
-    repositoryUrl: "https://github.com",
+      "Os badges laranja indicam projetos ativos; os verdes mostram projetos concluídos. A cor da barra no topo de cada card reflete o status.",
+    placement: "bottom" as const,
   },
   {
-    id: 3,
-    name: "EduTrack",
-    semester: "2025/1",
-    agesLevel: "AGES II",
-    membersCount: 11,
+    target: "[data-onboarding='projetos-grid']",
+    title: "Cards de Projeto",
     description:
-      "Ferramenta de acompanhamento de aprendizagem para professores e alunos. Dashboard de desempenho, gamificação e relatórios pedagógicos.",
-    status: "CONCLUIDO",
-    tags: ["React", "Django", "MySQL"],
-    repositoryUrl: "https://github.com",
-  },
-  {
-    id: 4,
-    name: "StockWise",
-    semester: "2024/2",
-    agesLevel: "AGES I",
-    membersCount: 13,
-    description:
-      "Gerenciador de estoque inteligente para pequenas e médias empresas. Controle de produtos, alertas de reposição e integração com notas fiscais.",
-    status: "CONCLUIDO",
-    tags: ["Angular", "Spring Boot", "Oracle"],
-    repositoryUrl: "https://github.com",
+      "Cada card exibe o nome, semestre, tecnologias utilizadas e membros da equipe. Clique em 'Ver detalhes' para acessar o cronograma e entregas do projeto.",
+    placement: "top" as const,
   },
 ];
 
+interface ProjectListItem {
+  id: number;
+  name: string;
+  summary: string | null;
+  projectStatus: string;
+  studentStatus: string;
+  period: string | null;
+  semesterYear: string | null;
+  agesLevel: number | null;
+  gitLabLink: string | null;
+  membersCount: number;
+  technologies: string[];
+  thumbnailUrl: string | null;
+  groupPhotoUrl: string | null;
+}
+
 export function ProjetosPage() {
-  const activeCount = mockProjects.filter((p) => p.status === "ATIVO").length;
-  const completedCount = mockProjects.filter(
-    (p) => p.status === "CONCLUIDO",
+  const [projects, setProjects] = useState<ProjectListItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+
+    api
+      .get<ProjectListItem[]>("/projects")
+      .then((data) => {
+        if (!cancelled) setProjects(data ?? []);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        console.error("Erro ao buscar projetos:", err);
+        setError("Não foi possível carregar os projetos.");
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  usePageOnboarding("projetos", PROJETOS_STEPS);
+
+  const activeCount = projects.filter(
+    (p) => p.projectStatus === "EM_ANDAMENTO",
+  ).length;
+  const completedCount = projects.filter(
+    (p) => p.projectStatus === "CONCLUIDO",
   ).length;
 
   return (
-    <div className="w-full flex flex-col gap-6 font-sans">
+    <>
+      <OnboardingTooltip steps={PROJETOS_STEPS} />
+
+      <div className="w-full flex flex-col gap-6 font-sans">
       {/* Header Superior de Visão Geral */}
-      <div className="bg-white rounded-2xl border border-[#6B728030] p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
-        <div className="flex items-center gap-3">
+      <div className="bg-white rounded-2xl border border-[#6B728030] p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm" data-onboarding="projetos-header">
+        <div className="flex items-center gap-3" data-onboarding="projetos-status-badges">
           <div className="p-3 bg-[#3B5CCC15] text-[#3B5CCC] rounded-2xl">
             <FolderOpen size={24} />
           </div>
@@ -112,23 +127,42 @@ export function ProjetosPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-10">
-        {mockProjects.map((project) => (
-          <ProjectCard key={project.id} project={project} />
-        ))}
+      {loading && (
+        <div className="text-center text-[#6B7280] py-10">
+          Carregando projetos...
+        </div>
+      )}
+
+      {!loading && error && (
+        <div className="text-center text-red-600 py-10">{error}</div>
+      )}
+
+      {!loading && !error && projects.length === 0 && (
+        <div className="text-center text-[#6B7280] py-10">
+          Nenhum projeto encontrado.
+        </div>
+      )}
+
+      {!loading && !error && projects.length > 0 && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-10" data-onboarding="projetos-grid">
+          {projects.map((project) => (
+            <ProjectCard key={project.id} project={project} />
+          ))}
+        </div>
+      )}
       </div>
-    </div>
+    </>
   );
 }
 
 // Subcomponente de Card (Interno)
 interface ProjectCardProps {
-  project: Project;
+  project: ProjectListItem;
 }
 
 const ProjectCard = ({ project }: ProjectCardProps) => {
   const navigate = useNavigate();
-  const isAtivo = project.status === "ATIVO";
+  const isAtivo = project.projectStatus === "EM_ANDAMENTO";
 
   const handleDetailsClick = () => {
     navigate(`/projetos/${project.id}`);
@@ -136,7 +170,8 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
 
   const handleRepositoryClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    window.open(project.repositoryUrl, "_blank", "noopener,noreferrer");
+    if (!project.gitLabLink) return;
+    window.open(project.gitLabLink, "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -187,23 +222,24 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
         <div className="flex items-center gap-4 text-xs font-medium text-[#6B7280]">
           <span className="flex items-center gap-1">
             <Calendar size={14} />
-            {project.semester}
+            {project.semesterYear ?? "—"}
           </span>
           <span>|</span>
           <span className="flex items-center gap-1">
             <Users size={14} />
-            {project.agesLevel} · {project.membersCount} membros
+            {toAgesLevel(project.agesLevel ?? undefined)} ·{" "}
+            {project.membersCount} membros
           </span>
         </div>
 
         {/* Descrição */}
         <p className="text-sm text-[#6B7280] leading-relaxed line-clamp-3">
-          {project.description}
+          {project.summary}
         </p>
 
         {/* Tags de tecnologias */}
         <div className="flex flex-wrap gap-2 mt-auto pt-2">
-          {project.tags.map((tag) => (
+          {project.technologies.map((tag) => (
             <span
               key={tag}
               className="inline px-2.5 py-1 bg-[#6B728010] border border-[#6B728030] text-[#6B7280] rounded-full text-xs font-semibold"
@@ -222,6 +258,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
         <Button
           variant="primary"
           onClick={handleRepositoryClick}
+          disabled={!project.gitLabLink}
           className="flex items-center justify-center gap-1.5 font-bold"
         >
           <GitBranch size={16} />

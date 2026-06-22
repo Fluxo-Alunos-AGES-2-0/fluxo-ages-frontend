@@ -3,6 +3,13 @@ import { Modal } from "../ui/Modal/Modal";
 import { Upload, Check, XCircle } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/AuthContext";
+import {
+  confirmFinalReportUpload,
+  confirmProgressReportUpload,
+  createFinalReportUploadUrl,
+  createProgressReportUploadUrl,
+  uploadFileToPresignedUrl,
+} from "../../services/reportUpload";
 
 const MAX_FILE_SIZE_BYTES = 25 * 1024 * 1024;
 
@@ -26,9 +33,16 @@ export const ReportUploadModal = ({
   const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const clearSelectedFile = () => {
+    setSelectedFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   useEffect(() => {
     if (!isOpen) {
-      setSelectedFile(null);
+      clearSelectedFile();
     }
   }, [isOpen]);
 
@@ -64,6 +78,24 @@ export const ReportUploadModal = ({
     );
   };
 
+  const getErrorMessage = (error: unknown, fallback: string) => {
+    if (error instanceof Error && error.message) {
+      return error.message;
+    }
+
+    return fallback;
+  };
+
+  const formatStageError = (error: unknown, fallback: string) => {
+    const message = getErrorMessage(error, "").trim();
+
+    if (!message || message === fallback || /^HTTP \d+$/.test(message)) {
+      return fallback;
+    }
+
+    return `${fallback} ${message}`;
+  };
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -74,32 +106,85 @@ export const ReportUploadModal = ({
 
     if (!isPdf) {
       showToast("error", "Selecione um arquivo PDF.");
-      setSelectedFile(null);
+      clearSelectedFile();
       return;
     }
 
     if (file.size > MAX_FILE_SIZE_BYTES) {
       showToast("error", "Arquivo excede o limite de 25MB.");
-      setSelectedFile(null);
+      clearSelectedFile();
       return;
     }
 
     setSelectedFile(file);
   };
 
+  const getUploadUrl = async () => {
+    try {
+      return reportType === "final"
+        ? await createFinalReportUploadUrl()
+        : await createProgressReportUploadUrl();
+    } catch (error) {
+      throw new Error(
+        formatStageError(
+          error,
+          "Não foi possível gerar a URL de upload do relatório.",
+        ),
+      );
+    }
+  };
+
+  const confirmUpload = async (fileReference: string) => {
+    try {
+      if (reportType === "final") {
+        await confirmFinalReportUpload(fileReference);
+        return;
+      }
+
+      await confirmProgressReportUpload(fileReference);
+    } catch (error) {
+      throw new Error(
+        formatStageError(
+          error,
+          reportType === "final"
+            ? "Não foi possível confirmar o upload do relatório final."
+            : "Não foi possível confirmar o upload do relatório de andamento.",
+        ),
+      );
+    }
+  };
+
   const handleUpload = async () => {
     if (!selectedFile) return;
     setIsUploading(true);
+
     try {
-      // TODO: integrar com endpoint real de upload quando o backend estiver pronto
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      showToast("success", "Relatório enviado!");
+      const uploadData = await getUploadUrl();
+
+      try {
+        await uploadFileToPresignedUrl(
+          uploadData.uploadUrl,
+          selectedFile,
+          uploadData.contentType || "application/pdf",
+        );
+      } catch (error) {
+        throw new Error(
+          formatStageError(
+            error,
+            "Não foi possível enviar o PDF para o armazenamento.",
+          ),
+        );
+      }
+
+      await confirmUpload(uploadData.fileReference);
+
+      showToast("success", "Relatório enviado com sucesso!");
       onSuccess();
       onClose();
-      setSelectedFile(null);
+      clearSelectedFile();
     } catch (error) {
       console.error("Erro ao enviar relatório:", error);
-      showToast("error", "Falha no envio.");
+      showToast("error", getErrorMessage(error, "Falha no envio do relatório."));
     } finally {
       setIsUploading(false);
     }
@@ -180,7 +265,7 @@ export const ReportUploadModal = ({
           <button
             type="button"
             onClick={onClose}
-            className="px-8 py-2.5 rounded-xl border border-[#e5e7eb] text-[#f97316] font-bold text-[15px] hover:bg-gray-50 transition-colors"
+            className="px-8 py-2.5 rounded-xl border border-[#e5e7eb] text-[#f97316] font-bold text-[15px] hover:bg-gray-50 transition-colors cursor-pointer"
           >
             Fechar
           </button>
@@ -190,7 +275,7 @@ export const ReportUploadModal = ({
             disabled={!selectedFile || isUploading}
             className={`px-8 py-2.5 rounded-xl font-bold text-[15px] text-white transition-all shadow-md ${!selectedFile || isUploading
                 ? "bg-gray-300 cursor-not-allowed"
-                : "bg-[#f97316] hover:bg-[#ea580c]"
+                : "bg-[#f97316] hover:bg-[#ea580c] cursor-pointer"
               }`}
           >
             {isUploading ? "Enviando..." : "Enviar Relatório"}
