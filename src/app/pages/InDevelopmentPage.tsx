@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { X } from 'lucide-react';
 import { InDevelopmentMonitor } from '../components/InDevelopment/InDevelopmentMonitor';
 

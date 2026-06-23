@@ -24,6 +24,7 @@ export const router = createBrowserRouter([
       { path: "projetos", Component: ProjetosPage },
       { path: "projetos/:id", Component: ProjetoDetalhesPage },
       { path: "sobre", Component: SobrePage },
+      { path: "em-desenvolvimento", Component: InDevelopmentPage },
     ],
   },
 ]);
