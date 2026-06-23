@@ -3,6 +3,7 @@ import { X, UploadCloud, LoaderCircle, User } from 'lucide-react';
 import { Button } from '../ui/Button/Button';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
+import { api } from '../../services/api';
 
 interface ProfileEditModalProps {
   isOpen: boolean;
@@ -16,13 +17,14 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onCl
   const [isLoading, setIsLoading] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { user } = useAuth();
+  
+  const { user, updateUser } = useAuth(); 
   const { showToast } = useToast();
 
   useEffect(() => {
     if (isOpen) {
       setSelectedFile(null);
-      setPreviewUrl(user?.avatarUrl || null); // Se o usuário já tiver foto, mostra ela
+      setPreviewUrl(user?.avatarUrl || null);
       setError(null);
     } else {
       if (previewUrl && !selectedFile) {
@@ -37,35 +39,37 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onCl
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // 1. Validação de formato
-    const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
     if (!validTypes.includes(file.type)) {
-      setError('Formato inválido. Por favor, envie uma imagem PNG, JPG ou JPEG.');
+      setError('Formato inválido. Por favor, envie uma imagem PNG, JPG, JPEG ou WEBP.');
       return;
     }
 
-    // 2. Validação de tamanho (Máx 5MB)
-    const maxSize = 5 * 1024 * 1024; // 5MB em bytes
+    const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
       setError('A imagem é muito grande. O tamanho máximo permitido é 5MB.');
       return;
     }
 
-    // Se passou nas validações, gera o preview antes de salvar
     setError(null);
     setSelectedFile(file);
     setPreviewUrl(URL.createObjectURL(file));
   };
 
   const handleSave = async () => {
-    if (!selectedFile && !previewUrl) return;
+    if (!selectedFile) return;
     
     setIsLoading(true);
     setError(null);
 
     try {
-      // Mock do endpoint de upload (Delay de 2 segundos)
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const formData = new FormData();
+
+      formData.append('file', selectedFile);
+
+      const response = await api.put<{ imageUrl: string }>('/students/me/avatar', formData);
+
+      updateUser({ avatarUrl: response.imageUrl });
 
       showToast({
         variant: "success",
@@ -85,18 +89,14 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onCl
     <div className="fixed inset-0 z-[99] flex items-center justify-center bg-black/40 p-4">
       <div className="bg-white rounded-[12px] w-full max-w-[450px] flex flex-col overflow-hidden shadow-xl animate-in fade-in zoom-in-95 duration-200">
         
-        {/* Header */}
         <div className="px-6 py-5 flex items-center justify-between border-b border-slate-100">
           <h2 className="text-[20px] font-semibold text-[#1f2937]">Editar Foto de Perfil</h2>
-          <button onClick={onClose} disabled={isLoading} className="text-slate-400 hover:text-slate-700 transition-colors cursor-pointer">
+          <button onClick={onClose} disabled={isLoading} className="text-slate-400 hover:text-slate-700 transition-colors">
             <X size={24} />
           </button>
         </div>
 
-        {/* Content */}
         <div className="px-6 py-8 flex flex-col items-center gap-6">
-          
-          {/* Avatar Preview & Upload Trigger */}
           <div className="relative group cursor-pointer" onClick={() => !isLoading && fileInputRef.current?.click()}>
             <div className={`w-[120px] h-[120px] rounded-full overflow-hidden border-4 border-slate-50 flex items-center justify-center bg-slate-100 shadow-sm transition-all ${isLoading ? 'opacity-50' : 'group-hover:border-blue-50'}`}>
               {previewUrl ? (
@@ -106,7 +106,6 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onCl
               )}
             </div>
             
-            {/* Overlay de hover */}
             {!isLoading && (
               <div className="absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white gap-1">
                 <UploadCloud size={24} />
@@ -135,7 +134,6 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onCl
           )}
         </div>
 
-        {/* Actions */}
         <div className="px-6 py-5 bg-slate-50 border-t border-slate-100 flex items-center gap-3 justify-end">
           <Button variant="secondary" onClick={onClose} disabled={isLoading} className="!border-[#e5e7eb] !text-slate-600 !bg-white hover:!bg-slate-50">
             Cancelar
