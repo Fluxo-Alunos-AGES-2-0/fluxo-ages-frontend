@@ -1,3 +1,4 @@
+import { Button } from "../ui/Button/Button";
 import { Modal } from "../ui/Modal/Modal";
 
 interface TeacherFeedbackModalProps {
@@ -51,6 +52,21 @@ export function TeacherFeedbackModal({
           >
             {reportData.feedback || mockLoremIpsum}
           </div>
+        </div>
+        <div className="mt-8 grid grid-cols-2 gap-4">
+          <Button
+            variant="accent-secondary"
+            fullWidth
+            onClick={onClose}
+          >
+            Fechar
+          </Button>
+
+          <Button
+            variant="accent"
+            fullWidth
+          > Baixar
+          </Button>
         </div>
       </div>
     </Modal>

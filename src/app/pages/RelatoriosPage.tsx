@@ -231,7 +231,7 @@ export default function RelatoriosPage() {
             onClick={handleDownloadTemplate}
             loading={isDownloadingTemplate}
             disabled={isDownloadingTemplate}
-            className="flex items-center gap-2 text-[#3b5ccc] font-bold text-[15px] px-1 rounded-none border-t-0 border-x-0 border-b-2 border-[#3b5ccc] bg-transparent hover:bg-transparent shadow-none"
+            className="flex items-center gap-2 text-[#3b5ccc] font-bold text-[15px] px-1 border-1 border-[#3b5ccc] bg-transparent hover:bg-[#3b5ccc]"
           >
             <FileDown size={20} strokeWidth={2.5} />
             Modelo de Relatório
@@ -273,7 +273,7 @@ export default function RelatoriosPage() {
 
         <div className="bg-white rounded-2xl border border-[#e5e7eb]">
           <div
-            className="sticky top-0 z-10 flex items-center border-b border-[#e5e7eb] px-6 bg-white rounded-t-2xl"
+            className="flex items-center border-b border-[#e5e7eb] px-6 bg-white rounded-t-2xl"
             data-onboarding="report-tabs"
           >
             <nav className="flex flex-1 gap-1" role="tablist">
@@ -327,7 +327,7 @@ export default function RelatoriosPage() {
                 <button
                   type="button"
                   onClick={() => setIsSprintModalOpen(true)}
-                  className="inline-flex items-center gap-2 rounded-lg bg-[#3b5ccc] px-4 py-2 text-sm font-medium text-white hover:bg-[#2f4bb0] transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-2 rounded-lg bg-[#3b5ccc] px-4 py-2 text-sm font-medium text-white hover:bg-[#4c6ef5] transition-colors cursor-pointer"
                 >
                   <Plus size={16} />
                   Novo Relatório
@@ -384,6 +384,11 @@ export default function RelatoriosPage() {
           onClose={() => setIsUploadModalOpen(false)}
           reportType={activeTab === "final" ? "final" : "andamento"}
           currentProject={currentProject?.name ?? ""}
+          hasExistingReport={
+            activeTab === "final"
+              ? finalReport.length > 0
+              : progressReport.length > 0
+          }
           onSuccess={() => {
             setRefreshKey((k) => k + 1);
           }}

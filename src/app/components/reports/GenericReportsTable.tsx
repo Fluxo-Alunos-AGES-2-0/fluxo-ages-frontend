@@ -82,7 +82,7 @@ export function GenericReportsTable({ data }: GenericReportsTableProps) {
                     setSelectedReport(report);
                     setIsModalOpen(true);
                   }}
-                  className="text-[#3b5ccc] hover:text-[#2a459c] transition-colors"
+                  className="text-[#3b5ccc] cursor-pointer hover:text-[#2a459c] transition-colors"
                 >
                   <MessageSquare size={20} />
                 </button>
