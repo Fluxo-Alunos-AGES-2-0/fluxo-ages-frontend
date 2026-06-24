@@ -5,7 +5,11 @@ interface TeacherFeedbackModalProps {
   isOpen: boolean;
   onClose: () => void;
   reportData: {
-    feedback: string;
+    feedback: {
+      comment: string | null;
+      revisionDate?: string | null;
+      teacherName?: string | null;
+    } | null;
   } | null;
 }
 
@@ -16,12 +20,24 @@ export function TeacherFeedbackModal({
 }: TeacherFeedbackModalProps) {
   if (!reportData) return null;
 
-  const mockTeacher = {
-    name: "Dilnei Venturini",
-  };
+  const hasFeedback = Boolean(reportData.feedback?.comment);
 
-  const mockLoremIpsum =
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras non leo et neque scelerisque malesuada. Duis et laoreet enim, a venenatis tortor. Ut congue urna eros. Nullam sagittis augue nec lacinia sollicitudin. Phasellus mattis enim in purus iaculis convallis. Duis tincidunt nisi quis urna suscipit, vel consectetur dui aliquet. Aenean aliquam magna quis urna commodo, ac lobortis neque mollis. Cras et sem nec quam auctor aliquet et eu odio. Vivamus aliquam tortor eu leo cursus placerat.\n\nMorbi tortor arcu, laoreet sed pulvinar at, tincidunt quis metus. Nam dignissim libero sed odio porta lacinia. Suspendisse sagittis nulla et vehicula commodo. Donec orci purus, malesuada sed auctor commodo, venenatis vitae nunc. Nullam venenatis accumsan tortor a maximus. Proin vitae velit ligula. Nam pharetra mi sed mattis accumsan. Curabitur ullamcorper neque non enim tempor, id placerat diam pretium. Suspendisse quis sapien nisi. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.\n\nDuis et interdum leo. Sed efficitur, quam in auctor gravida, augue nisl lobortis nunc, in scelerisque ante nisi at leo. Cras ante tellus, aliquet et facilisis id, ornare vitae ligula. Suspendisse auctor, sapien sit amet imperdiet mattis, nisi sapien semper erat, vitae tempor enim purus id tellus. In eu est ut massa mollis placenta ut a sem. Pellentesque eu aliquam eros. Nulla et tortor mollis, commodo justo.";
+  const handleDownloadFeedback = () => {
+    const commentText = reportData.feedback?.comment;
+    if (!commentText) return;
+
+    const blob = new Blob([commentText], {
+      type: "text/plain;charset=utf-8",
+    });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = "feedback-professor.txt";
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <Modal
@@ -32,7 +48,7 @@ export function TeacherFeedbackModal({
     >
       <div className="text-[#374151]">
         <p className="text-[14px] text-gray-400 border-b border-gray-100 pb-3 mb-4">
-          {mockTeacher.name}
+          {reportData.feedback?.teacherName || "Professor"}
         </p>
 
         {/* Seção de Comentário */}
@@ -42,7 +58,7 @@ export function TeacherFeedbackModal({
           </h4>
 
           <div
-            className="max-h-[360px] overflow-y-auto border border-gray-200 rounded-xl p-4 bg-white text-[14px] text-gray-600 leading-relaxed whitespace-pre-line
+            className="max-h-[360px] overflow-y-auto border border-gray-200 rounded-xl p-4 bg-white text-[14px] leading-relaxed whitespace-pre-line
             [&::-webkit-scrollbar]:w-1.5
             [&::-webkit-scrollbar-track]:bg-transparent
             [&::-webkit-scrollbar-thumb]:bg-gray-200
@@ -50,7 +66,15 @@ export function TeacherFeedbackModal({
             hover:[&::-webkit-scrollbar-thumb]:bg-gray-300
             [&::-webkit-scrollbar-button]:hidden"
           >
-            {reportData.feedback || mockLoremIpsum}
+            {hasFeedback ? (
+              <span className="text-gray-600">
+                {reportData.feedback?.comment}
+              </span>
+            ) : (
+              <span className="text-gray-400 italic">
+                Nenhum feedback enviado ainda.
+              </span>
+            )}
           </div>
         </div>
         <div className="mt-8 grid grid-cols-2 gap-4">
@@ -65,7 +89,15 @@ export function TeacherFeedbackModal({
           <Button
             variant="accent"
             fullWidth
-          > Baixar
+            disabled={!hasFeedback}
+            title={
+              hasFeedback
+                ? "Baixar feedback do professor"
+                : "Nenhum feedback disponível"
+            }
+            onClick={handleDownloadFeedback}
+          >
+            Baixar
           </Button>
         </div>
       </div>

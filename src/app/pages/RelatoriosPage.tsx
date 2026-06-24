@@ -39,11 +39,18 @@ const TABS: Tab[] = [
   { id: "final", label: "Final", hasProjectFilter: false },
 ];
 
+interface ReportFeedbackApiResponse {
+  comment: string | null;
+  correctionUrl: string | null;
+  revisionDate: string | null;
+  teacherName: string | null;
+}
+
 interface ReportApiResponse {
   date: string;
   project: string;
   grade: number;
-  feedback: string | null;
+  feedback: ReportFeedbackApiResponse | null;
   urlArchive: string | null;
 }
 
@@ -57,7 +64,7 @@ function toReportEntry(report: ReportApiResponse): ReportEntry {
     date: new Date(report.date).toLocaleDateString("pt-BR"),
     project: report.project,
     grade: report.grade,
-    feedback: report.feedback ?? "",
+    feedback: report.feedback,
     urlArchive: report.urlArchive ?? null,
   };
 }
