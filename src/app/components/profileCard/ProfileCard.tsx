@@ -143,7 +143,7 @@ function ProfileCard({ profile, loading, error }: ProfileCardProps) {
   }
 
   return (
-    <div ref={cardRef}>
+    <div ref={cardRef} className="h-full">
       <Card 
         title="Perfil do Estudante" 
         headerAction={
