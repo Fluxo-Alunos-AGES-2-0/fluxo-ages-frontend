@@ -22,7 +22,7 @@ export function HoursSummary({
 
   if (!isCurrentProject) {
     return (
-      <div className="mb-4 rounded-lg bg-blue-50 px-4 py-3 text-sm text-[#3b5ccc]">
+      <div className="mb-4 rounded-lg bg-blue-50 dark:bg-[#334155] px-4 py-3 text-sm text-[#3b5ccc] dark:text-[#F4F6F7] border border-transparent dark:border-[#334155]">
         <span className="font-semibold">{formatHours(doneSeconds)} concluídas</span>{" "}
         de {formatHours(totalSeconds)} totais.
       </div>
@@ -30,7 +30,7 @@ export function HoursSummary({
   }
 
   return (
-    <div className="mb-4 rounded-lg bg-blue-50 px-4 py-3 text-sm text-[#3b5ccc]">
+    <div className="mb-4 rounded-lg bg-blue-50 dark:bg-[#334155] px-4 py-3 text-sm text-[#3b5ccc] dark:text-[#F4F6F7] border border-transparent dark:border-[#334155]">
       <span className="font-semibold">
         {formatHours(doneSeconds)} concluídas
       </span>{" "}

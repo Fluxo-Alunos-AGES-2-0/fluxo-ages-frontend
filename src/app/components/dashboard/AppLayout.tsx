@@ -30,7 +30,7 @@ export function AppLayout() {
               <Sidebar />
               <div className="flex flex-col h-screen overflow-hidden">
                 <TopBar />
-                <div className="flex-1 p-6 overflow-y-auto bg-[#f3f4f6]">
+                <div className="flex-1 p-6 overflow-y-auto bg-[#f3f4f6] dark:bg-[#0F172A]">
                   <Outlet />
                 </div>
               </div>

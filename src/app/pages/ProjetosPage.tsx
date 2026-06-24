@@ -98,58 +98,69 @@ export function ProjetosPage() {
       <OnboardingTooltip steps={PROJETOS_STEPS} />
 
       <div className="w-full flex flex-col gap-6 font-sans">
-      {/* Header Superior de Visão Geral */}
-      <div className="bg-white rounded-2xl border border-[#6B728030] p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm" data-onboarding="projetos-header">
-        <div className="flex items-center gap-3" data-onboarding="projetos-status-badges">
-          <div className="p-3 bg-[#3B5CCC15] text-[#3B5CCC] rounded-2xl">
-            <FolderOpen size={24} />
+        {/* Header Superior de Visão Geral */}
+        <div
+          className="bg-white dark:bg-[#1E293B] rounded-2xl border border-[#6B728030] dark:border-[#334155] p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm"
+          data-onboarding="projetos-header"
+        >
+          <div
+            className="flex items-center gap-3"
+            data-onboarding="projetos-status-badges"
+          >
+            <div className="p-3 bg-[#3B5CCC15] dark:bg-[#334155] text-[#3B5CCC] dark:text-[#94A3B8] rounded-2xl">
+              <FolderOpen size={24} />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-[#1F2937] dark:text-[#F4F6F7]">
+                Mapa de Projetos
+              </h2>
+              <p className="text-sm text-[#6B7280] dark:text-[#94A3B8]">
+                Todos os projetos em que você participou
+              </p>
+            </div>
           </div>
-          <div>
-            <h2 className="text-lg font-bold text-[#1F2937]">
-              Mapa de Projetos
-            </h2>
-            <p className="text-sm text-[#6B7280]">
-              Todos os projetos em que você participou
-            </p>
+
+          {/* Badges de Contagem global */}
+          <div className="flex items-center gap-3">
+            <span className="inline-flex leading-none items-center gap-1 bg-[#F47B2015] text-[#F47B20] border border-orange-100 px-3 py-2 rounded-xl text-sm font-semibold">
+              <Zap fill="#F47B20" size={14} />
+              {activeCount} ativo
+            </span>
+            <span className="inline-flex items-center gap-1 bg-[#00A63E20] leading-none text-[#00A63E] border border-[#00A63E40] px-3 py-2 rounded-xl text-sm font-semibold">
+              <CircleCheckBig size={14} />
+              {completedCount} concluídos
+            </span>
           </div>
         </div>
 
-        {/* Badges de Contagem global */}
-        <div className="flex items-center gap-3">
-          <span className="inline-flex leading-none items-center gap-1 bg-[#F47B2015] text-[#F47B20] border border-orange-100 px-3 py-2 rounded-xl text-sm font-semibold">
-            <Zap fill="#F47B20" size={14} />
-            {activeCount} ativo
-          </span>
-          <span className="inline-flex items-center gap-1 bg-[#00A63E20] leading-none text-[#00A63E] border border-[#00A63E40] px-3 py-2 rounded-xl text-sm font-semibold">
-            <CircleCheckBig size={14} />
-            {completedCount} concluídos
-          </span>
-        </div>
-      </div>
+        {loading && (
+          <div className="text-center text-[#6B7280] dark:text-[#94A3B8] py-10">
+            Carregando projetos...
+          </div>
+        )}
 
-      {loading && (
-        <div className="text-center text-[#6B7280] py-10">
-          Carregando projetos...
-        </div>
-      )}
+        {!loading && error && (
+          <div className="text-center text-red-600 dark:text-red-400 py-10">
+            {error}
+          </div>
+        )}
 
-      {!loading && error && (
-        <div className="text-center text-red-600 py-10">{error}</div>
-      )}
+        {!loading && !error && projects.length === 0 && (
+          <div className="text-center text-[#6B7280] dark:text-[#94A3B8] py-10">
+            Nenhum projeto encontrado.
+          </div>
+        )}
 
-      {!loading && !error && projects.length === 0 && (
-        <div className="text-center text-[#6B7280] py-10">
-          Nenhum projeto encontrado.
-        </div>
-      )}
-
-      {!loading && !error && projects.length > 0 && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-10" data-onboarding="projetos-grid">
-          {projects.map((project) => (
-            <ProjectCard key={project.id} project={project} />
-          ))}
-        </div>
-      )}
+        {!loading && !error && projects.length > 0 && (
+          <div
+            className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-10"
+            data-onboarding="projetos-grid"
+          >
+            {projects.map((project) => (
+              <ProjectCard key={project.id} project={project} />
+            ))}
+          </div>
+        )}
       </div>
     </>
   );
@@ -177,11 +188,15 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
   return (
     <div
       onClick={handleDetailsClick}
-      className="bg-white rounded-2xl border border-[#6B728030] overflow-hidden shadow-sm flex flex-col justify-between h-full cursor-pointer hover:shadow-md transition-shadow relative"
+      className="bg-white dark:bg-[#1E293B] rounded-2xl border border-[#6B728030] dark:border-[#334155] overflow-hidden shadow-sm flex flex-col justify-between h-full cursor-pointer hover:shadow-md dark:hover:border-[#3B5CCC] transition-all relative"
     >
       {/*Barra superior colorida baseada no status */}
       <div
-        className={`h-[4px] w-full ${isAtivo ? "bg-[#F47B20]" : "bg-[#3B5CCC]"}`}
+        className={`p-2 rounded-lg ${
+          isAtivo
+            ? "bg-[#F47B2015] text-[#F47B20]"
+            : "bg-[#3B5CCC15] dark:bg-[#334155] text-[#3B5CCC]"
+        }`}
       />
 
       <div className="p-6 flex flex-col gap-4 flex-1">
@@ -193,7 +208,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
             >
               <FolderOpen size={20} />
             </div>
-            <h3 className="text-lg font-bold text-[#1F2937]">{project.name}</h3>
+            <h3 className="text-lg font-bold text-[#1F2937] dark:text-[#F4F6F7]">{project.name}</h3>
           </div>
 
           {/* Badge de Status */}
@@ -219,7 +234,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
         </div>
 
         {/* Metadados */}
-        <div className="flex items-center gap-4 text-xs font-medium text-[#6B7280]">
+        <div className="flex items-center gap-4 text-xs font-medium text-[#6B7280] dark:text-[#94A3B8]">
           <span className="flex items-center gap-1">
             <Calendar size={14} />
             {project.semesterYear ?? "—"}
@@ -233,7 +248,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
         </div>
 
         {/* Descrição */}
-        <p className="text-sm text-[#6B7280] leading-relaxed line-clamp-3">
+        <p className="text-sm text-[#6B7280] dark:text-[#94A3B8] leading-relaxed line-clamp-3">
           {project.summary}
         </p>
 
@@ -242,7 +257,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
           {project.technologies.map((tag) => (
             <span
               key={tag}
-              className="inline px-2.5 py-1 bg-[#6B728010] border border-[#6B728030] text-[#6B7280] rounded-full text-xs font-semibold"
+              className="inline px-2.5 py-1 bg-[#6B728010] dark:bg-[#334155] border border-[#6B728030] dark:border-[#334155] text-[#6B7280] dark:text-[#94A3B8] rounded-full text-xs font-semibold"
             >
               {tag}
             </span>
@@ -251,7 +266,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
       </div>
 
       {/* Divisor */}
-      <div className="border-t border-[#6B728030] mx-6" />
+      <div className="border-t border-[#6B728030] dark:border-[#334155] mx-6" />
 
       {/* Botões de Ação */}
       <div className="p-6 pt-4 grid grid-cols-2 gap-3 ">
@@ -272,7 +287,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
             e.stopPropagation();
             handleDetailsClick();
           }}
-          className="!font-semibold border !border-[#6B728030] bg-transparent hover:bg-[#6B728010] !text-[#3B5CCC]"
+          className="!font-semibold border !border-[#6B728030] dark:!border-[#334155] bg-transparent hover:bg-[#6B728010] dark:hover:bg-[#334155] !text-[#3B5CCC]"
         >
           Ver detalhes
         </Button>

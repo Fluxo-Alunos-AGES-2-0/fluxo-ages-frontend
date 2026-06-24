@@ -44,12 +44,12 @@ function ProfileCard({ profile, loading, error }: ProfileCardProps) {
     return (
       <Card title="Perfil do Estudante">
         <div className="flex flex-col gap-3 animate-pulse">
-          <div className="w-14 h-14 rounded-full bg-gray-200" />
-          <div className="w-3/5 h-4 rounded bg-gray-200" />
-          <div className="w-2/5 h-3 rounded bg-gray-200" />
-          <div className="w-full h-3.5 rounded bg-gray-200" />
-          <div className="w-full h-3.5 rounded bg-gray-200" />
-          <div className="w-full h-3.5 rounded bg-gray-200" />
+          <div className="w-14 h-14 rounded-full bg-gray-200 dark:bg-[#334155]" />
+          <div className="w-3/5 h-4 rounded bg-gray-200 dark:bg-[#334155]" />
+          <div className="w-2/5 h-3 rounded bg-gray-200 dark:bg-[#334155]" />
+          <div className="w-full h-3.5 rounded bg-gray-200 dark:bg-[#334155]" />
+          <div className="w-full h-3.5 rounded bg-gray-200 dark:bg-[#334155]" />
+          <div className="w-full h-3.5 rounded bg-gray-200 dark:bg-[#334155]" />
         </div>
       </Card>
     );
@@ -67,72 +67,72 @@ function ProfileCard({ profile, loading, error }: ProfileCardProps) {
           </div>
 
           <div>
-            <h3 className="font-semibold">{nome}</h3>
-            <p className="text-sm text-muted-foreground">{email}</p>
+            <h3 className="font-semibold text-[#1f2937] dark:text-[#F4F6F7]">{nome}</h3>
+            <p className="text-sm text-[#6b7280] dark:text-[#94A3B8]">{email}</p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-[#334155] text-[#334155] dark:text-[#F4F6F7] flex items-center justify-center">
             <Folder size={16} />
           </div>
 
           <div>
-            <small className="text-xs text-muted-foreground">
+            <small className="text-xs text-[#6b7280] dark:text-[#94A3B8]">
               PROJETO ATUAL
             </small>
-            <p className="font-medium">{projeto}</p>
+            <p className="font-medium text-[#1f2937] dark:text-[#F4F6F7]">{projeto}</p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-[#334155] text-[#334155] dark:text-[#F4F6F7] flex items-center justify-center">
             <GraduationCap size={16} />
           </div>
 
           <div>
-            <small className="text-xs text-muted-foreground">PROFESSOR</small>
-            <p className="font-medium">{professor}</p>
+            <small className="text-xs text-[#6b7280] dark:text-[#94A3B8]">PROFESSOR</small>
+            <p className="font-medium text-[#1f2937] dark:text-[#F4F6F7]">{professor}</p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-[#334155] text-[#334155] dark:text-[#F4F6F7] flex items-center justify-center">
             <CircleStar size={16} />
           </div>
 
           <div>
-            <small className="text-xs text-muted-foreground">NÍVEL AGES</small>
-            <p className="font-medium">{agesLevel}</p>
+            <small className="text-xs text-[#6b7280] dark:text-[#94A3B8]">NÍVEL AGES</small>
+            <p className="font-medium text-[#1f2937] dark:text-[#F4F6F7]">{agesLevel}</p>
           </div>
         </div>
 
-        <hr />
+        <hr className="border-[#e5e7eb] dark:border-[#334155]"/>
 
         <button
-          className="opacity-70 flex justify-between items-center gap-3 p-3 rounded-lg cursor-pointer border-none bg-transparent w-full hover:opacity-100 hover:bg-slate-50 transition-all"
+          className="opacity-70 flex justify-between items-center gap-3 p-3 rounded-lg cursor-pointer border-none bg-transparent dark:bg-[#334155]/60 w-full hover:opacity-100 hover:bg-slate-50 dark:hover:bg-[#334155] transition-all"
           onClick={() => setIsModalOpen(true)}
         >
           <div className="flex flex-col items-center">
-            <span>Aulas</span>
-            <b>{aulas}</b>
+            <span className="text-[#6b7280] dark:text-[#94A3B8]">Aulas</span>
+            <b className="text-[#1f2937] dark:text-[#F4F6F7]">{aulas}</b>
           </div>
 
           <div className="flex flex-col items-center">
-            <span>Presenças</span>
+            <span className="text-[#6b7280] dark:text-[#94A3B8]">Presenças</span>
             <b className="text-green-600">{presencas}</b>
           </div>
 
           <div className="flex flex-col items-center">
-            <span>Faltas</span>
+            <span className="text-[#6b7280] dark:text-[#94A3B8]">Faltas</span>
             <b className="text-red-600">{faltas}</b>
           </div>
         </button>
       </div>
 
-      <FrequenciaModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+      <FrequenciaModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
       />
     </Card>
   );

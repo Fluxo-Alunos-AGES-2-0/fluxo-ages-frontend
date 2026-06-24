@@ -76,7 +76,7 @@ export default function ProjetoDetalhesPage() {
   if (loading) {
     return (
       <div className="w-full flex flex-col gap-6 font-sans">
-        <div className="bg-white rounded-2xl border border-[#6B728030] p-6 shadow-sm text-center text-[#6B7280] py-10">
+        <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-[#6B728030] dark:border-[#334155] p-6 shadow-sm text-center text-[#6B7280] dark:text-[#94A3B8] py-10">
           Carregando detalhes do projeto...
         </div>
       </div>
@@ -86,11 +86,11 @@ export default function ProjetoDetalhesPage() {
   if (error || !project) {
     return (
       <div className="w-full flex flex-col gap-6 font-sans">
-        <div className="bg-white rounded-2xl border border-[#6B728030] p-6 shadow-sm">
-          <h2 className="text-lg font-bold text-[#1F2937]">
+        <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-[#6B728030] dark:border-[#334155] p-6 shadow-sm">
+          <h2 className="text-lg font-bold text-[#1F2937] dark:text-[#F4F6F7]">
             Projeto não encontrado
           </h2>
-          <p className="text-sm text-[#6B7280] mt-1">
+          <p className="text-sm text-[#6B7280] dark:text-[#94A3B8] mt-1">
             {error ?? "O projeto solicitado não existe ou não está disponível."}
           </p>
 
@@ -116,15 +116,15 @@ export default function ProjetoDetalhesPage() {
 
   return (
     <div className="w-full flex flex-col gap-6 font-sans">
-      <div className="bg-white rounded-2xl border border-[#6B728030] shadow-sm overflow-hidden">
-        <div className="p-6 pb-4 flex items-start justify-between gap-4 border-b border-[#6B728030]">
+      <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-[#6B728030] dark:border-[#334155] shadow-sm overflow-hidden">
+        <div className="p-6 pb-4 flex items-start justify-between gap-4 border-b border-[#6B728030] dark:border-[#334155]">
           <div className="flex items-end gap-3">
             <h2 className="text-4xl font-bold text-[#F47B20]">
               {project.name}
             </h2>
 
             {project.period && (
-              <span className="text-sm text-[#6B7280] mb-[2px]">
+              <span className="text-sm text-[#6B7280] dark:text-[#94A3B8] mb-[2px]">
                 {project.period}
               </span>
             )}
@@ -154,7 +154,7 @@ export default function ProjetoDetalhesPage() {
             <button
               type="button"
               onClick={() => navigate("/projetos")}
-              className="cursor-pointer text-[#94A3B8] hover:text-[#1F2937] transition-colors"
+              className="cursor-pointer text-[#94A3B8] hover:text-[#1F2937] dark:hover:text-[#F4F6F7] transition-colors"
               aria-label="Voltar para projetos"
             >
               <X size={30} />
@@ -172,14 +172,14 @@ export default function ProjetoDetalhesPage() {
                   className="w-full h-[260px] object-cover"
                 />
               ) : (
-                <div className="w-full h-[260px] bg-[#EEF3FF] flex items-center justify-center text-[#3B5CCC]">
+                <div className="w-full h-[260px] bg-[#F9FAFB] dark:bg-[#334155] flex items-center justify-center text-[#3B5CCC]">
                   <FolderOpen size={48} />
                 </div>
               )}
             </div>
 
             <div className="flex flex-col gap-3">
-              <h3 className="flex items-center gap-2 text-sm font-bold text-[#1F2937]">
+              <h3 className="flex items-center gap-2 text-sm font-bold text-[#1F2937] dark:text-[#F4F6F7]">
                 <Users size={16} className="text-[#3B5CCC]" />
                 Equipe
               </h3>
@@ -189,13 +189,13 @@ export default function ProjetoDetalhesPage() {
                   project.team.map((member) => (
                     <span
                       key={member.id}
-                      className="px-3 py-1.5 rounded-full bg-[#6B728010] border border-[#6B728030] text-xs font-semibold text-[#6B7280]"
+                      className="px-3 py-1.5 rounded-full bg-[#6B728010] dark:bg-[#334155] border border-[#6B728030] dark:border-[#334155] text-xs font-semibold text-[#6B7280] dark:text-[#94A3B8]"
                     >
                       {member.name}
                     </span>
                   ))
                 ) : (
-                  <span className="text-xs text-[#6B7280]">
+                  <span className="text-xs text-[#6B7280] dark:text-[#94A3B8]">
                     Nenhum membro cadastrado.
                   </span>
                 )}
@@ -203,14 +203,14 @@ export default function ProjetoDetalhesPage() {
 
               {project.technologies.length > 0 && (
                 <div className="mt-4 flex flex-col gap-3">
-                  <h3 className="text-sm font-bold text-[#1F2937]">
+                  <h3 className="text-sm font-bold text-[#1F2937] dark:text-[#F4F6F7]">
                     Tecnologias
                   </h3>
                   <div className="flex flex-wrap gap-2">
                     {project.technologies.map((tech) => (
                       <span
                         key={tech}
-                        className="px-3 py-1.5 rounded-full bg-[#3B5CCC10] border border-[#3B5CCC30] text-xs font-semibold text-[#3B5CCC]"
+                        className="px-3 py-1.5 rounded-full bg-[#3B5CCC10] dark:bg-[#334155] border border-[#3B5CCC30] dark:border-[#334155] text-xs font-semibold text-[#3B5CCC] dark:text-[#94A3B8]"
                       >
                         {tech}
                       </span>
@@ -222,16 +222,16 @@ export default function ProjetoDetalhesPage() {
           </div>
 
           <div className="lg:col-span-2">
-            <div className="bg-[#EEF3FF] rounded-xl p-6 min-h-[390px] flex flex-col justify-between">
+            <div className="bg-[#EEF3FF] dark:bg-[#1E293B] rounded-xl p-6 min-h-[390px] flex flex-col justify-between">
               <div className="flex flex-col gap-5">
-                <p className="text-sm text-[#6B7280] leading-relaxed">
+                <p className="text-sm text-[#6B7280] dark:text-[#94A3B8] leading-relaxed">
                   {project.description}
                 </p>
 
-                <div className="flex flex-col gap-3 text-sm text-[#6B7280]">
+                <div className="flex flex-col gap-3 text-sm text-[#6B7280] dark:text-[#94A3B8]">
                   {project.teacher && (
                     <p>
-                      <span className="font-semibold text-[#6B7280]">
+                      <span className="font-semibold text-[#6B7280] dark:text-[#94A3B8]">
                         Orientador(a):
                       </span>{" "}
                       {project.teacher.name}
@@ -240,7 +240,7 @@ export default function ProjetoDetalhesPage() {
 
                   <p className="flex items-center gap-1">
                     <Users size={15} />
-                    <span>
+                    <span className="text-[#6B7280] dark:text-[#94A3B8]">
                       {toAgesLevel(project.agesLevel ?? undefined)} ·{" "}
                       {project.membersCount} membros
                       {project.semesterYear ? ` · ${project.semesterYear}` : ""}
