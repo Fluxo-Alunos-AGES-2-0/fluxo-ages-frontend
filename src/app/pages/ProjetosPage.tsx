@@ -39,6 +39,12 @@ const PROJETOS_STEPS = [
   },
 ];
 
+interface ProjectTechnology {
+  id: number;
+  name: string;
+  iconUrl: string | null;
+}
+
 interface ProjectListItem {
   id: number;
   name: string;
@@ -50,7 +56,7 @@ interface ProjectListItem {
   agesLevel: number | null;
   gitLabLink: string | null;
   membersCount: number;
-  technologies: string[];
+  technologies: ProjectTechnology[];
   thumbnailUrl: string | null;
   groupPhotoUrl: string | null;
 }
@@ -174,7 +180,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
     window.open(project.gitLabLink, "_blank", "noopener,noreferrer");
   };
 
-  return (
+  return(
     <div
       onClick={handleDetailsClick}
       className="bg-white rounded-2xl border border-[#6B728030] overflow-hidden shadow-sm flex flex-col justify-between h-full cursor-pointer hover:shadow-md transition-shadow relative"
@@ -239,16 +245,15 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
 
         {/* Tags de tecnologias */}
         <div className="flex flex-wrap gap-2 mt-auto pt-2">
-          {project.technologies.map((tag) => (
+          {project.technologies.map((tech) => (
             <span
-              key={tag}
+              key={tech.id} // <-- Use o id como key única
               className="inline px-2.5 py-1 bg-[#6B728010] border border-[#6B728030] text-[#6B7280] rounded-full text-xs font-semibold"
             >
-              {tag}
+              {tech.name} {/* <-- Renderize apenas a string do nome */}
             </span>
           ))}
         </div>
-      </div>
 
       {/* Divisor */}
       <div className="border-t border-[#6B728030] mx-6" />
@@ -277,6 +282,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
           Ver detalhes
         </Button>
       </div>
+    </div>
     </div>
   );
 };

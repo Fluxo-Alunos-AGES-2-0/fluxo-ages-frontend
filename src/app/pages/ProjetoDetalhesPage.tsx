@@ -57,7 +57,7 @@ export default function ProjetoDetalhesPage() {
   const [project, setProject] = useState<ProjectDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+  const [imageErrors, setImageErrors] = useState<Record<number, boolean>>({});
   const [expandedLevel, setExpandedLevel] = useState<number | null>(null);
 
   useEffect(() => {
@@ -128,8 +128,8 @@ export default function ProjetoDetalhesPage() {
   };
 
   return (
-    <div className="w-full flex flex-col gap-6 font-sans pb-10">
-      <div className="bg-white rounded-2xl border border-[#6B728030] shadow-sm overflow-hidden">
+    <div className="w-full flex flex-col gap-6 font-sans">
+      <div className="bg-white rounded-2xl border border-[#6B728030] shadow-sm overflow-hidden relative">
         
         {/* Cabeçalho */}
         <div className="p-6 pb-4 flex items-center justify-between gap-4 border-b border-[#6B728030]">
@@ -204,10 +204,10 @@ export default function ProjetoDetalhesPage() {
                 <img
                   src={bannerUrl}
                   alt={`Equipe do projeto ${project.name}`}
-                  className="w-full h-[320px] object-cover"
+                  className="w-full h-[280px] object-cover" // Reduzido de 320px para 280px
                 />
               ) : (
-                <div className="w-full h-[320px] bg-[#EEF3FF] flex items-center justify-center text-[#3B5CCC]">
+                <div className="w-full h-[280px] bg-[#EEF3FF] flex items-center justify-center text-[#3B5CCC]">
                   <Users size={64} opacity={0.5} />
                 </div>
               )}
@@ -230,16 +230,16 @@ export default function ProjetoDetalhesPage() {
                       {isExpanded ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
                       {toAgesLevel(level)}
                     </button>
-
                     {isExpanded && (
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pl-6 animate-in fade-in slide-in-from-top-2 duration-200 mt-2 mb-2">
                         {levelMembers.map((member) => (
                           <div key={member.id} className="flex items-center gap-3">
-                            {member.avatarUrl ? (
+                            {member.avatarUrl && !imageErrors[member.id] ? (
                               <img 
                                 src={member.avatarUrl} 
                                 alt={member.name} 
                                 className="w-10 h-10 rounded-full object-cover shadow-sm border border-slate-100" 
+                                onError={() => setImageErrors(prev => ({ ...prev, [member.id]: true }))}
                               />
                             ) : (
                               <div className="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 font-bold text-sm shadow-sm">
