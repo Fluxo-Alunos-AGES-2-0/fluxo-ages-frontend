@@ -170,7 +170,7 @@ export default function ProjetoDetalhesPage() {
 
   const isAtivo = project.projectStatus === "EM_ANDAMENTO";
   const canEditProject = isAtivo && project.agesLevel === 4;
-  const bannerUrl = project.groupPhotoUrl ?? project.thumbnailUrl ?? "";
+  const bannerUrl = project.groupPhotoUrl ?? "";
 
   const agesLevels = [1, 2, 3, 4];
 
@@ -363,7 +363,7 @@ export default function ProjetoDetalhesPage() {
             {/* Ícone/Thumbnail do Projeto */}
             {project.thumbnailUrl ? (
               <img
-                src={project.thumbnailUrl}
+                src={toDisplayImageUrl(project.thumbnailUrl)}
                 alt={`Logo ${project.name}`}
                 className="w-14 h-14 rounded-xl border border-slate-100 object-contain p-1 shadow-sm"
               />
@@ -498,8 +498,8 @@ export default function ProjetoDetalhesPage() {
               <div className="rounded-xl overflow-hidden border-b-4 border-[#F47B20] shadow-sm">
                 {bannerUrl ? (
                   <img
-                    src={bannerUrl}
-                    alt={`Equipe do projeto ${project.name}`}
+                    src={toDisplayImageUrl(bannerUrl)}
+                    alt={`Foto do grupo do projeto ${project.name}`}
                     className="w-full h-[280px] object-cover"
                   />
                 ) : (
