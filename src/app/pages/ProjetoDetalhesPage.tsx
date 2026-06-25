@@ -35,6 +35,12 @@ interface ProjectTeamMember {
   agesLevel: number;
 }
 
+interface ProjectTechnology {
+  id: number;
+  name: string;
+  iconUrl: string | null;
+}
+
 interface ProjectDetails {
   id: number;
   name: string;
@@ -47,7 +53,7 @@ interface ProjectDetails {
   gitLabLink: string | null;
   teacher: ProjectTeacher | null;
   team: ProjectTeamMember[];
-  technologies: string[];
+  technologies: ProjectTechnology[];
   thumbnailUrl: string | null;
   groupPhotoUrl: string | null;
 }
@@ -623,12 +629,20 @@ export default function ProjetoDetalhesPage() {
                 </h3>
                 <div className="flex flex-wrap gap-x-6 gap-y-5">
                   {project.technologies.map((tech) => (
-                    <div key={tech} className="flex flex-col items-center justify-start w-16 gap-2">
-                      <div className="w-11 h-11 rounded-xl bg-[#f8fafc] dark:bg-[#334155] border border-[#e2e8f0] dark:border-[#31405A] flex items-center justify-center text-[#94a3b8] dark:text-[#94A3B8] shadow-sm">
-                        <Code2 size={20} />
-                      </div>
+                    <div key={tech.id} className="flex flex-col items-center justify-start w-16 gap-2">
+                      {tech.iconUrl ? (
+                        <img
+                          src={tech.iconUrl}
+                          alt={`Ícone ${tech.name}`}
+                          className="w-11 h-11 object-contain drop-shadow-sm"
+                        />
+                      ) : (
+                        <div className="w-11 h-11 rounded-xl bg-[#f8fafc] dark:bg-[#334155] border border-[#e2e8f0] dark:border-[#31405A] flex items-center justify-center text-[#94a3b8] dark:text-[#94A3B8] shadow-sm">
+                          <Code2 size={20} />
+                        </div>
+                      )}
                       <span className="text-[11px] text-center text-slate-600 dark:text-[#94A3B8] font-semibold leading-tight break-words w-full">
-                        {tech}
+                        {tech.name}
                       </span>
                     </div>
                   ))}
