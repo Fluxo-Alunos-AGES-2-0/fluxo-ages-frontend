@@ -95,7 +95,7 @@ export default function DashboardPage() {
     <>
       <OnboardingTooltip steps={DASHBOARD_STEPS} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 lg:rows-[auto_1fr] lg:h-full gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 lg:grid-rows-[auto_1fr] lg:h-full gap-6">
         <div className="lg:col-span-1 flex flex-col" data-onboarding="profile-card">
           <ProfileCard profile={profile} loading={loading} error={error} />
         </div>

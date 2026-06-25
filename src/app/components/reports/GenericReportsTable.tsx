@@ -3,11 +3,18 @@ import { Download, MessageSquare } from "lucide-react";
 import { TeacherFeedbackModal } from "./TeacherFeedbackModal";
 import { resolveFileUrl } from "../../services/api";
 
+export interface ReportFeedback {
+  comment: string | null;
+  correctionUrl?: string | null;
+  revisionDate?: string | null;
+  teacherName?: string | null;
+}
+
 export interface ReportEntry {
   date: string;
   project: string;
   grade: number;
-  feedback: string;
+  feedback: ReportFeedback | null;
   urlArchive?: string | null;
 }
 
@@ -75,17 +82,28 @@ export function GenericReportsTable({ data }: GenericReportsTableProps) {
               </td>
 
               <td className="px-6 py-4 text-center">
-                <button
-                  type="button"
-                  title="Ver feedback"
-                  onClick={() => {
-                    setSelectedReport(report);
-                    setIsModalOpen(true);
-                  }}
-                  className="text-[#3b5ccc] hover:text-[#2a459c] transition-colors"
-                >
-                  <MessageSquare size={20} />
-                </button>
+                {report.feedback?.comment ? (
+                  <button
+                    type="button"
+                    title="Ver feedback"
+                    onClick={() => {
+                      setSelectedReport(report);
+                      setIsModalOpen(true);
+                    }}
+                    className="text-[#3b5ccc] cursor-pointer hover:text-[#2a459c] transition-colors"
+                  >
+                    <MessageSquare size={20} />
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    disabled
+                    title="Nenhum feedback foi enviado ainda"
+                    className="text-[#3b5ccc] opacity-50 cursor-not-allowed"
+                  >
+                    <MessageSquare size={20} />
+                  </button>
+                )}
               </td>
 
               <td className="px-6 py-4 text-center">
