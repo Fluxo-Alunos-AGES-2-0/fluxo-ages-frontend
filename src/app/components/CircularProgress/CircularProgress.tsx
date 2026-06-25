@@ -33,7 +33,7 @@ export const CircularProgress: React.FC<CircularProgressProps> = ({
           cy={center}
           r={radius}
           strokeWidth={strokeWidth}
-          className="stroke-[#e5e7eb] fill-transparent"
+          className="stroke-[#e5e7eb] dark:stroke-[#31405A] fill-transparent"
         />
         <circle
           cx={center}
@@ -49,13 +49,13 @@ export const CircularProgress: React.FC<CircularProgressProps> = ({
 
       <div className="text-center z-[1]">
         <span
-          className="font-bold text-[#1f2937] block"
+          className="font-bold text-[#1f2937] dark:text-[#F4F6F7] block"
           style={{ fontSize: size * 0.22 }}
         >
           {validPercentage}%
         </span>
         <span
-          className="text-[#6b7280] uppercase tracking-wide font-normal block"
+          className="text-[#6b7280] dark:text-[#94A3B8] uppercase tracking-wide font-normal block"
           style={{ fontSize: size * 0.07 }}
         >
           Concluído

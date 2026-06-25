@@ -99,7 +99,7 @@ const TimerCardContent = ({ onConfirmFinish }: TimerCardContentProps) => {
   };
 
   const timerChildClass =
-    "w-full flex flex-col items-center p-6 gap-6 border-b border-slate-100 last:border-none";
+    "w-full flex flex-col items-center p-6 gap-6 border-b border-slate-100 dark:border-[#31405A] last:border-none";
 
   return (
     <>

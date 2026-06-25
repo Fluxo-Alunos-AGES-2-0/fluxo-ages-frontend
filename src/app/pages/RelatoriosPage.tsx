@@ -272,7 +272,7 @@ export default function RelatoriosPage() {
 
       <div className="flex flex-col gap-5">
         <div className="flex items-center gap-2.5">
-          <FileText size={20} className="text-[#3b5ccc]" strokeWidth={1.8} />
+          <FileText size={20} className="text-[#3b5ccc] dark:text-[#4E6CFF]" strokeWidth={1.8} />
           <h2 className="text-[18px] font-bold text-[#1f2937] dark:text-[#F4F6F7] m-0 leading-none">
             Relatórios
           </h2>
@@ -352,7 +352,7 @@ export default function RelatoriosPage() {
                   </div>
                 )}
                 {!loading && error && (
-                  <div className="text-center text-red-600 py-10">{error}</div>
+                  <div className="text-center text-red-600 dark:text-red-400 py-10">{error}</div>
                 )}
                 {!loading && !error && (
                   <>

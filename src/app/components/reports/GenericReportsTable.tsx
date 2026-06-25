@@ -30,54 +30,54 @@ export function GenericReportsTable({ data }: GenericReportsTableProps) {
 
   if (!data || !Array.isArray(data) || data.length === 0) {
     return (
-      <div className="text-center text-[#6b7280] py-10">
+      <div className="text-center text-[#6b7280] dark:text-[#94A3B8] py-10">
         Nenhum relatório encontrado.
       </div>
     );
   }
 
   return (
-    <div className="overflow-hidden border border-[#e5e7eb] rounded-xl">
+    <div className="overflow-hidden border border-[#e5e7eb] dark:border-[#31405A] rounded-xl">
       <table className="w-full table-fixed border-collapse">
         <thead>
-          <tr className="bg-[#f9fafb] border-b border-[#e5e7eb]">
-            <th className="w-[22%] px-6 py-4 text-left text-[13px] font-semibold text-[#6b7280]">
+          <tr className="bg-[#f9fafb] dark:bg-[#1A2438] border-b border-[#e5e7eb] dark:border-[#31405A]">
+            <th className="w-[22%] px-6 py-4 text-left text-[13px] font-semibold text-[#6b7280] dark:text-[#94A3B8]">
               Data de criação
             </th>
 
-            <th className="w-[38%] px-6 py-4 text-left text-[13px] font-semibold text-[#6b7280]">
+            <th className="w-[38%] px-6 py-4 text-left text-[13px] font-semibold text-[#6b7280] dark:text-[#94A3B8]">
               Projeto
             </th>
 
-            <th className="w-[14%] px-6 py-4 text-left text-[13px] font-semibold text-[#6b7280]">
+            <th className="w-[14%] px-6 py-4 text-left text-[13px] font-semibold text-[#6b7280] dark:text-[#94A3B8]">
               Nota
             </th>
 
-            <th className="w-[13%] px-6 py-4 text-center text-[13px] font-semibold text-[#6b7280]">
+            <th className="w-[13%] px-6 py-4 text-center text-[13px] font-semibold text-[#6b7280] dark:text-[#94A3B8]">
               Feedback
             </th>
 
-            <th className="w-[13%] px-6 py-4 text-center text-[13px] font-semibold text-[#6b7280]">
+            <th className="w-[13%] px-6 py-4 text-center text-[13px] font-semibold text-[#6b7280] dark:text-[#94A3B8]">
               Download
             </th>
           </tr>
         </thead>
 
-        <tbody className="divide-y divide-[#e5e7eb]">
+        <tbody className="divide-y divide-[#e5e7eb] dark:divide-[#31405A]">
           {data.map((report, index) => (
             <tr
               key={`${report.date}-${report.project}-${index}`}
-              className="hover:bg-gray-50 transition-colors"
+              className="hover:bg-gray-50 dark:hover:bg-[#253657] transition-colors"
             >
-              <td className="px-6 py-4 text-[14px] text-[#374151]">
+              <td className="px-6 py-4 text-[14px] text-[#374151] dark:text-[#F4F6F7]">
                 {report.date}
               </td>
 
-              <td className="px-6 py-4 text-[14px] text-[#374151] font-medium truncate">
+              <td className="px-6 py-4 text-[14px] text-[#374151] dark:text-[#F4F6F7] font-medium truncate">
                 {report.project}
               </td>
 
-              <td className="px-6 py-4 text-[14px] text-[#374151]">
+              <td className="px-6 py-4 text-[14px] text-[#374151] dark:text-[#F4F6F7]">
                 {report.grade?.toFixed(1) ?? "-"}
               </td>
 
@@ -90,7 +90,7 @@ export function GenericReportsTable({ data }: GenericReportsTableProps) {
                       setSelectedReport(report);
                       setIsModalOpen(true);
                     }}
-                    className="text-[#3b5ccc] cursor-pointer hover:text-[#2a459c] transition-colors"
+                    className="text-[#3b5ccc] dark:text-[#4E6CFF] cursor-pointer hover:text-[#2a459c] transition-colors"
                   >
                     <MessageSquare size={20} />
                   </button>
@@ -99,7 +99,7 @@ export function GenericReportsTable({ data }: GenericReportsTableProps) {
                     type="button"
                     disabled
                     title="Nenhum feedback foi enviado ainda"
-                    className="text-[#3b5ccc] opacity-50 cursor-not-allowed"
+                    className="text-[#3b5ccc] dark:text-[#4E6CFF] opacity-50 cursor-not-allowed"
                   >
                     <MessageSquare size={20} />
                   </button>
@@ -113,7 +113,7 @@ export function GenericReportsTable({ data }: GenericReportsTableProps) {
                     target="_blank"
                     rel="noopener noreferrer"
                     title="Baixar relatório"
-                    className="inline-flex text-[#3b5ccc] hover:text-[#2a459c] transition-colors"
+                    className="inline-flex text-[#3b5ccc] dark:text-[#4E6CFF] hover:text-[#2a459c] transition-colors"
                   >
                     <Download size={20} />
                   </a>
@@ -122,7 +122,7 @@ export function GenericReportsTable({ data }: GenericReportsTableProps) {
                     type="button"
                     disabled
                     title="Sem arquivo disponível"
-                    className="text-[#3b5ccc] opacity-50 cursor-not-allowed"
+                    className="text-[#3b5ccc] dark:text-[#4E6CFF] opacity-50 cursor-not-allowed"
                   >
                     <Download size={20} />
                   </button>

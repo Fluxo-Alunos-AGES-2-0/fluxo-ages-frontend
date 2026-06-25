@@ -90,7 +90,7 @@ export function SprintReportModal({
             title={
                 isEditing ? "Atualizar Relatório de Sprint" : "Relatório de Sprint"
             }
-            className="!max-w-2xl"
+            className="!max-w-2xl dark:bg-[#1E293B] dark:text-[#F4F6F7] dark:border-[#31405A]"
         >
             <div className="mt-4 flex max-h-[70vh] w-[640px] max-w-full flex-col">
                 <div
@@ -99,11 +99,12 @@ export function SprintReportModal({
             scrollbar-thin
             [&::-webkit-scrollbar]:w-1.5
             [&::-webkit-scrollbar-thumb]:bg-slate-200
-            dark:[&::-webkit-scrollbar-thumb]:bg-[#64748B]            
+            dark:[&::-webkit-scrollbar-thumb]:bg-[#64748B]
             [&::-webkit-scrollbar-thumb]:rounded-full
             [&::-webkit-scrollbar-track]:bg-transparent
             hover:[&::-webkit-scrollbar-thumb]:bg-slate-300
             dark:hover:[&::-webkit-scrollbar-thumb]:bg-[#94A3B8]
+            dark:text-[#F4F6F7]
           "
                 >
                     <div className="grid grid-cols-2 gap-4">
@@ -125,7 +126,7 @@ export function SprintReportModal({
                                 disabled={isEditing}
                                 placeholder="Selecione"
                                 wrapperClassName="w-full"
-                                className="w-full h-[42px] rounded-2xl"
+                                className="w-full h-[42px] rounded-2xl dark:bg-[#334155] dark:text-[#F4F6F7] dark:border-[#31405A] dark:placeholder:text-[#94A3B8]"
                                 options={SPRINT_OPTIONS.map((s) => ({
                                     value: s,
                                     label: usedSet.has(s) ? `${s}` : s,

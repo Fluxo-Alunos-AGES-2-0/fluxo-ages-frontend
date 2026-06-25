@@ -32,35 +32,35 @@ export const HoursTracker = ({ hours, loading, error }: HoursTrackerProps) => {
         </p>
       ) : (
         <>
-          <div className="w-full h-full border-r border-[#e5e7eb] flex flex-col items-center justify-center">
-            <span className="text-[#3b5ccc] text-2xl font-bold leading-8">
+          <div className="w-full h-full border-r border-[#e5e7eb] dark:border-[#31405A] flex flex-col items-center justify-center">
+            <span className="text-[#3b5ccc] dark:text-[#4E6CFF] text-2xl font-bold leading-8">
               {toHHMMSS(hours.completedSeconds)}
             </span>
-            <p className="text-[#6b7280] text-center text-[11px] font-normal leading-[16.5px] m-0">
+            <p className="text-[#6b7280] dark:text-[#94A3B8] text-center text-[11px] font-normal leading-[16.5px] m-0">
               Concluídas
             </p>
           </div>
-          <div className="w-full h-full border-r border-[#e5e7eb] flex flex-col items-center justify-center">
+          <div className="w-full h-full border-r border-[#e5e7eb] dark:border-[#31405A] flex flex-col items-center justify-center">
             <span className="text-[#f47b20] text-2xl font-bold leading-8">
               {toHHMMSS(hours.remainingSeconds)}
             </span>
-            <p className="text-[#6b7280] text-center text-[11px] font-normal leading-[16.5px] m-0">
+            <p className="text-[#6b7280] dark:text-[#94A3B8] text-center text-[11px] font-normal leading-[16.5px] m-0">
               A cumprir
             </p>
           </div>
-          <div className="w-full h-full border-r border-[#e5e7eb] flex flex-col items-center justify-center">
+          <div className="w-full h-full border-r border-[#e5e7eb] dark:border-[#31405A] flex flex-col items-center justify-center">
             <span className="text-[#f47b20] text-2xl font-bold leading-8">
               {toHHMMSS(hours.owingSeconds)}
             </span>
-            <p className="text-[#6b7280] text-center text-[11px] font-normal leading-[16.5px] m-0">
+            <p className="text-[#6b7280] dark:text-[#94A3B8] text-center text-[11px] font-normal leading-[16.5px] m-0">
               Devendo
             </p>
           </div>
-          <div className="w-full h-full border-r border-[#e5e7eb] flex flex-col items-center justify-center">
-            <span className="text-[#1f2937] text-2xl font-bold leading-8">
+          <div className="w-full h-full border-r border-[#e5e7eb] dark:border-[#31405A] flex flex-col items-center justify-center">
+            <span className="text-[#1f2937] dark:text-[#F4F6F7] text-2xl font-bold leading-8">
               {toHHMMSS(hours.totalSeconds)}
             </span>
-            <p className="text-[#6b7280] text-center text-[11px] font-normal leading-[16.5px] m-0">
+            <p className="text-[#6b7280] dark:text-[#94A3B8] text-center text-[11px] font-normal leading-[16.5px] m-0">
               Total
             </p>
           </div>

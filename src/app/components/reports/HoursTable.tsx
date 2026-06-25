@@ -368,7 +368,7 @@ export function HoursTable({ data, onChanged }: HoursTableProps) {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-slate-500 mb-2">
+              <label className="block text-sm font-semibold text-slate-500 dark:text-[#94A3B8] mb-2">
                 Horário de Entrada<span className="text-[#F47B20]">*</span>
               </label>
 
@@ -383,14 +383,14 @@ export function HoursTable({ data, onChanged }: HoursTableProps) {
                     }}
                     placeholder="HH:MM:SS"
                     maxLength={8}
-                    className={`w-full h-10 rounded-lg border px-3 pr-10 text-slate-700 outline-none focus:border-[#3B5CCC] ${editStartTime && !isValidTime(editStartTime)
-                      ? "border-red-500 focus:border-red-500"
-                      : "border-slate-200"
+                    className={`w-full h-10 rounded-lg border px-3 pr-10 text-slate-700 dark:text-[#F4F6F7] outline-none focus:border-[#3B5CCC] ${editStartTime && !isValidTime(editStartTime)
+                      ? "border-red-500 focus:border-red-500 dark:border-red-500"
+                      : "border-slate-200 dark:border-[#31405A] dark:bg-[#334155]"
                       }`}
                   />
                   <Timer
                     size={20}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-[#94A3B8]"
                   />
                 </div>
                 {editStartTime && !isValidTime(editStartTime) && (
@@ -400,7 +400,7 @@ export function HoursTable({ data, onChanged }: HoursTableProps) {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-slate-500 mb-2">
+              <label className="block text-sm font-semibold text-slate-500 dark:text-[#94A3B8] mb-2">
                 Horário de Saída<span className="text-[#F47B20]">*</span>
               </label>
 
@@ -415,14 +415,14 @@ export function HoursTable({ data, onChanged }: HoursTableProps) {
                     }}
                     placeholder="HH:MM:SS"
                     maxLength={8}
-                    className={`w-full h-10 rounded-lg border px-3 pr-10 text-slate-700 outline-none focus:border-[#3B5CCC] ${editEndTime && !isValidTime(editEndTime)
-                      ? "border-red-500 focus:border-red-500"
-                      : "border-slate-200"
+                    className={`w-full h-10 rounded-lg border px-3 pr-10 text-slate-700 dark:text-[#F4F6F7] outline-none focus:border-[#3B5CCC] ${editEndTime && !isValidTime(editEndTime)
+                      ? "border-red-500 focus:border-red-500 dark:border-red-500"
+                      : "border-slate-200 dark:border-[#31405A] dark:bg-[#334155]"
                       }`}
                   />
                   <Timer
                     size={20}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-[#94A3B8]"
                   />
                 </div>
                 {editEndTime && !isValidTime(editEndTime) && (
@@ -533,12 +533,12 @@ function getStatusClass(status: HourStatus) {
     "inline-block w-24 px-2 py-1 rounded-full text-[11px] font-bold border";
   switch (status) {
     case "APPROVED":
-      return `${base} bg-[#f0fdf4] text-[#22c55e] border-[#bbf7d0]`;
+      return `${base} bg-[#f0fdf4] text-[#22c55e] border-[#bbf7d0] dark:bg-[#22c55e]/15 dark:text-[#4ade80] dark:border-[#22c55e]/40`;
     case "REJECTED":
-      return `${base} bg-[#fef2f2] text-[#ef4444] border-[#fecaca]`;
+      return `${base} bg-[#fef2f2] text-[#ef4444] border-[#fecaca] dark:bg-[#ef4444]/15 dark:text-[#f87171] dark:border-[#ef4444]/40`;
     case "PENDING":
-      return `${base} bg-[#fff7ed] text-[#f97316] border-[#fed7aa]`;
+      return `${base} bg-[#fff7ed] text-[#f97316] border-[#fed7aa] dark:bg-[#f97316]/15 dark:text-[#fb923c] dark:border-[#f97316]/40`;
     default:
-      return `${base} bg-[#f0fdf4] text-[#22c55e] border-[#bbf7d0]`;
+      return `${base} bg-[#f0fdf4] text-[#22c55e] border-[#bbf7d0] dark:bg-[#22c55e]/15 dark:text-[#4ade80] dark:border-[#22c55e]/40`;
   }
 }

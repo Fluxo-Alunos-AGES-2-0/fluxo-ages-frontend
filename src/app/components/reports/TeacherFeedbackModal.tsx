@@ -46,19 +46,19 @@ export function TeacherFeedbackModal({
       title="Feedback do professor"
       className="max-w-[500px]"
     >
-      <div className="text-[#374151]">
-        <p className="text-[14px] text-gray-400 border-b border-gray-100 pb-3 mb-4">
+      <div className="text-[#374151] dark:text-[#F4F6F7]">
+        <p className="text-[14px] text-gray-400 dark:text-[#94A3B8] border-b border-gray-100 dark:border-[#31405A] pb-3 mb-4">
           {reportData.feedback?.teacherName || "Professor"}
         </p>
 
         {/* Seção de Comentário */}
         <div className="mb-2">
-          <h4 className="text-[14px] font-medium text-gray-500 mb-2">
+          <h4 className="text-[14px] font-medium text-gray-500 dark:text-[#94A3B8] mb-2">
             Comentário
           </h4>
 
           <div
-            className="max-h-[360px] overflow-y-auto border border-gray-200 rounded-xl p-4 bg-white text-[14px] leading-relaxed whitespace-pre-line
+            className="max-h-[360px] overflow-y-auto border border-gray-200 dark:border-[#31405A] rounded-xl p-4 bg-white dark:bg-[#1E293B] text-[14px] leading-relaxed whitespace-pre-line
             [&::-webkit-scrollbar]:w-1.5
             [&::-webkit-scrollbar-track]:bg-transparent
             [&::-webkit-scrollbar-thumb]:bg-gray-200
@@ -67,11 +67,11 @@ export function TeacherFeedbackModal({
             [&::-webkit-scrollbar-button]:hidden"
           >
             {hasFeedback ? (
-              <span className="text-gray-600">
+              <span className="text-gray-600 dark:text-[#94A3B8]">
                 {reportData.feedback?.comment}
               </span>
             ) : (
-              <span className="text-gray-400 italic">
+              <span className="text-gray-400 dark:text-[#94A3B8] italic">
                 Nenhum feedback enviado ainda.
               </span>
             )}
