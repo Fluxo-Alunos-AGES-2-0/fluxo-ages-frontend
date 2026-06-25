@@ -4,10 +4,6 @@ import {
   User,
   Lock,
   Calendar,
-  MessageSquare,
-  Globe,
-  GitBranch,
-  BookOpen,
   KeyRound,
   Mail,
 } from "lucide-react";
@@ -15,6 +11,10 @@ import { InputField } from "@/app/components/ui/InputField/InputField";
 import { Button } from "@/app/components/ui/Button/Button";
 import { QuickAccessButton } from "@/app/components/ui/QuickAccessButton/QuickAccessButton";
 import logoFluxoAges from "@/app/assets/images/login/logo_fluxo_ages.webp";
+import discordLogo from "@/app/assets/images/login/logo_discord.png";
+import siteLogo from "@/app/assets/images/login/logo_ages.svg";
+import gitlabLogo from "@/app/assets/images/login/logo_gitlab.png";
+import wikiLogo from "@/app/assets/images/login/logo_wiki.png";
 import { api } from "@/app/services/api";
 import { useToast } from "@/app/context/ToastContext";
 
@@ -264,34 +264,40 @@ export function LoginCard({ onOpenCronograma }: LoginCardProps) {
           <div className="flex-1 h-px bg-[#E5E7EB]" />
         </div>
 
-        <div className="flex flex-col gap-1.5">
+        {/* Ícones de acesso rápido */}
+        <div className="flex items-start justify-around gap-2">
           <QuickAccessButton
-            icon={<Calendar className="w-4 h-4" />}
-            label="Ver Cronograma AGES"
-            onClick={onOpenCronograma}
-            highlighted
-          />
-          <QuickAccessButton
-            icon={<MessageSquare className="w-4 h-4" />}
-            label="Discord da AGES"
+            icon={<img src={discordLogo} alt="Discord" className="w-8 h-8 object-contain" />}
+            label="Discord"
             href="https://discord.com/invite/wVtRNuqZUq"
+            iconOnly
           />
           <QuickAccessButton
-            icon={<Globe className="w-4 h-4" />}
-            label="Site AGES"
+            icon={<img src={siteLogo} alt="Site" className="w-8 h-8 object-contain" />}
+            label="AGES"
             href="https://ages.pucrs.br"
+            iconOnly
           />
           <QuickAccessButton
-            icon={<GitBranch className="w-4 h-4" />}
-            label="Gitlab Oficial da AGES - Tools"
+            icon={<img src={gitlabLogo} alt="GitLab" className="w-14 h-14 object-contain" />}
+            label="GitLab"
             href="https://tools.ages.pucrs.br"
+            iconOnly
           />
           <QuickAccessButton
-            icon={<BookOpen className="w-4 h-4" />}
-            label="Wiki AGES"
+            icon={<img src={wikiLogo} alt="Wiki" className="w-9 h-9 object-contain" />}
+            label="Wiki"
             href="https://tools.ages.pucrs.br/modelos/estudos/tutorialFluxoAges/-/wikis/home"
+            iconOnly
           />
         </div>
+
+        {/* Botão Cronograma */}
+        <QuickAccessButton
+          icon={<Calendar className="w-4 h-4" />}
+          label="Cronograma"
+          onClick={onOpenCronograma}
+        />
 
         <p className="text-center text-[11px] text-[#9CA3AF]">
           © {new Date().getFullYear()} FluxoAGES · PUCRS · Todos os direitos
