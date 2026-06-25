@@ -231,14 +231,14 @@ export default function RelatoriosPage() {
 
   const renderReportTab = (data: ReportEntry[]) => (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between border-b border-[#e5e7eb] pb-4">
+      <div className="flex items-center justify-between border-b border-[#e5e7eb] dark:border-[#334155] pb-4">
         <div className="relative">
           <Button
             variant="secondary"
             onClick={handleDownloadTemplate}
             loading={isDownloadingTemplate}
             disabled={isDownloadingTemplate}
-            className="flex items-center gap-2 text-[#3b5ccc] font-bold text-[15px] px-1 border-1 border-[#3b5ccc] bg-transparent hover:bg-[#3b5ccc]"
+            className="flex items-center gap-2 text-[#3b5ccc] dark:text-[#3B5CCC] font-bold text-[15px] px-1 border-1 border-[#3b5ccc] dark:border-[#3B5CCC] bg-transparent hover:bg-[#3b5ccc]"
           >
             <FileDown size={20} strokeWidth={2.5} />
             Modelo de Relatório
@@ -247,20 +247,20 @@ export default function RelatoriosPage() {
 
         <Button
           onClick={() => setIsUploadModalOpen(true)}
-          className="flex items-center gap-2 bg-[#4c6ef5] text-white px-5 py-2.5 rounded-lg font-bold text-[14px] hover:bg-[#3b5ccc] transition-colors shadow-sm"
-        >
+          className="flex items-center gap-2 bg-[#3B5CCC] text-white px-5 py-2.5 rounded-lg font-bold text-[14px] hover:bg-[#2f4bb0] transition-colors shadow-sm"
+          >
           <UploadCloud size={18} />
           Enviar Relatório
         </Button>
       </div>
 
       {loading && (
-        <div className="text-center text-[#6b7280] py-10">
+        <div className="text-center text-[#6b7280] dark:text-[#94A3B8] py-10">
           Carregando registros...
         </div>
       )}
       {!loading && error && (
-        <div className="text-center text-red-600 py-10">{error}</div>
+        <div className="text-center text-red-600 dark:text-red-400 py-10">{error}</div>
       )}
       {!loading && !error && <GenericReportsTable data={data} />}
     </div>
@@ -273,14 +273,14 @@ export default function RelatoriosPage() {
       <div className="flex flex-col gap-5">
         <div className="flex items-center gap-2.5">
           <FileText size={20} className="text-[#3b5ccc]" strokeWidth={1.8} />
-          <h2 className="text-[18px] font-bold text-[#1f2937] m-0 leading-none">
+          <h2 className="text-[18px] font-bold text-[#1f2937] dark:text-[#F4F6F7] m-0 leading-none">
             Relatórios
           </h2>
         </div>
 
-        <div className="bg-white rounded-2xl border border-[#e5e7eb]">
+        <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-[#e5e7eb] dark:border-[#334155]">
           <div
-            className="flex items-center border-b border-[#e5e7eb] px-6 bg-white rounded-t-2xl"
+            className="flex items-center border-b border-[#e5e7eb] dark:border-[#334155] px-6 bg-white dark:bg-[#1E293B] rounded-t-2xl"
             data-onboarding="report-tabs"
           >
             <nav className="flex flex-1 gap-1" role="tablist">
@@ -295,8 +295,8 @@ export default function RelatoriosPage() {
                     className={[
                       "relative px-4 py-4 text-[14px] font-medium transition-colors focus:outline-none cursor-pointer",
                       isActive
-                        ? "text-[#3b5ccc]"
-                        : "text-[#6b7280] hover:text-[#374151]",
+                        ? "text-[#3b5ccc] dark:text-[#3B5CCC]"
+                        : "text-[#6b7280] dark:text-[#94A3B8] hover:text-[#374151] dark:hover:text-[#F4F6F7]",
                     ].join(" ")}
                   >
                     {tab.label}
@@ -347,7 +347,7 @@ export default function RelatoriosPage() {
             {activeTab === "horas" && (
               <>
                 {loading && (
-                  <div className="text-center text-[#6b7280] py-10">
+                  <div className="text-center text-[#6b7280] dark:text-[#94A3B8] py-10">
                     Carregando registros...
                   </div>
                 )}

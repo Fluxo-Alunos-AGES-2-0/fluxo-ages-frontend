@@ -26,25 +26,27 @@ export function FrequenciaModal({ isOpen, onClose }: FrequenciaModalProps) {
         </Button>
       }
     >
-      <hr className="border-t border-gray-200 mb-4" />
+      <hr className="border-t border-gray-200 dark:border-[#334155] mb-4" />
 
      <div className="max-h-[60vh] overflow-y-auto flex flex-col gap-5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
         {mockAttendanceData.map((day: AttendanceDay) => (
           <div key={day.date} className="flex flex-col gap-2">
-            <p className="text-base font-semibold text-[#1f2937]">{day.date}</p>
+            <p className="text-base font-semibold text-[#1f2937] dark:text-[#F4F6F7]">{day.date}</p>
 
             {day.slots.map((slot, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3"
+                className="flex items-center justify-between bg-gray-50 dark:bg-[#0F172A] rounded-lg px-4 py-3"
               >
                 <div className="flex items-center gap-3">
                   <Clock size={18} className="text-[#f47b20]" />
-                  <span className="text-sm text-[#374151]">{slot.time}</span>
+                  <span className="text-sm text-[#374151] dark:text-[#F4F6F7]">{slot.time}</span>
                 </div>
                 <span
                   className={`text-sm font-bold ${
-                    slot.status === "Presente" ? "text-green-600" : "text-red-500"
+                    slot.status === "Presente"
+                      ? "text-green-600 dark:text-green-400"
+                      : "text-red-500 dark:text-red-400"
                   }`}
                 >
                   {slot.status}

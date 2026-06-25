@@ -99,9 +99,11 @@ export function SprintReportModal({
             scrollbar-thin
             [&::-webkit-scrollbar]:w-1.5
             [&::-webkit-scrollbar-thumb]:bg-slate-200
+            dark:[&::-webkit-scrollbar-thumb]:bg-[#64748B]            
             [&::-webkit-scrollbar-thumb]:rounded-full
             [&::-webkit-scrollbar-track]:bg-transparent
             hover:[&::-webkit-scrollbar-thumb]:bg-slate-300
+            dark:hover:[&::-webkit-scrollbar-thumb]:bg-[#94A3B8]
           "
                 >
                     <div className="grid grid-cols-2 gap-4">
@@ -113,7 +115,7 @@ export function SprintReportModal({
                         />
 
                         <div>
-                            <label className="mb-1.5 block text-sm font-semibold text-[#6B7280]">
+                            <label className="mb-1.5 block text-sm font-semibold text-[#6B7280] dark:text-[#94A3B8]">
                                 Sprint<span className="text-[#f47b20]">*</span>
                             </label>
 
@@ -132,7 +134,7 @@ export function SprintReportModal({
                             />
 
                             {!isEditing && availableSprints.length === 0 && (
-                                <span className="mt-1 block text-xs text-slate-500">
+                                <span className="mt-1 block text-xs text-slate-500 dark:text-[#94A3B8]">
                                     Todas as sprints já possuem relatório.
                                 </span>
                             )}
