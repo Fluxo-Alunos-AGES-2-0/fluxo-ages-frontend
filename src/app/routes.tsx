@@ -8,6 +8,7 @@ import { ProjetosPage } from "./pages/ProjetosPage";
 import ProjetoDetalhesPage from "./pages/ProjetoDetalhesPage";
 import SobrePage from "./pages/SobrePage";
 import UnexpectedError from "./components/UnexpectedError";
+import { InDevelopmentPage } from './pages/InDevelopmentPage';
 
 export const router = createBrowserRouter([
   { path: "/login", Component: LoginPage },
@@ -23,6 +24,7 @@ export const router = createBrowserRouter([
       { path: "projetos", Component: ProjetosPage },
       { path: "projetos/:id", Component: ProjetoDetalhesPage },
       { path: "sobre", Component: SobrePage },
+      { path: "em-desenvolvimento", Component: InDevelopmentPage },
     ],
   },
 ]);

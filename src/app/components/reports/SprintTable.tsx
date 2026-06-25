@@ -251,9 +251,9 @@ export function SprintTable({
                             handleUpdate(item);
                           }}
                           disabled={item.status === "ENVIANDO"}
-                          className="px-3 py-1 text-xs font-medium text-[#3b5ccc] cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                          className="px-3 py-1 text-xs font-medium text-[#3b5ccc] cursor-pointer hover:text-[#4c6ef5] transaction-colors disabled:opacity-40 disabled:cursor-not-allowed"
                         >
-                          <Pencil size={20} strokeWidth={3} />
+                          <Pencil size={20} />
                         </button>
                       </td>
                     </tr>

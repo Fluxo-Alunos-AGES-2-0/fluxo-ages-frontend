@@ -1,4 +1,5 @@
 import { RefreshCw, X } from "lucide-react";
+import { useNavigate } from "react-router"; // <-- Import adicionado
 import { useOnboarding } from "@/app/components/Onboarding/OnboardingContext";
 import { Button } from "@/app/components/ui/Button/Button";
 
@@ -12,8 +13,10 @@ export function ResetOnboardingModal({
   onClose,
 }: ResetOnboardingModalProps) {
   const { resetOnboarding } = useOnboarding();
+  const navigate = useNavigate(); 
 
   const handleConfirm = () => {
+    navigate("/dashboard"); 
     resetOnboarding();
     onClose();
   };
