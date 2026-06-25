@@ -121,16 +121,16 @@ export function ProjetosPage() {
 
             <div className="w-full flex flex-col gap-6 font-sans">
                 {/* Header Superior de Visão Geral */}
-                <div className="bg-white rounded-2xl border border-[#6B728030] p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm" data-onboarding="projetos-header">
+                <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-[#6B728030] dark:border-[#334155] p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm" data-onboarding="projetos-header">
                     <div className="flex items-center gap-3" data-onboarding="projetos-status-badges">
-                        <div className="p-3 bg-[#3B5CCC15] text-[#3B5CCC] rounded-2xl">
+                        <div className="p-3 bg-[#3B5CCC15] dark:bg-[#334155] text-[#3B5CCC] dark:text-[#94A3B8] rounded-2xl">
                             <FolderOpen size={24} />
                         </div>
                         <div>
-                            <h2 className="text-lg font-bold text-[#1F2937]">
+                            <h2 className="text-lg font-bold text-[#1F2937] dark:text-[#F4F6F7]">
                                 Mapa de Projetos
                             </h2>
-                            <p className="text-sm text-[#6B7280]">
+                            <p className="text-sm text-[#6B7280] dark:text-[#94A3B8]">
                                 Todos os projetos em que você participou
                             </p>
                         </div>
@@ -150,17 +150,17 @@ export function ProjetosPage() {
                 </div>
 
                 {loading && (
-                    <div className="text-center text-[#6B7280] py-10">
+                    <div className="text-center text-[#6B7280] dark:text-[#94A3B8] py-10">
                         Carregando projetos...
                     </div>
                 )}
 
                 {!loading && error && (
-                    <div className="text-center text-red-600 py-10">{error}</div>
+                    <div className="text-center text-red-600 dark:text-red-400 py-10">{error}</div>
                 )}
 
                 {!loading && !error && projects.length === 0 && (
-                    <div className="text-center text-[#6B7280] py-10">
+                    <div className="text-center text-[#6B7280] dark:text-[#94A3B8] py-10">
                         Nenhum projeto encontrado.
                     </div>
                 )}
@@ -318,7 +318,7 @@ const ProjectCard = ({ project, onProjectUpdated }: ProjectCardProps) => {
     return (
         <div
             onClick={handleDetailsClick}
-            className={`bg-white rounded-2xl border border-[#6B728030] overflow-hidden shadow-sm flex flex-col justify-between h-fit relative transition-shadow ${isEditing ? "" : "cursor-pointer hover:shadow-md"
+            className={`bg-white dark:bg-[#1E293B] rounded-2xl border border-[#6B728030] dark:border-[#334155] overflow-hidden shadow-sm flex flex-col justify-between h-fit relative transition-shadow ${isEditing ? "" : "cursor-pointer hover:shadow-md dark:hover:border-[#3B5CCC]"
                 }`}
         >
             {/*Barra superior colorida baseada no status */}
@@ -351,7 +351,7 @@ const ProjectCard = ({ project, onProjectUpdated }: ProjectCardProps) => {
                                 </div>
                             )}
                         </div>
-                        <h3 className="text-lg font-bold text-[#1F2937]">{project.name}</h3>
+                        <h3 className="text-lg font-bold text-[#1F2937] dark:text-[#F4F6F7]">{project.name}</h3>
                     </div>
 
                     <div className="flex items-center gap-2">
@@ -418,7 +418,7 @@ const ProjectCard = ({ project, onProjectUpdated }: ProjectCardProps) => {
                 />
 
                 {/* Metadados */}
-                <div className="flex items-center gap-4 text-xs font-medium text-[#6B7280]">
+                <div className="flex items-center gap-4 text-xs font-medium text-[#6B7280] dark:text-[#94A3B8]">
                     <span className="flex items-center gap-1">
                         <Calendar size={14} />
                         {project.semesterYear ?? "—"}
@@ -444,7 +444,7 @@ const ProjectCard = ({ project, onProjectUpdated }: ProjectCardProps) => {
                         />
                     </div>
                 ) : (
-                    <p className="text-sm text-[#6B7280] leading-relaxed line-clamp-3">
+                    <p className="text-sm text-[#6B7280] dark:text-[#94A3B8] leading-relaxed line-clamp-3">
                         {project.summary}
                     </p>
                 )}
@@ -454,7 +454,7 @@ const ProjectCard = ({ project, onProjectUpdated }: ProjectCardProps) => {
                     {project.technologies.map((tech) => (
                         <span
                             key={tech.id} // <-- Use o id como key única
-                            className="inline px-2.5 py-1 bg-[#6B728010] border border-[#6B728030] text-[#6B7280] rounded-full text-xs font-semibold"
+                            className="inline px-2.5 py-1 bg-[#6B728010] dark:bg-[#334155] border border-[#6B728030] dark:border-[#334155] text-[#6B7280] dark:text-[#94A3B8] rounded-full text-xs font-semibold"
                         >
                             {tech.name} {/* <-- Renderize apenas a string do nome */}
                         </span>
@@ -462,7 +462,7 @@ const ProjectCard = ({ project, onProjectUpdated }: ProjectCardProps) => {
                 </div>
 
                 {/* Divisor */}
-                <div className="border-t border-[#6B728030] mx-6" />
+                <div className="border-t border-[#6B728030] dark:border-[#334155] mx-6" />
 
                 {/* Botões de Ação */}
                 <div className="p-6 pt-4 grid grid-cols-2 gap-3 ">
@@ -483,7 +483,7 @@ const ProjectCard = ({ project, onProjectUpdated }: ProjectCardProps) => {
                             e.stopPropagation();
                             handleDetailsClick();
                         }}
-                        className="!font-semibold border !border-[#6B728030] bg-transparent hover:bg-[#6B728010] !text-[#3B5CCC]"
+                        className="!font-semibold border !border-[#6B728030] dark:!border-[#334155] bg-transparent hover:bg-[#6B728010] dark:hover:bg-[#334155] !text-[#3B5CCC]"
                     >
                         Ver detalhes
                     </Button>

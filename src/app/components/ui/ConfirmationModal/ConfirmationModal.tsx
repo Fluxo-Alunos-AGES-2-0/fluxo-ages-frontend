@@ -71,18 +71,18 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-[99] flex items-center justify-center bg-black/40 p-4">
-      <div className="bg-white rounded-[12px] w-full max-w-[570px] flex flex-col overflow-hidden shadow-xl">
+      <div className="bg-white dark:bg-[#1E293B] border border-transparent dark:border-[#334155] rounded-[12px] w-full max-w-[570px] flex flex-col overflow-hidden shadow-xl">
         {/* Header */}
         <div className="px-10 py-5 text-left">
-          <h2 className="text-[24px] font-semibold text-[#1f2937]">{title}</h2>
+          <h2 className="text-[24px] font-semibold text-[#1f2937] dark:text-[#F4F6F7]">{title}</h2>
         </div>
 
-        <div className="border-t border-slate-100" />
+        <div className="border-t border-slate-100 dark:border-[#334155]" />
 
         {/* Content */}
         <div className="px-10 py-8 flex flex-col gap-6 text-left">
           <div className="flex flex-col gap-4">
-            <p className="text-base text-slate-600">{description}</p>
+            <p className="text-base text-slate-600 dark:text-[#F4F6F7]">{description}</p>
 
             {/* Input de Descrição Condicional */}
             {withInput && (

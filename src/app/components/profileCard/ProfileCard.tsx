@@ -131,12 +131,12 @@ function ProfileCard({ profile, loading, error }: ProfileCardProps) {
     return (
       <Card title="Perfil do Estudante">
         <div className="flex flex-col gap-3 animate-pulse">
-          <div className="w-14 h-14 rounded-full bg-gray-200" />
-          <div className="w-3/5 h-4 rounded bg-gray-200" />
-          <div className="w-2/5 h-3 rounded bg-gray-200" />
-          <div className="w-full h-3.5 rounded bg-gray-200" />
-          <div className="w-full h-3.5 rounded bg-gray-200" />
-          <div className="w-full h-3.5 rounded bg-gray-200" />
+          <div className="w-14 h-14 rounded-full bg-gray-200 dark:bg-[#334155]" />
+          <div className="w-3/5 h-4 rounded bg-gray-200 dark:bg-[#334155]" />
+          <div className="w-2/5 h-3 rounded bg-gray-200 dark:bg-[#334155]" />
+          <div className="w-full h-3.5 rounded bg-gray-200 dark:bg-[#334155]" />
+          <div className="w-full h-3.5 rounded bg-gray-200 dark:bg-[#334155]" />
+          <div className="w-full h-3.5 rounded bg-gray-200 dark:bg-[#334155]" />
         </div>
       </Card>
     );
@@ -147,7 +147,7 @@ function ProfileCard({ profile, loading, error }: ProfileCardProps) {
       <Card 
         title="Perfil do Estudante" 
         headerAction={
-          <button className={`text-sm font-medium transition-colors cursor-pointer text-slate-400 hover:text-slate-600`}>
+          <button className={`text-sm font-medium transition-colors cursor-pointer text-slate-400 hover:text-slate-600 dark:text-[#94A3B8] dark:hover:text-[#F4F6F7]`}>
             {isEditing ? 'Cancelar' : 'Editar'}
           </button>
         } 
@@ -193,39 +193,39 @@ function ProfileCard({ profile, loading, error }: ProfileCardProps) {
             </div>
 
             <div className="flex flex-col">
-              <h3 className="font-bold text-slate-800 text-lg leading-tight">{nome}</h3>
-              <p className="text-sm text-slate-500">{email}</p>
+              <h3 className="font-bold text-slate-800 dark:text-[#F4F6F7] text-lg leading-tight">{nome}</h3>
+              <p className="text-sm text-slate-500 dark:text-[#94A3B8]">{email}</p>
             </div>
           </div>
 
           <div className="flex flex-col gap-4 mt-2">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">
+              <div className="w-9 h-9 rounded-lg bg-slate-100 dark:bg-[#334155] flex items-center justify-center text-slate-500 dark:text-[#94A3B8]">
                 <Folder size={18} />
               </div>
               <div className="flex flex-col">
-                <small className="text-[11px] font-bold text-slate-400">PROJETO ATUAL</small>
-                <p className="font-medium text-slate-700 text-sm">{projeto}</p>
+                <small className="text-[11px] font-bold text-slate-400 dark:text-[#94A3B8]">PROJETO ATUAL</small>
+                <p className="font-medium text-slate-700 dark:text-[#F4F6F7] text-sm">{projeto}</p>
               </div>
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">
+              <div className="w-9 h-9 rounded-lg bg-slate-100 dark:bg-[#334155] flex items-center justify-center text-slate-500 dark:text-[#94A3B8]">
                 <GraduationCap size={18} />
               </div>
               <div className="flex flex-col">
-                <small className="text-[11px] font-bold text-slate-400">PROFESSOR</small>
-                <p className="font-medium text-slate-700 text-sm">{professor}</p>
+                <small className="text-[11px] font-bold text-slate-400 dark:text-[#94A3B8]">PROFESSOR</small>
+                <p className="font-medium text-slate-700 dark:text-[#F4F6F7] text-sm">{professor}</p>
               </div>
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">
+              <div className="w-9 h-9 rounded-lg bg-slate-100 dark:bg-[#334155] flex items-center justify-center text-slate-500 dark:text-[#94A3B8]">
                 <CircleStar size={18} />
               </div>
               <div className="flex flex-col">
-                <small className="text-[11px] font-bold text-slate-400">NÍVEL AGES</small>
-                <p className="font-medium text-slate-700 text-sm">{agesLevel}</p>
+                <small className="text-[11px] font-bold text-slate-400 dark:text-[#94A3B8]">NÍVEL AGES</small>
+                <p className="font-medium text-slate-700 dark:text-[#F4F6F7] text-sm">{agesLevel}</p>
               </div>
             </div>
           </div>
@@ -233,36 +233,36 @@ function ProfileCard({ profile, loading, error }: ProfileCardProps) {
           {/* Container de Frequência */}
           <button
             onClick={() => setIsModalOpen(true)}
-            className="flex flex-col gap-3 p-4 mt-2 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors border border-slate-100 w-full cursor-pointer text-left"
+            className="flex flex-col gap-3 p-4 mt-2 rounded-xl bg-slate-50 dark:bg-[#334155]/60 hover:bg-slate-100 dark:hover:bg-[#334155] transition-colors border border-slate-100 dark:border-[#334155] w-full cursor-pointer text-left"
           >
             <div className="flex items-center justify-between w-full">
               <div className="flex items-center gap-2">
-                <Calendar size={16} className="text-[#3b5ccc]" />
-                <span className="text-xs font-bold text-slate-600 tracking-wide">FREQUÊNCIA</span>
+                <Calendar size={16} className="text-[#3b5ccc] dark:text-[#4E6CFF]" />
+                <span className="text-xs font-bold text-slate-600 dark:text-[#94A3B8] tracking-wide">FREQUÊNCIA</span>
               </div>
               <ChevronRight size={16} className="text-slate-400" />
             </div>
 
             <div className="flex justify-between items-center w-full px-2 pt-1">
               <div className="flex flex-col items-center">
-                <span className="text-xs font-medium text-slate-500 mb-0.5">Aulas</span>
-                <b className="text-slate-800 text-sm">{aulas}</b>
+                <span className="text-xs font-medium text-slate-500 dark:text-[#94A3B8] mb-0.5">Aulas</span>
+                <b className="text-slate-800 dark:text-[#F4F6F7] text-sm">{aulas}</b>
               </div>
               <div className="flex flex-col items-center">
-                <span className="text-xs font-medium text-slate-500 mb-0.5">Presenças</span>
+                <span className="text-xs font-medium text-slate-500 dark:text-[#94A3B8] mb-0.5">Presenças</span>
                 <b className="text-green-600 text-sm">{presencas}</b>
               </div>
               <div className="flex flex-col items-center">
-                <span className="text-xs font-medium text-slate-500 mb-0.5">Faltas</span>
+                <span className="text-xs font-medium text-slate-500 dark:text-[#94A3B8] mb-0.5">Faltas</span>
                 <b className="text-red-600 text-sm">{faltas}</b>
               </div>
             </div>
           </button>
         </div>
 
-        <FrequenciaModal 
-          isOpen={isModalOpen} 
-          onClose={() => setIsModalOpen(false)} 
+        <FrequenciaModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
         />
       </Card>
     </div>

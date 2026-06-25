@@ -87,7 +87,7 @@ export default function ProjetoDetalhesPage() {
   if (loading) {
     return (
       <div className="w-full flex flex-col gap-6 font-sans">
-        <div className="bg-white rounded-2xl border border-[#6B728030] p-6 shadow-sm text-center text-[#6B7280] py-10">
+        <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-[#6B728030] dark:border-[#334155] p-6 shadow-sm text-center text-[#6B7280] dark:text-[#94A3B8] py-10">
           Carregando detalhes do projeto...
         </div>
       </div>
@@ -97,11 +97,11 @@ export default function ProjetoDetalhesPage() {
   if (error || !project) {
     return (
       <div className="w-full flex flex-col gap-6 font-sans">
-        <div className="bg-white rounded-2xl border border-[#6B728030] p-6 shadow-sm">
-          <h2 className="text-lg font-bold text-[#1F2937]">
+        <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-[#6B728030] dark:border-[#334155] p-6 shadow-sm">
+          <h2 className="text-lg font-bold text-[#1F2937] dark:text-[#F4F6F7]">
             Projeto não encontrado
           </h2>
-          <p className="text-sm text-[#6B7280] mt-1">
+          <p className="text-sm text-[#6B7280] dark:text-[#94A3B8] mt-1">
             {error ?? "O projeto solicitado não existe ou não está disponível."}
           </p>
 
@@ -129,17 +129,17 @@ export default function ProjetoDetalhesPage() {
 
   return (
     <div className="w-full flex flex-col gap-6 font-sans">
-      <div className="bg-white rounded-2xl border border-[#6B728030] shadow-sm overflow-hidden relative">
-        
+      <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-[#6B728030] dark:border-[#334155] shadow-sm overflow-hidden relative">
+
         {/* Cabeçalho */}
-        <div className="p-6 pb-4 flex items-center justify-between gap-4 border-b border-[#6B728030]">
-          
+        <div className="p-6 pb-4 flex items-center justify-between gap-4 border-b border-[#6B728030] dark:border-[#334155]">
+
           <div className="flex items-center gap-4">
             {/* Ícone/Thumbnail do Projeto */}
             {project.thumbnailUrl ? (
-              <img 
-                src={project.thumbnailUrl} 
-                alt={`Logo ${project.name}`} 
+              <img
+                src={project.thumbnailUrl}
+                alt={`Logo ${project.name}`}
                 className="w-14 h-14 rounded-xl border border-slate-100 object-contain p-1 shadow-sm"
               />
             ) : (
@@ -186,7 +186,7 @@ export default function ProjetoDetalhesPage() {
             <button
               type="button"
               onClick={() => navigate("/projetos")}
-              className="cursor-pointer text-[#94A3B8] hover:text-[#1F2937] transition-colors"
+              className="cursor-pointer text-[#94A3B8] hover:text-[#1F2937] dark:hover:text-[#F4F6F7] transition-colors"
               aria-label="Voltar para projetos"
             >
               <X size={30} />
@@ -207,7 +207,7 @@ export default function ProjetoDetalhesPage() {
                   className="w-full h-[280px] object-cover" // Reduzido de 320px para 280px
                 />
               ) : (
-                <div className="w-full h-[280px] bg-[#EEF3FF] flex items-center justify-center text-[#3B5CCC]">
+                <div className="w-full h-[280px] bg-[#EEF3FF] dark:bg-[#334155] flex items-center justify-center text-[#3B5CCC]">
                   <Users size={64} opacity={0.5} />
                 </div>
               )}
@@ -225,7 +225,7 @@ export default function ProjetoDetalhesPage() {
                   <div key={level} className="flex flex-col gap-2">
                     <button
                       onClick={() => setExpandedLevel(isExpanded ? null : level)}
-                      className="flex items-center gap-1.5 text-[#3B5CCC] font-bold hover:text-[#2f4fb8] transition-colors w-fit cursor-pointer"
+                      className="flex items-center gap-1.5 text-[#3B5CCC] dark:text-[#4E6CFF] font-bold hover:text-[#2f4fb8] transition-colors w-fit cursor-pointer"
                     >
                       {isExpanded ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
                       {toAgesLevel(level)}
@@ -235,18 +235,18 @@ export default function ProjetoDetalhesPage() {
                         {levelMembers.map((member) => (
                           <div key={member.id} className="flex items-center gap-3">
                             {member.avatarUrl && !imageErrors[member.id] ? (
-                              <img 
-                                src={member.avatarUrl} 
-                                alt={member.name} 
-                                className="w-10 h-10 rounded-full object-cover shadow-sm border border-slate-100" 
+                              <img
+                                src={member.avatarUrl}
+                                alt={member.name}
+                                className="w-10 h-10 rounded-full object-cover shadow-sm border border-slate-100"
                                 onError={() => setImageErrors(prev => ({ ...prev, [member.id]: true }))}
                               />
                             ) : (
-                              <div className="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 font-bold text-sm shadow-sm">
+                              <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-[#334155] border border-slate-200 dark:border-[#31405A] flex items-center justify-center text-slate-500 dark:text-[#94A3B8] font-bold text-sm shadow-sm">
                                 {member.name.charAt(0).toUpperCase()}
                               </div>
                             )}
-                            <span className="text-sm font-medium text-slate-700 break-words line-clamp-2">
+                            <span className="text-sm font-medium text-slate-700 dark:text-[#F4F6F7] break-words line-clamp-2">
                               {member.name}
                             </span>
                           </div>
@@ -261,17 +261,17 @@ export default function ProjetoDetalhesPage() {
 
           {/* Lado Direito: Descrição e Tecnologias */}
           <div className="lg:col-span-2 flex flex-col gap-6">
-            <div className="bg-[#EEF3FF] rounded-xl p-6 flex flex-col gap-6 shadow-sm">
+            <div className="bg-[#EEF3FF] dark:bg-[#1E293B] rounded-xl p-6 flex flex-col gap-6 shadow-sm">
               <div className="flex flex-col gap-5">
-                <p className="text-[15px] text-[#6B7280] leading-relaxed text-justify">
+                <p className="text-[15px] text-[#6B7280] dark:text-[#94A3B8] leading-relaxed text-justify">
                   {project.description}
                 </p>
 
-                <div className="flex flex-col gap-3 text-sm text-[#6B7280] mt-2">
-                  <p className="flex items-center gap-2 border-t border-[#3B5CCC20] pt-4">
-                    <Users size={16} className="text-[#3B5CCC]" />
+                <div className="flex flex-col gap-3 text-sm text-[#6B7280] dark:text-[#94A3B8] mt-2">
+                  <p className="flex items-center gap-2 border-t border-[#3B5CCC20] dark:border-[#31405A] pt-4">
+                    <Users size={16} className="text-[#3B5CCC] dark:text-[#4E6CFF]" />
                     <span>
-                      <span className="font-semibold text-slate-700">Clientes AGES:</span>{" "}
+                      <span className="font-semibold text-slate-700 dark:text-[#F4F6F7]">Clientes AGES:</span>{" "}
                       {project.teacher?.name}
                     </span>
                   </p>
@@ -280,7 +280,7 @@ export default function ProjetoDetalhesPage() {
                     <p className="flex items-center gap-2">
                       <Users size={16} className="text-[#3B5CCC] opacity-0" /> {/* Ícone invisível para alinhamento */}
                       <span>
-                        <span className="font-semibold text-slate-700">Orientador(a):</span>{" "}
+                        <span className="font-semibold text-slate-700 dark:text-[#F4F6F7]">Orientador(a):</span>{" "}
                         {project.teacher.name}
                       </span>
                     </p>
@@ -303,7 +303,7 @@ export default function ProjetoDetalhesPage() {
             {/* Bloco de Tecnologias */}
             {project.technologies && project.technologies.length > 0 && (
               <div className="mt-2 flex flex-col gap-4">
-                <h3 className="text-[16px] font-bold text-[#1F2937]">
+                <h3 className="text-[16px] font-bold text-[#1F2937] dark:text-[#F4F6F7]">
                   Tecnologias
                 </h3>
                 <div className="flex flex-wrap gap-x-6 gap-y-5">
@@ -316,11 +316,11 @@ export default function ProjetoDetalhesPage() {
                           className="w-11 h-11 object-contain drop-shadow-sm"
                         />
                       ) : (
-                        <div className="w-11 h-11 rounded-xl bg-[#f8fafc] border border-[#e2e8f0] flex items-center justify-center text-[#94a3b8] shadow-sm">
+                        <div className="w-11 h-11 rounded-xl bg-[#f8fafc] dark:bg-[#334155] border border-[#e2e8f0] dark:border-[#31405A] flex items-center justify-center text-[#94a3b8] dark:text-[#94A3B8] shadow-sm">
                           <Code2 size={20} />
                         </div>
                       )}
-                      <span className="text-[11px] text-center text-slate-600 font-semibold leading-tight break-words w-full">
+                      <span className="text-[11px] text-center text-slate-600 dark:text-[#94A3B8] font-semibold leading-tight break-words w-full">
                         {tech.name}
                       </span>
                     </div>

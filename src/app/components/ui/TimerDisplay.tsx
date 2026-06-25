@@ -6,7 +6,7 @@ interface TimerDisplayProps {
 }
 
 export const TimerDisplay: React.FC<TimerDisplayProps> = ({
-  color = "text-slate-800",
+  color = "text-slate-800 dark:text-[#F4F6F7]",
 }) => {
   const { elapsedTime } = useTimer();
 
@@ -23,7 +23,7 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
 
   const TimeBlock = ({ value, label }: { value: string; label: string }) => (
     <div className="flex flex-col items-center">
-      <div className="bg-slate-100 rounded-2xl w-24 h-24 flex items-center justify-center shadow-sm">
+      <div className="bg-slate-100 dark:bg-[#0F172A] rounded-2xl w-24 h-24 flex items-center justify-center shadow-sm">
         <span
           className={`text-5xl font-bold tracking-widest ${textColorClass}`}
           style={inlineStyle}
@@ -31,7 +31,7 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
           {value}
         </span>
       </div>
-      <span className="text-[10px] text-slate-400 font-semibold mt-3 uppercase tracking-widest">
+      <span className="text-[10px] text-slate-400 dark:text-[#94A3B8] font-semibold mt-3 uppercase tracking-widest">
         {label}
       </span>
     </div>
@@ -39,7 +39,7 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
 
   const Separator = () => (
     <div className="h-24 flex items-center px-3">
-      <span className="text-3xl font-bold text-slate-300 pb-2">:</span>
+      <span className="text-3xl font-bold text-slate-300 dark:text-[#94A3B8] pb-2">:</span>
     </div>
   );
 
