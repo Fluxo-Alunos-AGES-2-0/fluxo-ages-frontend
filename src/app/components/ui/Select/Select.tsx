@@ -28,6 +28,8 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           text-[13px] text-[#6b7280] font-medium
           focus:outline-none focus:ring-2 focus:ring-[#3b5ccc]/30 focus:border-[#3b5ccc]
           cursor-pointer transition-colors
+          disabled:bg-[#f4f5f6] disabled:border-[#e2e4e9] disabled:text-slate-400
+          disabled:cursor-not-allowed disabled:opacity-100
           ${className}
         `}
           {...props}
