@@ -184,19 +184,19 @@ export function SprintTable({
   return (
     <>
       {loading ? (
-        <div className="text-center text-[#6b7280] py-10">
+        <div className="text-center text-[#6b7280] dark:text-[#94A3B8] py-10">
           Carregando relatórios...
         </div>
       ) : error ? (
         <div className="text-center text-red-600 py-10">{error}</div>
       ) : sprintReports.length === 0 ? (
-        <div className="text-center text-[#6b7280] py-10">
+        <div className="text-center text-[#6b7280] dark:text-[#94A3B8] py-10">
           Nenhum relatório de sprint encontrado.
         </div>
       ) : (
-        <div className="w-full overflow-hidden rounded-xl border border-[#eef0f4]">
+        <div className="w-full overflow-hidden rounded-xl border border-[#eef0f4] dark:border-[#31405A]">
           <table className="w-full text-sm border-collapse">
-            <thead className="bg-[#f9fafb] text-[#6b7280] border-b border-[#eef0f4]">
+            <thead className="bg-[#f9fafb] dark:bg-[#1A2438] text-[#6b7280] dark:text-[#94A3B8] border-b border-[#eef0f4] dark:border-[#31405A]">
               <tr>
                 <th className="px-6 py-4 text-left font-semibold">Sprint</th>
                 <th className="px-6 py-4 text-left font-semibold">Estudante</th>
@@ -206,7 +206,7 @@ export function SprintTable({
               </tr>
             </thead>
 
-            <tbody className="bg-white">
+            <tbody className="bg-white dark:bg-[#1E293B]">
               {sprintReports.map((item) => {
                 const isExpanded = expandedRowId === item.id;
 
@@ -215,29 +215,29 @@ export function SprintTable({
                     <tr
                       onClick={() => toggleRow(item.id)}
                       className={`cursor-pointer transition-colors ${
-                        isExpanded ? "bg-slate-50" : "hover:bg-slate-50/50"
-                      } ${!isExpanded ? "border-b border-[#eef0f4]" : ""}`}
+                        isExpanded ? "bg-slate-50 dark:bg-[#253657]" : "hover:bg-slate-50/50 dark:hover:bg-[#253657]"
+                      } ${!isExpanded ? "border-b border-[#eef0f4] dark:border-[#31405A]" : ""}`}
                     >
-                      <td className="px-6 py-4 font-medium text-slate-700">
+                      <td className="px-6 py-4 font-medium text-slate-700 dark:text-[#F4F6F7]">
                         {item.sprint}
                       </td>
 
-                      <td className="px-6 py-4 text-slate-600">
+                      <td className="px-6 py-4 text-slate-600 dark:text-[#94A3B8]">
                         {item.student}
                       </td>
 
-                      <td className="px-6 py-4 text-slate-600">
+                      <td className="px-6 py-4 text-slate-600 dark:text-[#94A3B8]">
                         {new Date(item.date).toLocaleDateString("pt-BR")}
                       </td>
 
                       <td className="px-6 py-4 text-center">
                         {item.status === "ENVIANDO" ? (
-                          <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 border border-blue-100 px-2.5 py-1 text-xs font-bold text-blue-600">
+                          <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 border border-blue-100 px-2.5 py-1 text-xs font-bold text-blue-600 dark:bg-[#3b82f6]/15 dark:border-[#3b82f6]/40 dark:text-[#60a5fa]">
                             <LoaderCircle size={13} className="animate-spin" />
                             Enviando
                           </span>
                         ) : (
-                          <span className="inline-flex items-center rounded-full bg-[#f0fdf4] border border-[#bbf7d0] px-2.5 py-1 text-xs font-bold text-[#22c55e]">
+                          <span className="inline-flex items-center rounded-full bg-[#f0fdf4] border border-[#bbf7d0] px-2.5 py-1 text-xs font-bold text-[#22c55e] dark:bg-[#22c55e]/15 dark:border-[#22c55e]/40 dark:text-[#4ade80]">
                             Enviado
                           </span>
                         )}
@@ -251,50 +251,50 @@ export function SprintTable({
                             handleUpdate(item);
                           }}
                           disabled={item.status === "ENVIANDO"}
-                          className="px-3 py-1 text-xs font-medium text-[#3b5ccc] cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                          className="px-3 py-1 text-xs font-medium text-[#3b5ccc] dark:text-[#4E6CFF] cursor-pointer hover:text-[#4c6ef5] transaction-colors disabled:opacity-40 disabled:cursor-not-allowed"
                         >
-                          <Pencil size={20} strokeWidth={3} />
+                          <Pencil size={20} />
                         </button>
                       </td>
                     </tr>
 
                     {isExpanded && (
-                      <tr className="border-b border-[#eef0f4] bg-slate-50">
+                      <tr className="border-b border-[#eef0f4] dark:border-[#31405A] bg-slate-50 dark:bg-[#253657]">
                         <td
                           colSpan={5}
-                          className="px-6 pb-6 pt-2 text-sm text-slate-700"
+                          className="px-6 pb-6 pt-2 text-sm text-slate-700 dark:text-[#F4F6F7]"
                         >
                           <div className="flex flex-col gap-4 animate-in fade-in slide-in-from-top-2 duration-200">
                             <p className="leading-relaxed text-justify">
-                              <strong className="text-slate-900">
+                              <strong className="text-slate-900 dark:text-[#F4F6F7]">
                                 Atividades Previstas:{" "}
                               </strong>
                               {item.predicted_activity ||
                                 "Nenhuma atividade prevista informada."}
                             </p>
                             <p className="leading-relaxed text-justify">
-                              <strong className="text-slate-900">
+                              <strong className="text-slate-900 dark:text-[#F4F6F7]">
                                 Atividades Concluídas:{" "}
                               </strong>
                               {item.activity_completed ||
                                 "Nenhuma atividade concluída informada."}
                             </p>
                             <p className="leading-relaxed text-justify">
-                              <strong className="text-slate-900">
+                              <strong className="text-slate-900 dark:text-[#F4F6F7]">
                                 Problemas Encontrados:{" "}
                               </strong>
                               {item.problems_encountered ||
                                 "Nenhum problema reportado."}
                             </p>
                             <p className="leading-relaxed text-justify">
-                              <strong className="text-slate-900">
+                              <strong className="text-slate-900 dark:text-[#F4F6F7]">
                                 Lições aprendidas:{" "}
                               </strong>
                               {item.learned_lessons ||
                                 "Nenhuma lição aprendida reportada."}
                             </p>
                             <p className="leading-relaxed text-justify">
-                              <strong className="text-slate-900">
+                              <strong className="text-slate-900 dark:text-[#F4F6F7]">
                                 Próximos Passos:{" "}
                               </strong>
                               {item.next_steps ||

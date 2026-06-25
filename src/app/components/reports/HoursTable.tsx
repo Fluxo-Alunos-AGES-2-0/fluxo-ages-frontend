@@ -76,12 +76,28 @@ export function HoursTable({ data, onChanged }: HoursTableProps) {
     setEditEndTime(endDate.toLocaleTimeString("pt-BR"));
   }
 
+  function isValidTime(timeStr: string): boolean {
+    if (!timeStr) return false;
+
+    const regex = /^([0-1]?[0-9]|2[0-3]):([0-5]?[0-9]):([0-5]?[0-9])$/;
+    return regex.test(timeStr);
+  }
+
   async function handleSaveEdit() {
     if (!editingItem) return;
 
     const description = editDescription.trim();
     const entry = partsToDate(editDate, editStartTime);
     const exit = partsToDate(editDate, editEndTime);
+
+    if (!isValidTime(editStartTime) || !isValidTime(editEndTime)) {
+      showToast({
+        variant: "error",
+        title: "Horário inválido",
+        message: "Informe horários entre 00:00:00 e 23:59:59.",
+      });
+      return;
+    }
 
     if (!description || !entry || !exit) {
       showToast({
@@ -146,25 +162,34 @@ export function HoursTable({ data, onChanged }: HoursTableProps) {
     }
   }
 
+  const handleTimeChange = (value: string) => {
+    let numbers = value.replace(/\D/g, "").slice(0, 6);
+
+    if (numbers.length <= 2) {
+      return numbers;
+    } else if (numbers.length <= 4) {
+      return `${numbers.slice(0, 2)}:${numbers.slice(2)}`;
+    } else {
+      return `${numbers.slice(0, 2)}:${numbers.slice(2, 4)}:${numbers.slice(4)}`;
+    }
+  }
+
   const handleDateChange = (value: string) => {
     const numbers = value.replace(/\D/g, "").slice(0, 8);
 
     let formatted = numbers;
-
     if (numbers.length > 2) {
       formatted = `${numbers.slice(0, 2)}/${numbers.slice(2)}`;
     }
-
     if (numbers.length > 4) {
       formatted = `${numbers.slice(0, 2)}/${numbers.slice(2, 4)}/${numbers.slice(4)}`;
     }
-
     setEditDate(formatted);
   };
 
   if (hours.length === 0) {
     return (
-      <div className="text-center text-[#6b7280] py-10">
+      <div className="text-center text-[#6b7280] dark:text-[#94A3B8] py-10">
         Nenhum registro de horas encontrado.
       </div>
     );
@@ -172,9 +197,9 @@ export function HoursTable({ data, onChanged }: HoursTableProps) {
 
   return (
     <>
-      <div className="w-full overflow-hidden rounded-xl border border-[#eef0f4]">
+      <div className="w-full overflow-hidden rounded-xl border border-[#eef0f4] dark:border-[#334155]">
         <table className="w-full text-sm border-collapse table-fixed">
-          <thead className="bg-[#f9fafb] text-[#6b7280] border-b border-[#eef0f4]">
+          <thead className="bg-[#f9fafb] dark:bg-[#0F172A] text-[#6b7280] dark:text-[#94A3B8] border-b border-[#eef0f4] dark:border-[#334155]">
             <tr>
               <th className="px-6 py-4 text-left font-semibold w-32">Data</th>
               <th className="px-6 py-4 text-left font-semibold w-44">
@@ -188,7 +213,7 @@ export function HoursTable({ data, onChanged }: HoursTableProps) {
             </tr>
           </thead>
 
-          <tbody className="bg-white">
+          <tbody className="bg-white dark:bg-[#1E293B]">
             {hours.map((item) => {
               const status: HourStatus = item.status ?? "APPROVED";
               const isExpanded = expandedId === item.id;
@@ -200,14 +225,22 @@ export function HoursTable({ data, onChanged }: HoursTableProps) {
               return (
                 <tr
                   key={item.id}
-                  className="border-b border-[#eef0f4] hover:bg-slate-50/30 transition-colors"
+                  className="
+                  border-b border-[#eef0f4]
+                dark:border-[#334155]
+                odd:dark:bg-[#1E293B]
+                even:dark:bg-[#182236]
+                hover:bg-slate-50/30
+                dark:hover:bg-[#334155]/50
+                  transition-colors
+                "
                 >
-                  <td className="px-6 py-4 whitespace-nowrap text-slate-600 align-top">
+                  <td className="px-6 py-4 whitespace-nowrap text-slate-600 dark:text-[#94A3B8] align-top">
                     {new Date(item.startTime).toLocaleDateString("pt-BR")}
                   </td>
 
                   <td className="px-6 py-4 whitespace-nowrap align-top">
-                    <span className="inline-flex items-center gap-1.5 bg-[#eff6ff] text-[#2563eb] px-3 py-1 rounded-full text-xs font-bold border border-[#dbeafe]">
+                    <span className="inline-flex items-center gap-1.5 bg-[#eff6ff] dark:bg-[#334155] text-[#2563eb] dark:text-[#F4F6F7] px-3 py-1 rounded-full text-xs font-bold border border-[#dbeafe] dark:border-[#334155]">
                       <Clock size={14} />
                       {formatDuration(item.sessionTimeSeconds)}
                     </span>
@@ -216,7 +249,7 @@ export function HoursTable({ data, onChanged }: HoursTableProps) {
                   <td className="px-6 py-4 align-top">
                     <div className="flex items-start gap-2 w-full">
                       <p
-                        className={`text-slate-700 leading-relaxed break-all ${
+                        className={`text-slate-700 dark:text-[#F4F6F7] leading-relaxed break-all ${
                           isExpanded ? "whitespace-normal" : "line-clamp-1"
                         }`}
                       >
@@ -229,7 +262,7 @@ export function HoursTable({ data, onChanged }: HoursTableProps) {
                           onClick={() =>
                             setExpandedId(isExpanded ? null : item.id)
                           }
-                          className="flex-shrink-0 mt-0.5 text-slate-400 hover:text-blue-600 cursor-pointer transition-colors p-1"
+                          className="flex-shrink-0 mt-0.5 text-slate-400 dark:text-[#94A3B8] hover:text-blue-600 dark:hover:text-[#3B5CCC] cursor-pointer transition-colors p-1"
                         >
                           {isExpanded ? (
                             <ChevronUp size={16} />
@@ -254,7 +287,7 @@ export function HoursTable({ data, onChanged }: HoursTableProps) {
                               item.rejectionJustification ?? null,
                             )
                           }
-                          className="text-[#9ca3af] hover:text-blue-600 transition-colors"
+                          className="text-[#9ca3af] dark:text-[#94A3B8] hover:text-blue-600 dark:hover:text-[#3B5CCC] transition-colors"
                           title="Ver justificativa"
                         >
                           <MessageSquare size={18} />
@@ -270,7 +303,7 @@ export function HoursTable({ data, onChanged }: HoursTableProps) {
                         aria-label="Editar relatório"
                         title="Editar relatório"
                         onClick={() => handleOpenEditModal(item)}
-                        className="text-blue-500 hover:text-blue-700 cursor-pointer transition-colors"
+                        className="text-[#3b5ccc] hover:text-[#4c6ef5] cursor-pointer transition-colors"
                       >
                         <Pencil size={18} />
                       </button>
@@ -293,7 +326,7 @@ export function HoursTable({ data, onChanged }: HoursTableProps) {
         </table>
       </div>
 
-      {editingItem && (
+      {
         <Modal
           isOpen={!!editingItem}
           onClose={() => setEditingItem(null)}
@@ -302,19 +335,19 @@ export function HoursTable({ data, onChanged }: HoursTableProps) {
         >
           <div className="space-y-5">
             <div>
-              <label className="block text-sm font-semibold text-slate-500 mb-2">
+              <label className="block text-sm font-semibold text-[#64748B] dark:text-[#94A3B8] mb-2">
                 Descrição<span className="text-[#F47B20]">*</span>
               </label>
 
               <textarea
                 value={editDescription}
                 onChange={(event) => setEditDescription(event.target.value)}
-                className="w-full min-h-24 rounded-lg border border-slate-200 px-3 py-2 text-slate-700 outline-none resize-none focus:border-[#3B5CCC]"
+                className="w-full min-h-24 rounded-lg border border-slate-200 dark:border-[#334155] bg-white dark:bg-[#334155] px-3 py-2 text-slate-700 dark:text-[#F4F6F7] outline-none resize-none focus:border-[#3B5CCC]"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-slate-500 mb-2">
+              <label className="block text-sm font-semibold text-[#64748B] dark:text-[#94A3B8] mb-2">
                 Data<span className="text-[#F47B20]">*</span>
               </label>
 
@@ -325,77 +358,109 @@ export function HoursTable({ data, onChanged }: HoursTableProps) {
                   onChange={(event) => handleDateChange(event.target.value)}
                   placeholder="dd/mm/aaaa"
                   maxLength={10}
-                  className="w-full h-10 rounded-lg border border-slate-200 px-3 pr-10 text-slate-700 outline-none focus:border-[#3B5CCC]"
+                  className="w-full h-10 rounded-lg border border-slate-200 dark:border-[#334155] bg-white dark:bg-[#334155] px-3 pr-10 text-slate-700 dark:text-[#F4F6F7] placeholder:text-slate-400 dark:placeholder:text-[#94A3B8] outline-none focus:border-[#3B5CCC]"
                 />
                 <Calendar
                   size={20}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-[#94A3B8]"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-slate-500 mb-2">
+              <label className="block text-sm font-semibold text-slate-500 dark:text-[#94A3B8] mb-2">
                 Horário de Entrada<span className="text-[#F47B20]">*</span>
               </label>
 
-              <div className="relative">
-                <input
-                  type="text"
-                  value={editStartTime}
-                  onChange={(event) => setEditStartTime(event.target.value)}
-                  className="w-full h-10 rounded-lg border border-slate-200 px-3 pr-10 text-slate-700 outline-none focus:border-[#3B5CCC]"
-                />
-                <Timer
-                  size={20}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500"
-                />
+              <div className="flex flex-col gap-1">
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={editStartTime}
+                    onChange={(event) => {
+                      const formatted = handleTimeChange(event.target.value);
+                      setEditStartTime(formatted);
+                    }}
+                    placeholder="HH:MM:SS"
+                    maxLength={8}
+                    className={`w-full h-10 rounded-lg border px-3 pr-10 text-slate-700 dark:text-[#F4F6F7] outline-none focus:border-[#3B5CCC] ${editStartTime && !isValidTime(editStartTime)
+                      ? "border-red-500 focus:border-red-500 dark:border-red-500"
+                      : "border-slate-200 dark:border-[#31405A] dark:bg-[#334155]"
+                      }`}
+                  />
+                  <Timer
+                    size={20}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-[#94A3B8]"
+                  />
+                </div>
+                {editStartTime && !isValidTime(editStartTime) && (
+                  <span className="text-xs text-red-500">Por favor, insira um horário válido de 00:00:00 a 23:59:59</span>
+                )}
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-slate-500 mb-2">
+              <label className="block text-sm font-semibold text-slate-500 dark:text-[#94A3B8] mb-2">
                 Horário de Saída<span className="text-[#F47B20]">*</span>
               </label>
 
-              <div className="relative">
-                <input
-                  type="text"
-                  value={editEndTime}
-                  onChange={(event) => setEditEndTime(event.target.value)}
-                  className="w-full h-10 rounded-lg border border-slate-200 px-3 pr-10 text-slate-700 outline-none focus:border-[#3B5CCC]"
-                />
-                <Timer
-                  size={20}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500"
-                />
+              <div className="flex flex-col gap-1">
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={editEndTime}
+                    onChange={(event) => {
+                      const formatted = handleTimeChange(event.target.value);
+                      setEditEndTime(formatted);
+                    }}
+                    placeholder="HH:MM:SS"
+                    maxLength={8}
+                    className={`w-full h-10 rounded-lg border px-3 pr-10 text-slate-700 dark:text-[#F4F6F7] outline-none focus:border-[#3B5CCC] ${editEndTime && !isValidTime(editEndTime)
+                      ? "border-red-500 focus:border-red-500 dark:border-red-500"
+                      : "border-slate-200 dark:border-[#31405A] dark:bg-[#334155]"
+                      }`}
+                  />
+                  <Timer
+                    size={20}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-[#94A3B8]"
+                  />
+                </div>
+                {editEndTime && !isValidTime(editEndTime) && (
+                  <span className="text-xs text-red-500">Por favor, insira um horário válido de 00:00:00 a 23:59:59</span>
+                )}
               </div>
             </div>
-
             <div className="grid grid-cols-2 gap-6 pt-5">
-              <button
-                type="button"
-                onClick={handleSaveEdit}
-                disabled={isSaving}
-                className="h-14 rounded-xl bg-[#F47B20] text-white font-bold text-xl hover:opacity-90 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isSaving ? "Salvando..." : "Salvar"}
-              </button>
 
               <button
                 type="button"
                 onClick={() => setEditingItem(null)}
                 disabled={isSaving}
-                className="h-14 rounded-xl border border-slate-200 text-[#F47B20] font-bold text-xl hover:bg-slate-50 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                className="h-14 rounded-xl border border-slate-200 dark:border-[#334155] text-[#F47B20] font-bold text-xl hover:bg-slate-50 dark:hover:bg-[#334155] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Fechar
+              </button>
+              
+              <button
+                type="button"
+                onClick={handleSaveEdit}
+                disabled={
+                  isSaving ||
+                  !editStartTime ||
+                  !editEndTime ||
+                  !isValidTime(editStartTime) ||
+                  !isValidTime(editEndTime)
+                }
+                className="h-14 rounded-xl bg-[#F47B20] text-white font-bold text-xl hover:opacity-90 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSaving ? "Salvando..." : "Salvar"}
               </button>
             </div>
           </div>
         </Modal>
-      )}
+      }
 
-      {deletingItem && (
+      {
         <Modal
           isOpen={!!deletingItem}
           onClose={() => setDeletingItem(null)}
@@ -403,11 +468,11 @@ export function HoursTable({ data, onChanged }: HoursTableProps) {
           className="max-w-xl"
         >
           <div className="space-y-4">
-            <p className="text-[18px] font-medium text-slate-700">
+            <p className="text-[18px] font-medium text-slate-700 dark:text-[#F4F6F7]">
               Tem certeza de que deseja deletar o relatório de horas?
             </p>
 
-            <div className="w-full bg-[#FBE4D3] rounded-xl px-8 py-4 flex items-center gap-5">
+            <div className="w-full bg-[#FBE4D3] dark:bg-[#334155] rounded-xl px-8 py-4 flex items-center gap-5">
               <TriangleAlert size={24} className="text-[#F47B20]" />
 
               <p className="text-[#F47B20] text-lg font-medium">
@@ -420,7 +485,7 @@ export function HoursTable({ data, onChanged }: HoursTableProps) {
                 type="button"
                 onClick={() => setDeletingItem(null)}
                 disabled={isDeleting}
-                className="h-14 rounded-xl border border-slate-200 text-[#F47B20] font-bold text-xl hover:bg-slate-50 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                className="h-14 rounded-xl border border-slate-200 dark:border-[#334155] text-[#F47B20] font-bold text-xl hover:bg-slate-50 dark:hover:bg-[#334155] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Cancelar
               </button>
@@ -436,7 +501,7 @@ export function HoursTable({ data, onChanged }: HoursTableProps) {
             </div>
           </div>
         </Modal>
-      )}
+      }
 
       <RejectionJustificationModal
         isOpen={!!justificationModalText}
@@ -468,12 +533,12 @@ function getStatusClass(status: HourStatus) {
     "inline-block w-24 px-2 py-1 rounded-full text-[11px] font-bold border";
   switch (status) {
     case "APPROVED":
-      return `${base} bg-[#f0fdf4] text-[#22c55e] border-[#bbf7d0]`;
+      return `${base} bg-[#f0fdf4] text-[#22c55e] border-[#bbf7d0] dark:bg-[#22c55e]/15 dark:text-[#4ade80] dark:border-[#22c55e]/40`;
     case "REJECTED":
-      return `${base} bg-[#fef2f2] text-[#ef4444] border-[#fecaca]`;
+      return `${base} bg-[#fef2f2] text-[#ef4444] border-[#fecaca] dark:bg-[#ef4444]/15 dark:text-[#f87171] dark:border-[#ef4444]/40`;
     case "PENDING":
-      return `${base} bg-[#fff7ed] text-[#f97316] border-[#fed7aa]`;
+      return `${base} bg-[#fff7ed] text-[#f97316] border-[#fed7aa] dark:bg-[#f97316]/15 dark:text-[#fb923c] dark:border-[#f97316]/40`;
     default:
-      return `${base} bg-[#f0fdf4] text-[#22c55e] border-[#bbf7d0]`;
+      return `${base} bg-[#f0fdf4] text-[#22c55e] border-[#bbf7d0] dark:bg-[#22c55e]/15 dark:text-[#4ade80] dark:border-[#22c55e]/40`;
   }
 }

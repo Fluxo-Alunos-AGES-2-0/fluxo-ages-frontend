@@ -10,6 +10,7 @@ interface CardProps {
   children: ReactNode;
   className?: string;
   classContent?: string;
+  headerActionOnClick?: () => void;
 }
 
 export const Card: React.FC<CardProps> = ({
@@ -19,33 +20,34 @@ export const Card: React.FC<CardProps> = ({
   children,
   className,
   classContent,
+  headerActionOnClick,
 }) => {
   const hasHeader = !!title;
 
   return (
     <div
       className={[
-        "bg-white shadow-[0_1px_3px_rgba(0,0,0,0.05)] rounded-xl flex flex-col min-h-0 min-w-[280px] max-h-[550px] relative overflow-scroll no-scrollbar :hidden w-full h-full",
+        "bg-white dark:bg-[#1E293B] border border-[#e5e7eb] dark:border-[#334155] shadow-[0_1px_3px_rgba(0,0,0,0.05)] rounded-xl flex flex-col min-h-0 min-w-[280px] max-h-[550px] relative overflow-auto no-scrollbar w-full h-full",
         className || "",
       ].join(" ")}
     >
-      <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#3b5ccc] to-[#5b7ae8] z-10 rounded-t-xl" />
+      <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#3B5CCC] to-[#3B5CCC] z-10 rounded-t-xl" />
 
       {hasHeader && (
-        <div className="sticky z-1 flex justify-between items-center px-5 py-4 border-b border-[#e5e7eb] w-full h-[50px]">
+        <div className="sticky z-1 flex justify-between items-center px-5 py-4 border-b border-[#e5e7eb] dark:border-[#334155] w-full h-[50px]">
           <div className="flex items-center gap-2.5">
             {icon === "clock" && <img src={clockIcon} alt="Clock icon" />}
             {icon === "arrow" && (
               <img src={arrowIcon} alt="Rising arrow icon" />
             )}
             {title && (
-              <h2 className="text-[14px] font-semibold text-[#1f2937] leading-5 m-0">
+              <h2 className="text-[14px] font-semibold text-[#1f2937] dark:text-[#F4F6F7] leading-5 m-0">
                 {title}
               </h2>
             )}
           </div>
           {headerAction && (
-            <div className="text-[#6b7280] text-[12px] font-medium flex gap-1.5 items-center justify-end max-h-full w-1/4 cursor-pointer">
+            <div className="text-[#6b7280] dark:text-[#94A3B8] text-[12px] font-medium flex gap-1.5 items-center justify-end max-h-full w-1/4 cursor-pointer" onClick={headerActionOnClick}>
               <img src={pencil} alt="Edit icon" />
               {headerAction}
             </div>

@@ -5,206 +5,204 @@ import { TextArea } from "../ui/TextArea/TextArea";
 import { Select } from "../ui/Select/Select";
 import { InputField } from "../ui/InputField/InputField";
 import {
-  SprintReportFormData,
-  SprintReportRow,
+    SprintReportFormData,
+    SprintReportRow,
 } from "@/app/types/sprintReport";
 
 interface SprintReportModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSubmit?: (data: SprintReportFormData) => void | Promise<void>;
-  isSubmitting?: boolean;
-  usedSprints?: string[];
-  initialData?: SprintReportRow | null;
-  projectName?: string;
+    isOpen: boolean;
+    onClose: () => void;
+    onSubmit?: (data: SprintReportFormData) => void | Promise<void>;
+    isSubmitting?: boolean;
+    usedSprints?: string[];
+    initialData?: SprintReportRow | null;
+    projectName?: string;
 }
 
 const DEFAULT_PROJECT = "Fluxo AGES 2.0 - Alunos";
 const SPRINT_OPTIONS = [
-  "Sprint 1",
-  "Sprint 2",
-  "Sprint 3",
-  "Sprint 4",
-  "Sprint 5",
+    "Sprint 1",
+    "Sprint 2",
+    "Sprint 3",
+    "Sprint 4",
+    "Sprint 5",
 ];
 
 export function SprintReportModal({
-  isOpen,
-  onClose,
-  onSubmit,
-  isSubmitting = false,
-  usedSprints = [],
-  initialData = null,
-  projectName = DEFAULT_PROJECT,
+    isOpen,
+    onClose,
+    onSubmit,
+    isSubmitting = false,
+    usedSprints = [],
+    initialData = null,
+    projectName = DEFAULT_PROJECT,
 }: SprintReportModalProps) {
-  const [sprint, setSprint] = useState("");
-  const [plannedActivities, setPlannedActivities] = useState("");
-  const [completedActivities, setCompletedActivities] = useState("");
-  const [problems, setProblems] = useState("");
-  const [lessonsLearned, setLessonsLearned] = useState("");
-  const [nextSteps, setNextSteps] = useState("");
+    const [sprint, setSprint] = useState("");
+    const [plannedActivities, setPlannedActivities] = useState("");
+    const [completedActivities, setCompletedActivities] = useState("");
+    const [problems, setProblems] = useState("");
+    const [lessonsLearned, setLessonsLearned] = useState("");
+    const [nextSteps, setNextSteps] = useState("");
+    const [isEditing, setIsEditing] = useState(false);
 
-  useEffect(() => {
-    if (isOpen) {
-      setSprint(initialData?.sprint ?? "");
-      setPlannedActivities(initialData?.predicted_activity ?? "");
-      setCompletedActivities(initialData?.activity_completed ?? "");
-      setProblems(initialData?.problems_encountered ?? "");
-      setLessonsLearned(initialData?.learned_lessons ?? "");
-      setNextSteps(initialData?.next_steps ?? "");
-    } else {
-      setSprint("");
-      setPlannedActivities("");
-      setCompletedActivities("");
-      setProblems("");
-      setLessonsLearned("");
-      setNextSteps("");
-    }
-  }, [isOpen, initialData]);
+    useEffect(() => {
+        if (isOpen) {
+            setIsEditing(!!initialData);
+            setSprint(initialData?.sprint ?? "");
+            setPlannedActivities(initialData?.predicted_activity ?? "");
+            setCompletedActivities(initialData?.activity_completed ?? "");
+            setProblems(initialData?.problems_encountered ?? "");
+            setLessonsLearned(initialData?.learned_lessons ?? "");
+            setNextSteps(initialData?.next_steps ?? "");
+        }
+    }, [isOpen, initialData]);
 
-  const usedSet = new Set(usedSprints);
-  const availableSprints = SPRINT_OPTIONS.filter((s) => !usedSet.has(s));
+    const usedSet = new Set(usedSprints);
+    const availableSprints = SPRINT_OPTIONS.filter((s) => !usedSet.has(s));
 
-  const isFormValid = Boolean(
-    sprint.trim() &&
-    plannedActivities.trim() &&
-    completedActivities.trim() &&
-    problems.trim() &&
-    lessonsLearned.trim() &&
-    nextSteps.trim(),
-  );
+    const isFormValid = Boolean(
+        sprint.trim() &&
+        plannedActivities.trim() &&
+        completedActivities.trim() &&
+        problems.trim() &&
+        lessonsLearned.trim() &&
+        nextSteps.trim(),
+    );
 
-  const handleSubmit = () => {
-    if (!isFormValid || isSubmitting) return;
+    const handleSubmit = () => {
+        if (!isFormValid || isSubmitting) return;
 
-    onSubmit?.({
-      project: projectName,
-      sprint,
-      plannedActivities,
-      completedActivities,
-      problems,
-      lessonsLearned,
-      nextSteps,
-    });
-  };
+        onSubmit?.({
+            project: projectName,
+            sprint,
+            plannedActivities,
+            completedActivities,
+            problems,
+            lessonsLearned,
+            nextSteps,
+        });
+    };
 
-  return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title={
-        initialData ? "Atualizar Relatório de Sprint" : "Relatório de Sprint"
-      }
-      className="!max-w-2xl"
-    >
-      <div className="mt-4 flex max-h-[70vh] w-[640px] max-w-full flex-col">
-        <div
-          className="
+    return (
+        <Modal
+            isOpen={isOpen}
+            onClose={onClose}
+            title={
+                isEditing ? "Atualizar Relatório de Sprint" : "Relatório de Sprint"
+            }
+            className="!max-w-2xl dark:bg-[#1E293B] dark:text-[#F4F6F7] dark:border-[#31405A]"
+        >
+            <div className="mt-4 flex max-h-[70vh] w-[640px] max-w-full flex-col">
+                <div
+                    className="
             flex flex-col gap-4 overflow-y-auto pr-2
             scrollbar-thin
             [&::-webkit-scrollbar]:w-1.5
             [&::-webkit-scrollbar-thumb]:bg-slate-200
+            dark:[&::-webkit-scrollbar-thumb]:bg-[#64748B]
             [&::-webkit-scrollbar-thumb]:rounded-full
             [&::-webkit-scrollbar-track]:bg-transparent
             hover:[&::-webkit-scrollbar-thumb]:bg-slate-300
+            dark:hover:[&::-webkit-scrollbar-thumb]:bg-[#94A3B8]
+            dark:text-[#F4F6F7]
           "
-        >
-          <div className="grid grid-cols-2 gap-4">
-            <InputField
-              label="Projeto"
-              disabled
-              value={projectName}
-              mandatory
-            />
+                >
+                    <div className="grid grid-cols-2 gap-4">
+                        <InputField
+                            label="Projeto"
+                            disabled
+                            value={projectName}
+                            mandatory
+                        />
 
-            <div>
-              <label className="mb-1.5 block text-sm font-semibold text-[#6B7280]">
-                Sprint<span className="text-[#f47b20]">*</span>
-              </label>
+                        <div>
+                            <label className="mb-1.5 block text-sm font-semibold text-[#6B7280] dark:text-[#94A3B8]">
+                                Sprint<span className="text-[#f47b20]">*</span>
+                            </label>
 
-              <Select
-                value={sprint}
-                onChange={(e) => setSprint(e.target.value)}
-                disabled={!!initialData}
-                placeholder="Selecione"
-                wrapperClassName="w-full"
-                className="w-full h-[42px] rounded-2xl"
-                options={SPRINT_OPTIONS.map((s) => ({
-                  value: s,
-                  label: usedSet.has(s) ? `${s} (já enviada)` : s,
-                  disabled: usedSet.has(s),
-                }))}
-              />
+                            <Select
+                                value={sprint}
+                                onChange={(e) => setSprint(e.target.value)}
+                                disabled={isEditing}
+                                placeholder="Selecione"
+                                wrapperClassName="w-full"
+                                className="w-full h-[42px] rounded-2xl dark:bg-[#334155] dark:text-[#F4F6F7] dark:border-[#31405A] dark:placeholder:text-[#94A3B8]"
+                                options={SPRINT_OPTIONS.map((s) => ({
+                                    value: s,
+                                    label: usedSet.has(s) ? `${s}` : s,
+                                    disabled: usedSet.has(s),
+                                }))}
+                            />
 
-              {!initialData && availableSprints.length === 0 && (
-                <span className="mt-1 block text-xs text-slate-500">
-                  Todas as sprints já possuem relatório.
-                </span>
-              )}
+                            {!isEditing && availableSprints.length === 0 && (
+                                <span className="mt-1 block text-xs text-slate-500 dark:text-[#94A3B8]">
+                                    Todas as sprints já possuem relatório.
+                                </span>
+                            )}
+                        </div>
+                    </div>
+
+                    <TextArea
+                        label="Atividades Previstas"
+                        value={plannedActivities}
+                        onChange={setPlannedActivities}
+                        mandatory
+                    />
+
+                    <TextArea
+                        label="Atividades Concluídas"
+                        value={completedActivities}
+                        onChange={setCompletedActivities}
+                        mandatory
+                    />
+
+                    <TextArea
+                        label="Problemas Encontrados"
+                        value={problems}
+                        onChange={setProblems}
+                        mandatory
+                    />
+
+                    <TextArea
+                        label="Lições Aprendidas"
+                        value={lessonsLearned}
+                        onChange={setLessonsLearned}
+                        mandatory
+                    />
+
+                    <TextArea
+                        label="Próximos Passos"
+                        value={nextSteps}
+                        onChange={setNextSteps}
+                        mandatory
+                    />
+                </div>
+
+                <div className="mt-8 grid grid-cols-2 gap-4">
+                    <Button
+                        variant="accent-secondary"
+                        fullWidth
+                        onClick={onClose}
+                        disabled={isSubmitting}
+                    >
+                        Fechar
+                    </Button>
+
+                    <Button
+                        variant="accent"
+                        fullWidth
+                        onClick={handleSubmit}
+                        disabled={!isFormValid || isSubmitting}
+                        loading={isSubmitting}
+                    >
+                        {isSubmitting
+                            ? "Enviando..."
+                            : isEditing
+                                ? "Atualizar Relatório"
+                                : "Cadastrar"}
+                    </Button>
+                </div>
             </div>
-          </div>
-
-          <TextArea
-            label="Atividades Previstas"
-            value={plannedActivities}
-            onChange={setPlannedActivities}
-            mandatory
-          />
-
-          <TextArea
-            label="Atividades Concluídas"
-            value={completedActivities}
-            onChange={setCompletedActivities}
-            mandatory
-          />
-
-          <TextArea
-            label="Problemas Encontrados"
-            value={problems}
-            onChange={setProblems}
-            mandatory
-          />
-
-          <TextArea
-            label="Lições Aprendidas"
-            value={lessonsLearned}
-            onChange={setLessonsLearned}
-            mandatory
-          />
-
-          <TextArea
-            label="Próximos Passos"
-            value={nextSteps}
-            onChange={setNextSteps}
-            mandatory
-          />
-        </div>
-
-        <div className="mt-8 grid grid-cols-2 gap-4">
-          <Button
-            variant="accent"
-            fullWidth
-            onClick={handleSubmit}
-            disabled={!isFormValid || isSubmitting}
-            loading={isSubmitting}
-          >
-            {isSubmitting
-              ? "Enviando..."
-              : initialData
-                ? "Atualizar Relatório"
-                : "Cadastrar"}
-          </Button>
-
-          <Button
-            variant="accent-secondary"
-            fullWidth
-            onClick={onClose}
-            disabled={isSubmitting}
-          >
-            Fechar
-          </Button>
-        </div>
-      </div>
-    </Modal>
-  );
+        </Modal>
+    );
 }
