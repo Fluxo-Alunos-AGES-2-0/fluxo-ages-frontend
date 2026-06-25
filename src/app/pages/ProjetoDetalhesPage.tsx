@@ -303,55 +303,6 @@ export default function ProjetoDetalhesPage() {
     }
   };
 
-  const renderEditableImage = (
-    label: string,
-    currentUrl: string | null,
-    previewUrl: string | null,
-    onClick: () => void,
-  ) => {
-    const displayUrl = previewUrl ?? currentUrl;
-
-    return (
-      <div className="flex flex-col gap-2">
-        <span className="text-xs font-bold uppercase tracking-wide text-[#6B7280]">
-          {label}
-        </span>
-
-        <button
-          type="button"
-          onClick={onClick}
-          disabled={isSaving}
-          className="group relative h-[220px] w-full overflow-hidden rounded-xl border-b-4 border-[#F47B20] bg-[#EEF3FF] cursor-pointer disabled:cursor-not-allowed"
-        >
-          {displayUrl ? (
-            <img
-              src={toDisplayImageUrl(displayUrl)}
-              alt={label}
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <div className="h-full w-full flex items-center justify-center text-[#3B5CCC]">
-              <FolderOpen size={42} />
-            </div>
-          )}
-
-          <div className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-all group-hover:bg-black/45 group-hover:opacity-100">
-            <div className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-[#1F2937] shadow-md">
-              <Camera size={18} />
-              Alterar imagem
-            </div>
-          </div>
-
-          {isSaving && (
-            <div className="absolute inset-0 flex items-center justify-center bg-white/70">
-              <Loader2 className="animate-spin text-[#F47B20]" size={34} />
-            </div>
-          )}
-        </button>
-      </div>
-    );
-  };
-
   return (
     <div className="w-full flex flex-col gap-6 font-sans">
       <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-[#6B728030] dark:border-[#334155] shadow-sm overflow-hidden relative">
@@ -360,8 +311,32 @@ export default function ProjetoDetalhesPage() {
         <div className="p-6 pb-4 flex items-center justify-between gap-4 border-b border-[#6B728030] dark:border-[#334155]">
 
           <div className="flex items-center gap-4">
-            {/* Ícone/Thumbnail do Projeto */}
-            {project.thumbnailUrl ? (
+            {/* Ícone/Thumbnail do Projeto (editável no modo de edição) */}
+            {isEditing ? (
+              <button
+                type="button"
+                onClick={() => thumbnailInputRef.current?.click()}
+                disabled={isSaving}
+                className="group relative w-14 h-14 rounded-xl overflow-hidden border border-slate-100 dark:border-[#334155] shadow-sm shrink-0 cursor-pointer disabled:cursor-not-allowed"
+                aria-label="Alterar thumbnail"
+                title="Alterar thumbnail"
+              >
+                {thumbnailPreviewUrl ?? project.thumbnailUrl ? (
+                  <img
+                    src={toDisplayImageUrl(thumbnailPreviewUrl ?? project.thumbnailUrl)}
+                    alt={`Logo ${project.name}`}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-orange-50 text-[#F47B20] flex items-center justify-center">
+                    <FolderOpen size={24} />
+                  </div>
+                )}
+                <div className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-all group-hover:bg-black/45 group-hover:opacity-100">
+                  <Camera size={18} className="text-white" />
+                </div>
+              </button>
+            ) : project.thumbnailUrl ? (
               <img
                 src={toDisplayImageUrl(project.thumbnailUrl)}
                 alt={`Logo ${project.name}`}
@@ -460,22 +435,56 @@ export default function ProjetoDetalhesPage() {
           
           {/* Lado Esquerdo: Banner e Equipe */}
           <div className="lg:col-span-3 flex flex-col gap-8">
-            {isEditing ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {renderEditableImage(
-                  "Thumbnail",
-                  project.thumbnailUrl,
-                  thumbnailPreviewUrl,
-                  () => thumbnailInputRef.current?.click(),
-                )}
+            {/* Banner = Foto do grupo (editável por hover no modo de edição) */}
+            <div className="rounded-xl overflow-hidden border-b-4 border-[#F47B20] shadow-sm">
+              {isEditing ? (
+                <button
+                  type="button"
+                  onClick={() => groupPhotoInputRef.current?.click()}
+                  disabled={isSaving}
+                  className="group relative block h-[280px] w-full overflow-hidden bg-[#EEF3FF] dark:bg-[#334155] cursor-pointer disabled:cursor-not-allowed"
+                >
+                  {groupPhotoPreviewUrl ?? project.groupPhotoUrl ? (
+                    <img
+                      src={toDisplayImageUrl(groupPhotoPreviewUrl ?? project.groupPhotoUrl)}
+                      alt={`Foto do grupo do projeto ${project.name}`}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="h-full w-full flex items-center justify-center text-[#3B5CCC]">
+                      <Users size={64} opacity={0.5} />
+                    </div>
+                  )}
 
-                {renderEditableImage(
-                  "Foto do grupo",
-                  project.groupPhotoUrl,
-                  groupPhotoPreviewUrl,
-                  () => groupPhotoInputRef.current?.click(),
-                )}
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-all group-hover:bg-black/45 group-hover:opacity-100">
+                    <div className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-[#1F2937] shadow-md">
+                      <Camera size={18} />
+                      Alterar foto do grupo
+                    </div>
+                  </div>
 
+                  {isSaving && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-white/70">
+                      <Loader2 className="animate-spin text-[#F47B20]" size={34} />
+                    </div>
+                  )}
+                </button>
+              ) : bannerUrl ? (
+                <img
+                  src={toDisplayImageUrl(bannerUrl)}
+                  alt={`Foto do grupo do projeto ${project.name}`}
+                  className="w-full h-[280px] object-cover"
+                />
+              ) : (
+                <div className="w-full h-[280px] bg-[#EEF3FF] dark:bg-[#334155] flex items-center justify-center text-[#3B5CCC]">
+                  <Users size={64} opacity={0.5} />
+                </div>
+              )}
+            </div>
+
+            {/* Inputs de arquivo (thumbnail no cabeçalho, foto do grupo no banner) */}
+            {isEditing && (
+              <>
                 <input
                   ref={thumbnailInputRef}
                   type="file"
@@ -493,21 +502,7 @@ export default function ProjetoDetalhesPage() {
                   disabled={isSaving}
                   onChange={(event) => handleImageChange(event, "groupPhoto")}
                 />
-              </div>
-            ) : (
-              <div className="rounded-xl overflow-hidden border-b-4 border-[#F47B20] shadow-sm">
-                {bannerUrl ? (
-                  <img
-                    src={toDisplayImageUrl(bannerUrl)}
-                    alt={`Foto do grupo do projeto ${project.name}`}
-                    className="w-full h-[280px] object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-[280px] bg-[#EEF3FF] dark:bg-[#334155] flex items-center justify-center text-[#3B5CCC]">
-                    <Users size={64} opacity={0.5} />
-                  </div>
-                )}
-              </div>
+              </>
             )}
 
             {/* Acordeão de Membros */}
