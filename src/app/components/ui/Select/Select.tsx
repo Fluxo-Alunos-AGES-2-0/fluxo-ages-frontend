@@ -23,15 +23,16 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
         <select
           ref={ref}
           className={`
-            appearance-none pl-4 pr-9 rounded-lg h-[38px]
-            border border-[#e5e7eb] dark:border-[#334155]
+          appearance-none pl-4 pr-9 rounded-lg h-[38px]
+          border border-[#e5e7eb] dark:border-[#334155]
           bg-white dark:bg-[#1E293B]
-            text-[13px] text-[#6b7280] dark:text-[#F4F6F7]
-            font-medium
-            focus:outline-none focus:ring-2 focus:ring-[#3b5ccc]/30 focus:border-[#3b5ccc]
-            cursor-pointer transition-colors
-            ${className}
-`}
+          text-[13px] text-[#6b7280] dark:text-[#F4F6F7] font-medium
+          focus:outline-none focus:ring-2 focus:ring-[#3b5ccc]/30 focus:border-[#3b5ccc]
+          cursor-pointer transition-colors
+          disabled:bg-[#f4f5f6] disabled:border-[#e2e4e9] disabled:text-slate-400
+          disabled:cursor-not-allowed disabled:opacity-100
+          ${className}
+        `}
           {...props}
         >
           {placeholder && (

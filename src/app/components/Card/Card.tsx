@@ -10,6 +10,7 @@ interface CardProps {
   children: ReactNode;
   className?: string;
   classContent?: string;
+  headerActionOnClick?: () => void;
 }
 
 export const Card: React.FC<CardProps> = ({
@@ -19,6 +20,7 @@ export const Card: React.FC<CardProps> = ({
   children,
   className,
   classContent,
+  headerActionOnClick,
 }) => {
   const hasHeader = !!title;
 
@@ -45,7 +47,7 @@ export const Card: React.FC<CardProps> = ({
             )}
           </div>
           {headerAction && (
-            <div className="text-[#6b7280] dark:text-[#94A3B8] text-[12px] font-medium flex gap-1.5 items-center justify-end max-h-full w-1/4 cursor-pointer">
+            <div className="text-[#6b7280] dark:text-[#94A3B8] text-[12px] font-medium flex gap-1.5 items-center justify-end max-h-full w-1/4 cursor-pointer" onClick={headerActionOnClick}>
               <img src={pencil} alt="Edit icon" />
               {headerAction}
             </div>

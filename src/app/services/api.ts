@@ -57,6 +57,13 @@ export const api = {
       body: isFormData ? body : JSON.stringify(body),
     });
   },
+  patch: <T>(path: string, body: unknown) => {
+    const isFormData = body instanceof FormData;
+    return request<T>(path, {
+      method: "PATCH",
+      body: isFormData ? body : JSON.stringify(body),
+    });
+  },
   delete: <T>(path: string) => request<T>(path, { method: "DELETE" }),
   blob: async (path: string): Promise<Blob> => {
     const token = localStorage.getItem("token");

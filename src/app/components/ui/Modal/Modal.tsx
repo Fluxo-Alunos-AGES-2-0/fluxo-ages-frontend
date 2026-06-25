@@ -91,7 +91,7 @@ export function Modal({
         ref={modalRef}
         className={`relative bg-white dark:bg-[#1E293B] p-6 rounded-xl w-full max-w-md z-[10000] shadow-2xl overflow-hidden border border-transparent dark:border-[#334155] ${className}`}
       >
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#3b5ccc] to-[#5b7ae8] z-10 rounded-t-xl" />
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#F47B20] to-[#f18a3c] z-10 rounded-t-xl" />
         <div className="flex justify-between items-center">
           <h2 className="text-[24px] font-bold text-black dark:text-[#F4F6F7]">{title}</h2>
           <div className="flex items-center gap-2">

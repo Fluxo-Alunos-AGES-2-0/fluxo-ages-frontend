@@ -6,6 +6,9 @@ import {
   Users,
   X,
   Zap,
+  ChevronRight,
+  ChevronDown,
+  Code2
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
@@ -22,6 +25,12 @@ interface ProjectTeamMember {
   id: number;
   name: string;
   avatarUrl: string | null;
+  agesLevel: number;
+}
+
+interface ProjectTechnology {
+  name: string;
+  iconUrl: string | null;
 }
 
 interface ProjectDetails {
@@ -36,7 +45,7 @@ interface ProjectDetails {
   gitLabLink: string | null;
   teacher: ProjectTeacher | null;
   team: ProjectTeamMember[];
-  technologies: string[];
+  technologies: ProjectTechnology[];
   thumbnailUrl: string | null;
   groupPhotoUrl: string | null;
 }
@@ -48,6 +57,8 @@ export default function ProjetoDetalhesPage() {
   const [project, setProject] = useState<ProjectDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [imageErrors, setImageErrors] = useState<Record<number, boolean>>({});
+  const [expandedLevel, setExpandedLevel] = useState<number | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -107,7 +118,9 @@ export default function ProjetoDetalhesPage() {
   }
 
   const isAtivo = project.projectStatus === "EM_ANDAMENTO";
-  const imageUrl = project.thumbnailUrl ?? project.groupPhotoUrl ?? "";
+  const bannerUrl = project.groupPhotoUrl ?? project.thumbnailUrl ?? "";
+  
+  const agesLevels = [1, 2, 3, 4];
 
   const handleRepositoryClick = () => {
     if (!project.gitLabLink) return;
@@ -116,18 +129,37 @@ export default function ProjetoDetalhesPage() {
 
   return (
     <div className="w-full flex flex-col gap-6 font-sans">
-      <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-[#6B728030] dark:border-[#334155] shadow-sm overflow-hidden">
-        <div className="p-6 pb-4 flex items-start justify-between gap-4 border-b border-[#6B728030] dark:border-[#334155]">
-          <div className="flex items-end gap-3">
-            <h2 className="text-4xl font-bold text-[#F47B20]">
-              {project.name}
-            </h2>
+      <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-[#6B728030] dark:border-[#334155] shadow-sm overflow-hidden relative">
 
-            {project.period && (
-              <span className="text-sm text-[#6B7280] dark:text-[#94A3B8] mb-[2px]">
-                {project.period}
-              </span>
+        {/* Cabeçalho */}
+        <div className="p-6 pb-4 flex items-center justify-between gap-4 border-b border-[#6B728030] dark:border-[#334155]">
+
+          <div className="flex items-center gap-4">
+            {/* Ícone/Thumbnail do Projeto */}
+            {project.thumbnailUrl ? (
+              <img
+                src={project.thumbnailUrl}
+                alt={`Logo ${project.name}`}
+                className="w-14 h-14 rounded-xl border border-slate-100 object-contain p-1 shadow-sm"
+              />
+            ) : (
+              <div className="w-14 h-14 rounded-xl bg-orange-50 text-[#F47B20] flex items-center justify-center shadow-sm">
+                <FolderOpen size={28} />
+              </div>
             )}
+            
+            <div className="flex flex-col justify-center">
+              <div className="flex items-center gap-3">
+                <h2 className="text-3xl font-bold text-[#F47B20] leading-none">
+                  {project.name}
+                </h2>
+                {project.period && (
+                  <span className="text-sm text-[#6B7280] font-medium border-l border-slate-300 pl-3">
+                    {project.period}
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
 
           <div className="flex items-center gap-6">
@@ -162,90 +194,97 @@ export default function ProjetoDetalhesPage() {
           </div>
         </div>
 
-        <div className="p-6 grid grid-cols-1 lg:grid-cols-5 gap-8">
+        {/* Corpo (Grid) */}
+        <div className="p-6 grid grid-cols-1 lg:grid-cols-5 gap-10">
+          
+          {/* Lado Esquerdo: Banner e Equipe */}
           <div className="lg:col-span-3 flex flex-col gap-8">
-            <div className="rounded-xl overflow-hidden border-b-4 border-[#F47B20]">
-              {imageUrl ? (
+            <div className="rounded-xl overflow-hidden border-b-4 border-[#F47B20] shadow-sm">
+              {bannerUrl ? (
                 <img
-                  src={imageUrl}
-                  alt={`Imagem do projeto ${project.name}`}
-                  className="w-full h-[260px] object-cover"
+                  src={bannerUrl}
+                  alt={`Equipe do projeto ${project.name}`}
+                  className="w-full h-[280px] object-cover" // Reduzido de 320px para 280px
                 />
               ) : (
-                <div className="w-full h-[260px] bg-[#F9FAFB] dark:bg-[#334155] flex items-center justify-center text-[#3B5CCC]">
-                  <FolderOpen size={48} />
+                <div className="w-full h-[280px] bg-[#EEF3FF] dark:bg-[#334155] flex items-center justify-center text-[#3B5CCC]">
+                  <Users size={64} opacity={0.5} />
                 </div>
               )}
             </div>
 
-            <div className="flex flex-col gap-3">
-              <h3 className="flex items-center gap-2 text-sm font-bold text-[#1F2937] dark:text-[#F4F6F7]">
-                <Users size={16} className="text-[#3B5CCC]" />
-                Equipe
-              </h3>
+            {/* Acordeão de Membros */}
+            <div className="flex flex-col gap-4">
+              {agesLevels.map((level) => {
+                const levelMembers = project.team.filter(m => m.agesLevel === level);
+                if (levelMembers.length === 0) return null;
 
-              <div className="flex flex-wrap gap-2">
-                {project.team.length > 0 ? (
-                  project.team.map((member) => (
-                    <span
-                      key={member.id}
-                      className="px-3 py-1.5 rounded-full bg-[#6B728010] dark:bg-[#334155] border border-[#6B728030] dark:border-[#334155] text-xs font-semibold text-[#6B7280] dark:text-[#94A3B8]"
+                const isExpanded = expandedLevel === level;
+
+                return (
+                  <div key={level} className="flex flex-col gap-2">
+                    <button
+                      onClick={() => setExpandedLevel(isExpanded ? null : level)}
+                      className="flex items-center gap-1.5 text-[#3B5CCC] dark:text-[#4E6CFF] font-bold hover:text-[#2f4fb8] transition-colors w-fit cursor-pointer"
                     >
-                      {member.name}
-                    </span>
-                  ))
-                ) : (
-                  <span className="text-xs text-[#6B7280] dark:text-[#94A3B8]">
-                    Nenhum membro cadastrado.
-                  </span>
-                )}
-              </div>
-
-              {project.technologies.length > 0 && (
-                <div className="mt-4 flex flex-col gap-3">
-                  <h3 className="text-sm font-bold text-[#1F2937] dark:text-[#F4F6F7]">
-                    Tecnologias
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {project.technologies.map((tech) => (
-                      <span
-                        key={tech}
-                        className="px-3 py-1.5 rounded-full bg-[#3B5CCC10] dark:bg-[#334155] border border-[#3B5CCC30] dark:border-[#334155] text-xs font-semibold text-[#3B5CCC] dark:text-[#94A3B8]"
-                      >
-                        {tech}
-                      </span>
-                    ))}
+                      {isExpanded ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
+                      {toAgesLevel(level)}
+                    </button>
+                    {isExpanded && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pl-6 animate-in fade-in slide-in-from-top-2 duration-200 mt-2 mb-2">
+                        {levelMembers.map((member) => (
+                          <div key={member.id} className="flex items-center gap-3">
+                            {member.avatarUrl && !imageErrors[member.id] ? (
+                              <img
+                                src={member.avatarUrl}
+                                alt={member.name}
+                                className="w-10 h-10 rounded-full object-cover shadow-sm border border-slate-100"
+                                onError={() => setImageErrors(prev => ({ ...prev, [member.id]: true }))}
+                              />
+                            ) : (
+                              <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-[#334155] border border-slate-200 dark:border-[#31405A] flex items-center justify-center text-slate-500 dark:text-[#94A3B8] font-bold text-sm shadow-sm">
+                                {member.name.charAt(0).toUpperCase()}
+                              </div>
+                            )}
+                            <span className="text-sm font-medium text-slate-700 dark:text-[#F4F6F7] break-words line-clamp-2">
+                              {member.name}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                </div>
-              )}
+                );
+              })}
             </div>
           </div>
 
-          <div className="lg:col-span-2">
-            <div className="bg-[#EEF3FF] dark:bg-[#1E293B] rounded-xl p-6 min-h-[390px] flex flex-col justify-between">
+          {/* Lado Direito: Descrição e Tecnologias */}
+          <div className="lg:col-span-2 flex flex-col gap-6">
+            <div className="bg-[#EEF3FF] dark:bg-[#1E293B] rounded-xl p-6 flex flex-col gap-6 shadow-sm">
               <div className="flex flex-col gap-5">
-                <p className="text-sm text-[#6B7280] dark:text-[#94A3B8] leading-relaxed">
+                <p className="text-[15px] text-[#6B7280] dark:text-[#94A3B8] leading-relaxed text-justify">
                   {project.description}
                 </p>
 
-                <div className="flex flex-col gap-3 text-sm text-[#6B7280] dark:text-[#94A3B8]">
-                  {project.teacher && (
-                    <p>
-                      <span className="font-semibold text-[#6B7280] dark:text-[#94A3B8]">
-                        Orientador(a):
-                      </span>{" "}
-                      {project.teacher.name}
-                    </p>
-                  )}
-
-                  <p className="flex items-center gap-1">
-                    <Users size={15} />
-                    <span className="text-[#6B7280] dark:text-[#94A3B8]">
-                      {toAgesLevel(project.agesLevel ?? undefined)} ·{" "}
-                      {project.membersCount} membros
-                      {project.semesterYear ? ` · ${project.semesterYear}` : ""}
+                <div className="flex flex-col gap-3 text-sm text-[#6B7280] dark:text-[#94A3B8] mt-2">
+                  <p className="flex items-center gap-2 border-t border-[#3B5CCC20] dark:border-[#31405A] pt-4">
+                    <Users size={16} className="text-[#3B5CCC] dark:text-[#4E6CFF]" />
+                    <span>
+                      <span className="font-semibold text-slate-700 dark:text-[#F4F6F7]">Clientes AGES:</span>{" "}
+                      {project.teacher?.name}
                     </span>
                   </p>
+
+                  {project.teacher && (
+                    <p className="flex items-center gap-2">
+                      <Users size={16} className="text-[#3B5CCC] opacity-0" /> {/* Ícone invisível para alinhamento */}
+                      <span>
+                        <span className="font-semibold text-slate-700 dark:text-[#F4F6F7]">Orientador(a):</span>{" "}
+                        {project.teacher.name}
+                      </span>
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -253,13 +292,43 @@ export default function ProjetoDetalhesPage() {
                 variant="primary"
                 onClick={handleRepositoryClick}
                 disabled={!project.gitLabLink}
-                className="self-center mt-8 px-10 !bg-[#3B5CCC] hover:!bg-[#2f4fb8] flex items-center gap-2 font-bold"
+                className="mt-4 !bg-[#3B5CCC] hover:!bg-[#2f4fb8] flex items-center justify-center gap-2 font-bold w-full"
               >
                 <GitBranch size={16} />
                 Repositório
                 <ExternalLink size={14} />
               </Button>
             </div>
+
+            {/* Bloco de Tecnologias */}
+            {project.technologies && project.technologies.length > 0 && (
+              <div className="mt-2 flex flex-col gap-4">
+                <h3 className="text-[16px] font-bold text-[#1F2937] dark:text-[#F4F6F7]">
+                  Tecnologias
+                </h3>
+                <div className="flex flex-wrap gap-x-6 gap-y-5">
+                  {project.technologies.map((tech) => (
+                    <div key={tech.name} className="flex flex-col items-center justify-start w-16 gap-2">
+                      {tech.iconUrl ? (
+                        <img 
+                          src={tech.iconUrl} 
+                          alt={`Ícone ${tech.name}`} 
+                          className="w-11 h-11 object-contain drop-shadow-sm"
+                        />
+                      ) : (
+                        <div className="w-11 h-11 rounded-xl bg-[#f8fafc] dark:bg-[#334155] border border-[#e2e8f0] dark:border-[#31405A] flex items-center justify-center text-[#94a3b8] dark:text-[#94A3B8] shadow-sm">
+                          <Code2 size={20} />
+                        </div>
+                      )}
+                      <span className="text-[11px] text-center text-slate-600 dark:text-[#94A3B8] font-semibold leading-tight break-words w-full">
+                        {tech.name}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
           </div>
         </div>
       </div>

@@ -10,6 +10,7 @@ import {
   createProgressReportUploadUrl,
   uploadFileToPresignedUrl,
 } from "../../services/reportUpload";
+import { ConfirmationModal } from "../ui/ConfirmationModal/ConfirmationModal";
 
 const MAX_FILE_SIZE_BYTES = 25 * 1024 * 1024;
 
@@ -19,6 +20,7 @@ interface ReportUploadModalProps {
   onSuccess: () => void;
   reportType?: "andamento" | "final";
   currentProject?: string;
+  hasExistingReport?: boolean;
 }
 
 export const ReportUploadModal = ({
@@ -27,9 +29,11 @@ export const ReportUploadModal = ({
   onSuccess,
   reportType = "andamento",
   currentProject = "",
+  hasExistingReport = false
 }: ReportUploadModalProps) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -237,11 +241,10 @@ export const ReportUploadModal = ({
           </label>
           <div
             onClick={() => fileInputRef.current?.click()}
-            className={`group relative h-[48px] flex items-center justify-between px-4 rounded-lg border-2 border-dashed transition-all cursor-pointer ${
-              selectedFile
-                ? "border-[#f97316] bg-[#fff7ed] dark:bg-[#334155]"
-                : "border-[#e5e7eb] dark:border-[#334155] bg-[#f8fafc] dark:bg-[#334155]"
-            }`}
+            className={`group relative h-[48px] flex items-center justify-between px-4 rounded-lg border-2 border-dashed transition-all cursor-pointer ${selectedFile
+              ? "border-[#f97316] bg-[#fff7ed] dark:bg-[#334155]"
+              : "border-[#e5e7eb] dark:border-[#334155] bg-[#f8fafc] dark:bg-[#334155]"
+              }`}
           >
             <input
               type="file"
@@ -280,18 +283,24 @@ export const ReportUploadModal = ({
           </button>
           <button
             type="button"
-            onClick={handleUpload}
+            onClick={() => hasExistingReport ? setIsConfirmationModalOpen(true) : handleUpload()}
             disabled={!selectedFile || isUploading}
-            className={`px-8 py-2.5 rounded-xl font-bold text-[15px] text-white transition-all shadow-md ${
-              !selectedFile || isUploading
-                ? "bg-gray-300 dark:bg-[#64748B] cursor-not-allowed"
-                : "bg-[#f97316] hover:bg-[#ea580c] cursor-pointer"
-            }`}
+            className={`px-8 py-2.5 rounded-xl font-bold text-[15px] text-white transition-all shadow-md ${!selectedFile || isUploading
+              ? "bg-gray-300 dark:bg-[#64748B] cursor-not-allowed"
+              : "bg-[#f97316] hover:bg-[#ea580c] cursor-pointer"
+              }`}
           >
             {isUploading ? "Enviando..." : "Enviar Relatório"}
           </button>
         </div>
       </div>
+      <ConfirmationModal
+        isOpen={isConfirmationModalOpen}
+        onClose={() => setIsConfirmationModalOpen(false)}
+        onConfirm={handleUpload}
+        title="Confirmar Envio do Relatório"
+        description={"Essa ação não é reversível e irá sobrescrever o relatório já existente. Deseja enviar mesmo assim?"}
+      />
     </Modal>
   );
 };

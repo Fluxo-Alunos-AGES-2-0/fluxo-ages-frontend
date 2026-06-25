@@ -76,12 +76,28 @@ export function HoursTable({ data, onChanged }: HoursTableProps) {
     setEditEndTime(endDate.toLocaleTimeString("pt-BR"));
   }
 
+  function isValidTime(timeStr: string): boolean {
+    if (!timeStr) return false;
+
+    const regex = /^([0-1]?[0-9]|2[0-3]):([0-5]?[0-9]):([0-5]?[0-9])$/;
+    return regex.test(timeStr);
+  }
+
   async function handleSaveEdit() {
     if (!editingItem) return;
 
     const description = editDescription.trim();
     const entry = partsToDate(editDate, editStartTime);
     const exit = partsToDate(editDate, editEndTime);
+
+    if (!isValidTime(editStartTime) || !isValidTime(editEndTime)) {
+      showToast({
+        variant: "error",
+        title: "Horário inválido",
+        message: "Informe horários entre 00:00:00 e 23:59:59.",
+      });
+      return;
+    }
 
     if (!description || !entry || !exit) {
       showToast({
@@ -146,19 +162,28 @@ export function HoursTable({ data, onChanged }: HoursTableProps) {
     }
   }
 
+  const handleTimeChange = (value: string) => {
+    let numbers = value.replace(/\D/g, "").slice(0, 6);
+
+    if (numbers.length <= 2) {
+      return numbers;
+    } else if (numbers.length <= 4) {
+      return `${numbers.slice(0, 2)}:${numbers.slice(2)}`;
+    } else {
+      return `${numbers.slice(0, 2)}:${numbers.slice(2, 4)}:${numbers.slice(4)}`;
+    }
+  }
+
   const handleDateChange = (value: string) => {
     const numbers = value.replace(/\D/g, "").slice(0, 8);
 
     let formatted = numbers;
-
     if (numbers.length > 2) {
       formatted = `${numbers.slice(0, 2)}/${numbers.slice(2)}`;
     }
-
     if (numbers.length > 4) {
       formatted = `${numbers.slice(0, 2)}/${numbers.slice(2, 4)}/${numbers.slice(4)}`;
     }
-
     setEditDate(formatted);
   };
 
@@ -278,7 +303,7 @@ export function HoursTable({ data, onChanged }: HoursTableProps) {
                         aria-label="Editar relatório"
                         title="Editar relatório"
                         onClick={() => handleOpenEditModal(item)}
-                        className="text-blue-500 hover:text-blue-700 cursor-pointer transition-colors"
+                        className="text-[#3b5ccc] hover:text-[#4c6ef5] cursor-pointer transition-colors"
                       >
                         <Pencil size={18} />
                       </button>
@@ -301,7 +326,7 @@ export function HoursTable({ data, onChanged }: HoursTableProps) {
         </table>
       </div>
 
-      {editingItem && (
+      {
         <Modal
           isOpen={!!editingItem}
           onClose={() => setEditingItem(null)}
@@ -347,17 +372,30 @@ export function HoursTable({ data, onChanged }: HoursTableProps) {
                 Horário de Entrada<span className="text-[#F47B20]">*</span>
               </label>
 
-              <div className="relative">
-                <input
-                  type="text"
-                  value={editStartTime}
-                  onChange={(event) => setEditStartTime(event.target.value)}
-                  className="w-full h-10 rounded-lg border border-slate-200 px-3 pr-10 text-slate-700 outline-none focus:border-[#3B5CCC]"
-                />
-                <Timer
-                  size={20}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500"
-                />
+              <div className="flex flex-col gap-1">
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={editStartTime}
+                    onChange={(event) => {
+                      const formatted = handleTimeChange(event.target.value);
+                      setEditStartTime(formatted);
+                    }}
+                    placeholder="HH:MM:SS"
+                    maxLength={8}
+                    className={`w-full h-10 rounded-lg border px-3 pr-10 text-slate-700 outline-none focus:border-[#3B5CCC] ${editStartTime && !isValidTime(editStartTime)
+                      ? "border-red-500 focus:border-red-500"
+                      : "border-slate-200"
+                      }`}
+                  />
+                  <Timer
+                    size={20}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500"
+                  />
+                </div>
+                {editStartTime && !isValidTime(editStartTime) && (
+                  <span className="text-xs text-red-500">Por favor, insira um horário válido de 00:00:00 a 23:59:59</span>
+                )}
               </div>
             </div>
 
@@ -366,29 +404,33 @@ export function HoursTable({ data, onChanged }: HoursTableProps) {
                 Horário de Saída<span className="text-[#F47B20]">*</span>
               </label>
 
-              <div className="relative">
-                <input
-                  type="text"
-                  value={editEndTime}
-                  onChange={(event) => setEditEndTime(event.target.value)}
-                  className="w-full h-10 rounded-lg border border-slate-200 px-3 pr-10 text-slate-700 outline-none focus:border-[#3B5CCC]"
-                />
-                <Timer
-                  size={20}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500"
-                />
+              <div className="flex flex-col gap-1">
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={editEndTime}
+                    onChange={(event) => {
+                      const formatted = handleTimeChange(event.target.value);
+                      setEditEndTime(formatted);
+                    }}
+                    placeholder="HH:MM:SS"
+                    maxLength={8}
+                    className={`w-full h-10 rounded-lg border px-3 pr-10 text-slate-700 outline-none focus:border-[#3B5CCC] ${editEndTime && !isValidTime(editEndTime)
+                      ? "border-red-500 focus:border-red-500"
+                      : "border-slate-200"
+                      }`}
+                  />
+                  <Timer
+                    size={20}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500"
+                  />
+                </div>
+                {editEndTime && !isValidTime(editEndTime) && (
+                  <span className="text-xs text-red-500">Por favor, insira um horário válido de 00:00:00 a 23:59:59</span>
+                )}
               </div>
             </div>
-
             <div className="grid grid-cols-2 gap-6 pt-5">
-              <button
-                type="button"
-                onClick={handleSaveEdit}
-                disabled={isSaving}
-                className="h-14 rounded-xl bg-[#F47B20] text-white font-bold text-xl hover:opacity-90 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isSaving ? "Salvando..." : "Salvar"}
-              </button>
 
               <button
                 type="button"
@@ -398,12 +440,27 @@ export function HoursTable({ data, onChanged }: HoursTableProps) {
               >
                 Fechar
               </button>
+              
+              <button
+                type="button"
+                onClick={handleSaveEdit}
+                disabled={
+                  isSaving ||
+                  !editStartTime ||
+                  !editEndTime ||
+                  !isValidTime(editStartTime) ||
+                  !isValidTime(editEndTime)
+                }
+                className="h-14 rounded-xl bg-[#F47B20] text-white font-bold text-xl hover:opacity-90 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSaving ? "Salvando..." : "Salvar"}
+              </button>
             </div>
           </div>
         </Modal>
-      )}
+      }
 
-      {deletingItem && (
+      {
         <Modal
           isOpen={!!deletingItem}
           onClose={() => setDeletingItem(null)}
@@ -444,7 +501,7 @@ export function HoursTable({ data, onChanged }: HoursTableProps) {
             </div>
           </div>
         </Modal>
-      )}
+      }
 
       <RejectionJustificationModal
         isOpen={!!justificationModalText}

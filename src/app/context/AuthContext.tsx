@@ -8,6 +8,7 @@ export interface User {
   email: string;
   role: string;
   level: string;
+  avatarUrl: string;
 }
 
 interface AuthContextType {
@@ -39,6 +40,7 @@ function decodeToken(token: string): User | null {
       email: "",
       role: payload.role ?? "",
       level: "",
+      avatarUrl: ""
     };
   } catch {
     return null;

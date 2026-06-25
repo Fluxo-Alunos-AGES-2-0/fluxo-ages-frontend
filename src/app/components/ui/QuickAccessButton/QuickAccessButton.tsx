@@ -1,12 +1,13 @@
 import type { ReactNode } from "react";
-import { ExternalLink } from "lucide-react";
 
 interface QuickAccessButtonProps {
   icon: ReactNode;
   label: string;
   onClick?: () => void;
   href?: string;
+  /** @deprecated */
   highlighted?: boolean;
+  iconOnly?: boolean;
 }
 
 export function QuickAccessButton({
@@ -14,48 +15,58 @@ export function QuickAccessButton({
   label,
   onClick,
   href,
-  highlighted = false,
+  iconOnly = false,
 }: QuickAccessButtonProps) {
-  const baseClasses =
-    "w-full flex items-center justify-between rounded-2xl border px-4 py-3 text-sm font-medium transition-all duration-200 cursor-pointer";
+  if (iconOnly) {
+    const iconContent = (
+      <div className="flex flex-col items-center gap-2">
+        <div
+          className="w-14 h-14 rounded-full bg-white flex items-center justify-center transition-transform duration-150 hover:scale-105 active:scale-95 cursor-pointer"
+          style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.10), 0 1px 2px rgba(0,0,0,0.06)" }}
+        >
+          {icon}
+        </div>
+        <span className="text-[11px] text-[#374151] font-medium leading-tight text-center">
+          {label}
+        </span>
+      </div>
+    );
 
-  const stateClasses = highlighted
-    ? "bg-[#FFF5EC] border-[#F47B20]/50 text-[#F47B20] hover:bg-[#FFF1E5]"
-    : "bg-white border-[#E5E7EB] text-[#374151] hover:bg-[#F9FAFB]";
+    if (href) {
+      return (
+        <a href={href} target="_blank" rel="noreferrer">
+          {iconContent}
+        </a>
+      );
+    }
 
-  const iconClasses = highlighted ? "text-[#F47B20]" : "text-[#374151]";
-  const externalIconClasses = "w-4 h-4 text-[#9CA3AF] shrink-0";
+    return (
+      <button type="button" onClick={onClick}>
+        {iconContent}
+      </button>
+    );
+  }
+
+  const sharedClasses =
+    "w-full flex items-center justify-center gap-2.5 rounded-lg border border-[#3B5CCC] px-4 py-2.5 text-[0.9375rem] font-semibold text-[#3B5CCC] bg-transparent hover:bg-[#3B5CCC]/10 active:bg-[#3B5CCC]/15 transition-colors duration-200 cursor-pointer";
 
   const content = (
     <>
-      <div className="flex items-center gap-3 min-w-0">
-        <span className={iconClasses}>{icon}</span>
-        <span className="truncate">{label}</span>
-      </div>
-
-      {href ? <ExternalLink className={externalIconClasses} /> : null}
+      <span className="flex items-center">{icon}</span>
+      <span>{label}</span>
     </>
   );
 
   if (href) {
     return (
-      <a
-        href={href}
-        target="_blank"
-        rel="noreferrer"
-        className={`${baseClasses} ${stateClasses}`}
-      >
+      <a href={href} target="_blank" rel="noreferrer" className={sharedClasses}>
         {content}
       </a>
     );
   }
 
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`${baseClasses} ${stateClasses}`}
-    >
+    <button type="button" onClick={onClick} className={sharedClasses}>
       {content}
     </button>
   );

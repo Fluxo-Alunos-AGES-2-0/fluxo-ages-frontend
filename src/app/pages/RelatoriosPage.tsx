@@ -39,11 +39,18 @@ const TABS: Tab[] = [
   { id: "final", label: "Final", hasProjectFilter: false },
 ];
 
+interface ReportFeedbackApiResponse {
+  comment: string | null;
+  correctionUrl: string | null;
+  revisionDate: string | null;
+  teacherName: string | null;
+}
+
 interface ReportApiResponse {
   date: string;
   project: string;
   grade: number;
-  feedback: string | null;
+  feedback: ReportFeedbackApiResponse | null;
   urlArchive: string | null;
 }
 
@@ -57,7 +64,7 @@ function toReportEntry(report: ReportApiResponse): ReportEntry {
     date: new Date(report.date).toLocaleDateString("pt-BR"),
     project: report.project,
     grade: report.grade,
-    feedback: report.feedback ?? "",
+    feedback: report.feedback,
     urlArchive: report.urlArchive ?? null,
   };
 }
@@ -231,7 +238,7 @@ export default function RelatoriosPage() {
             onClick={handleDownloadTemplate}
             loading={isDownloadingTemplate}
             disabled={isDownloadingTemplate}
-            className="flex items-center gap-2 text-[#3b5ccc] dark:text-[#3B5CCC] font-bold text-[15px] px-1 rounded-none border-t-0 border-x-0 border-b-2 border-[#3b5ccc] dark:border-[#3B5CCC] bg-transparent hover:bg-transparent shadow-none"
+            className="flex items-center gap-2 text-[#3b5ccc] dark:text-[#3B5CCC] font-bold text-[15px] px-1 border-1 border-[#3b5ccc] dark:border-[#3B5CCC] bg-transparent hover:bg-[#3b5ccc]"
           >
             <FileDown size={20} strokeWidth={2.5} />
             Modelo de Relatório
@@ -273,7 +280,7 @@ export default function RelatoriosPage() {
 
         <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-[#e5e7eb] dark:border-[#334155]">
           <div
-            className="sticky top-0 z-10 flex items-center border-b border-[#e5e7eb] dark:border-[#334155] px-6 bg-white dark:bg-[#1E293B] rounded-t-2xl"
+            className="flex items-center border-b border-[#e5e7eb] dark:border-[#334155] px-6 bg-white dark:bg-[#1E293B] rounded-t-2xl"
             data-onboarding="report-tabs"
           >
             <nav className="flex flex-1 gap-1" role="tablist">
@@ -327,7 +334,7 @@ export default function RelatoriosPage() {
                 <button
                   type="button"
                   onClick={() => setIsSprintModalOpen(true)}
-                  className="inline-flex items-center gap-2 rounded-lg bg-[#3B5CCC] px-4 py-2 text-sm font-medium text-white hover:bg-[#2f4bb0] transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-2 rounded-lg bg-[#3b5ccc] px-4 py-2 text-sm font-medium text-white hover:bg-[#4c6ef5] transition-colors cursor-pointer"
                 >
                   <Plus size={16} />
                   Novo Relatório
@@ -384,6 +391,11 @@ export default function RelatoriosPage() {
           onClose={() => setIsUploadModalOpen(false)}
           reportType={activeTab === "final" ? "final" : "andamento"}
           currentProject={currentProject?.name ?? ""}
+          hasExistingReport={
+            activeTab === "final"
+              ? finalReport.length > 0
+              : progressReport.length > 0
+          }
           onSuccess={() => {
             setRefreshKey((k) => k + 1);
           }}
