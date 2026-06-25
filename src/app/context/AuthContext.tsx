@@ -9,6 +9,7 @@ export interface User {
   role: string;
   level: string;
   avatarUrl: string;
+  diaTurno: string;
 }
 
 interface AuthContextType {
@@ -40,7 +41,10 @@ function decodeToken(token: string): User | null {
       email: "",
       role: payload.role ?? "",
       level: "",
-      avatarUrl: ""
+      avatarUrl: "",
+      // TODO: o backend ainda não inclui diaTurno no JWT. Quando incluir, a
+      // sidebar passa a usar o turno real do aluno automaticamente.
+      diaTurno: payload.diaTurno ?? ""
     };
   } catch {
     return null;
