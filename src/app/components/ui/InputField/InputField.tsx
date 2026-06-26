@@ -29,11 +29,11 @@ export const InputField: React.FC<InputFieldProps> = ({
   // Lógica para aplicar as classes dinamicamente com base no estado
   const wrapperClasses = `flex items-center border rounded-lg px-3 py-2.5 transition-all duration-200 ease-in-out ${
     disabled
-      ? 'bg-[#f4f5f6] border-[#e2e4e9] dark:bg-[#334155] dark:border-[#334155]'
-      : error 
-        ? 'border-red-500 bg-white dark:bg-[#1E293B] dark:border-red-500' 
-        : isFocused 
-          ? 'border-blue-500 ring-1 ring-blue-500 bg-white dark:bg-[#1E293B]' 
+      ? 'bg-[#f4f5f6] border-[#e2e4e9] dark:bg-[#0F172A] dark:border-[#334155] dark:opacity-60' // Read-only: cinza claro no light, slate escuro apagado no dark
+      : error
+        ? 'border-red-500 bg-white dark:bg-[#1E293B] dark:border-red-500'
+        : isFocused
+          ? 'border-blue-500 ring-1 ring-blue-500 bg-white dark:bg-[#1E293B]'
           : 'border-slate-300 bg-white dark:border-[#334155] dark:bg-[#1E293B]'
   }`;
 

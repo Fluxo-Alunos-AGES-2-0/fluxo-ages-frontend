@@ -10,10 +10,10 @@ export interface TurnoOption {
 // e devem ser alinhados quando o enum for fechado no backend. A lista foi pensada
 // para crescer (basta adicionar novas entradas aqui).
 export const TURNO_OPTIONS: TurnoOption[] = [
-  { value: "JK_SEGQUA", label: "Segunda e Quarta · JK" },
-  { value: "LM_SEGQUA", label: "Segunda e Quarta · LM" },
-  { value: "JK_TERQUI", label: "Terça e Quinta · JK" },
-  { value: "LMNP_SEXTA", label: "Sexta - LM/NP" },
+  { value: "JK_SEGQUA", label: "Seg e Qua · JK" },
+  { value: "LM_SEGQUA", label: "Seg e Qua · LM" },
+  { value: "JK_TERQUI", label: "Ter e Qui · JK" },
+  { value: "LMNP_SEXTA", label: "Sexta · LM/NP" },
 ];
 
 // Único turno com dados semeados no backend hoje.

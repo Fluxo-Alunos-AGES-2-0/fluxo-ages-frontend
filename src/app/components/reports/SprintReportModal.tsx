@@ -126,7 +126,7 @@ export function SprintReportModal({
                                 disabled={isEditing}
                                 placeholder="Selecione"
                                 wrapperClassName="w-full"
-                                className="w-full h-[42px] rounded-2xl dark:bg-[#334155] dark:text-[#F4F6F7] dark:border-[#31405A] dark:placeholder:text-[#94A3B8]"
+                                className="w-full h-[42px] rounded-2xl dark:bg-[#0F172A] dark:text-[#F4F6F7] dark:border-[#334155] dark:placeholder:text-[#94A3B8]"
                                 options={SPRINT_OPTIONS.map((s) => ({
                                     value: s,
                                     label: usedSet.has(s) ? `${s}` : s,

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ChevronDown, ChevronsRight, CalendarX2, Loader2 } from "lucide-react";
+import { createPortal } from "react-dom";
+import { ChevronDown, ChevronsRight, CalendarX2, Loader2, Clock } from "lucide-react";
 import {
   fetchSchedule,
   monthAbbr,
@@ -76,14 +77,14 @@ export function CronogramaPanel({
 
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <>
       <div
-        className="fixed inset-0 z-20 bg-black/20 backdrop-blur-sm"
+        className="fixed inset-0 z-[90] bg-black/40"
         onClick={onClose}
       />
 
-      <div className="fixed inset-y-0 right-0 z-30 w-full max-w-sm bg-[#1E2B49]/60 backdrop-blur-xl shadow-2xl flex flex-col">
+      <div className="fixed inset-y-0 right-0 z-[100] w-full max-w-md bg-[#1E2B49] shadow-2xl flex flex-col">
         {/* Header */}
         <div className="px-5 pt-4 pb-4 shrink-0">
           <button
@@ -105,9 +106,9 @@ export function CronogramaPanel({
             <button
               type="button"
               onClick={() => setFilterOpen((open) => !open)}
-              className="flex items-center gap-1.5 bg-[#F47B20] hover:bg-[#E06F14] text-white text-[12px] font-semibold px-3 py-2 rounded-lg transition-colors max-w-[170px]"
+              className="flex items-center gap-1.5 bg-[#F47B20] hover:bg-[#E06F14] text-white text-[12px] font-semibold px-3 py-2 rounded-lg transition-colors shrink-0 whitespace-nowrap"
             >
-              <span className="truncate">{turnoLabel(turno)}</span>
+              <span>{turnoLabel(turno)}</span>
               <ChevronDown
                 className={`w-4 h-4 shrink-0 transition-transform ${filterOpen ? "rotate-180" : ""}`}
               />
@@ -164,7 +165,8 @@ export function CronogramaPanel({
           )}
         </div>
       </div>
-    </>
+    </>,
+    document.body,
   );
 }
 
@@ -199,10 +201,16 @@ function EventCard({
         </span>
       </div>
 
-      <div className="flex-1 px-4 py-3 flex items-center">
+      <div className="flex-1 px-4 py-3 flex flex-col justify-center gap-1">
         <span className="text-[14px] font-medium text-white leading-snug">
           {event.title}
         </span>
+        {event.time && (
+          <span className="flex items-center gap-1 text-[12px] text-white/70">
+            <Clock className="w-3.5 h-3.5 shrink-0" />
+            {event.time}
+          </span>
+        )}
       </div>
     </div>
   );

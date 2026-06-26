@@ -20,6 +20,7 @@ import {
   type ScheduleEventDto,
 } from "@/app/services/scheduleService";
 import { DEFAULT_TURNO } from "@/app/data/turnoOptions";
+import { CronogramaPanel } from "@/app/components/CronogramaPanel/CronogramaPanel";
 import logoFluxoAges from "@/app/assets/images/login/logo_fluxo_ages.webp";
 
 const menuItems = [
@@ -66,15 +67,21 @@ function NavItem({
 function ScheduleItem({
   event,
   isToday,
+  onClick,
 }: {
   event: ScheduleEventDto;
   isToday: boolean;
+  onClick: () => void;
 }) {
   return (
-    <div
+    <button
+      type="button"
+      onClick={onClick}
       className={[
-        "flex items-center gap-3 px-2 py-2 rounded-xl",
-        isToday ? "bg-[#eef1fb] dark:bg-[#253657]" : "",
+        "flex items-center gap-3 px-2 py-2 rounded-xl w-full text-left cursor-pointer transition-colors",
+        isToday
+          ? "bg-[#eef1fb] dark:bg-[#253657] hover:bg-[#e2e8fb] dark:hover:bg-[#2c4066]"
+          : "hover:bg-gray-50 dark:hover:bg-[#253657]",
       ].join(" ")}
     >
       <div
@@ -96,7 +103,7 @@ function ScheduleItem({
       <div className="flex flex-col min-w-0">
         <span
           className={[
-            "text-[14px] truncate",
+            "text-[14px] leading-snug line-clamp-2",
             isToday
               ? "font-semibold text-[#3b5ccc] dark:text-[#93c5fd]"
               : "font-normal text-[#1f2937] dark:text-[#94A3B8]",
@@ -109,7 +116,7 @@ function ScheduleItem({
           <span className="text-[12px] font-semibold text-[#f47b20]">Hoje</span>
         )}
       </div>
-    </div>
+    </button>
   );
 }
 
@@ -147,6 +154,7 @@ export function Sidebar() {
   const { pathname } = useLocation();
   const { user } = useAuth();
   const [events, setEvents] = useState<ScheduleEventDto[]>([]);
+  const [cronogramaOpen, setCronogramaOpen] = useState(false);
 
   // TODO: usar user.diaTurno quando o backend incluir o turno no JWT;
   // por ora cai no turno padrão semeado.
@@ -218,6 +226,7 @@ export function Sidebar() {
                 key={event.id}
                 event={event}
                 isToday={isSameDay(event.date, today)}
+                onClick={() => setCronogramaOpen(true)}
               />
             ))
           )}
@@ -226,6 +235,12 @@ export function Sidebar() {
 
       {/* Footer */}
       <UserFooter />
+
+      <CronogramaPanel
+        isOpen={cronogramaOpen}
+        onClose={() => setCronogramaOpen(false)}
+        initialTurno={turno}
+      />
     </aside>
   );
 }

@@ -30,8 +30,8 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           focus:outline-none focus:ring-2 focus:ring-[#3b5ccc]/30 focus:border-[#3b5ccc]
           cursor-pointer transition-colors
           disabled:bg-[#f4f5f6] disabled:border-[#e2e4e9] disabled:text-slate-400
-          dark:disabled:bg-[#334155] dark:disabled:border-[#334155] dark:disabled:text-[#94A3B8]
-          disabled:cursor-not-allowed disabled:opacity-100
+          dark:disabled:bg-[#0F172A] dark:disabled:border-[#334155] dark:disabled:text-[#64748B]
+          disabled:cursor-not-allowed disabled:opacity-100 dark:disabled:opacity-60
           ${className}
         `}
           style={{ colorScheme: "light dark" }}
