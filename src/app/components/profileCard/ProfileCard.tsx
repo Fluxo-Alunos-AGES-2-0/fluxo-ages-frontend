@@ -7,7 +7,6 @@ import { FrequenciaModal } from "../profileCard/FrequenciaModal";
 import { useToast } from "../../context/ToastContext";
 import { useAuth } from "../../context/AuthContext";
 import { api } from "../../services/api";
-import { mockAttendanceData, type AttendanceDay } from "../../data/mockAttendance";
 
 interface ProfileCardProps {
   profile: ProfileData | null;
