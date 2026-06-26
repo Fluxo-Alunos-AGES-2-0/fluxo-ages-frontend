@@ -1,5 +1,7 @@
+import { FileDown } from "lucide-react";
 import { Button } from "../ui/Button/Button";
 import { Modal } from "../ui/Modal/Modal";
+import { resolveFileUrl } from "../../services/api";
 
 interface TeacherFeedbackModalProps {
   isOpen: boolean;
@@ -7,6 +9,7 @@ interface TeacherFeedbackModalProps {
   reportData: {
     feedback: {
       comment: string | null;
+      correctionUrl?: string | null;
       revisionDate?: string | null;
       teacherName?: string | null;
     } | null;
@@ -21,22 +24,21 @@ export function TeacherFeedbackModal({
   if (!reportData) return null;
 
   const hasFeedback = Boolean(reportData.feedback?.comment);
+  const correctionUrl = reportData.feedback?.correctionUrl;
+  const hasDownload = Boolean(correctionUrl);
 
+  // Baixa o PDF de correção enviado pelo professor (o backend o expõe em
+  // correctionUrl). Abrir em nova aba cobre tanto URL do S3 quanto /uploads.
   const handleDownloadFeedback = () => {
-    const commentText = reportData.feedback?.comment;
-    if (!commentText) return;
+    if (!correctionUrl) return;
 
-    const blob = new Blob([commentText], {
-      type: "text/plain;charset=utf-8",
-    });
-    const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = "feedback-professor.txt";
+    anchor.href = resolveFileUrl(correctionUrl);
+    anchor.target = "_blank";
+    anchor.rel = "noopener noreferrer";
     document.body.appendChild(anchor);
     anchor.click();
     anchor.remove();
-    URL.revokeObjectURL(url);
   };
 
   return (
@@ -89,14 +91,15 @@ export function TeacherFeedbackModal({
           <Button
             variant="accent"
             fullWidth
-            disabled={!hasFeedback}
+            disabled={!hasDownload}
             title={
-              hasFeedback
+              hasDownload
                 ? "Baixar feedback do professor"
-                : "Nenhum feedback disponível"
+                : "Nenhum arquivo de feedback disponível"
             }
             onClick={handleDownloadFeedback}
           >
+            <FileDown size={18} />
             Baixar
           </Button>
         </div>

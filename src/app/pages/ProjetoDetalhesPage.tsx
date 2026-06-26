@@ -17,6 +17,7 @@ import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { Button } from "@/app/components/ui/Button/Button";
 import { useToast } from "@/app/context/ToastContext";
+import { useAuth } from "@/app/context/AuthContext";
 import { api, resolveFileUrl } from "../services/api";
 import { toAgesLevel } from "../utils/agesLevel";
 
@@ -83,6 +84,7 @@ export default function ProjetoDetalhesPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const { user } = useAuth();
 
   const thumbnailInputRef = useRef<HTMLInputElement>(null);
   const groupPhotoInputRef = useRef<HTMLInputElement>(null);
@@ -170,7 +172,11 @@ export default function ProjetoDetalhesPage() {
   }
 
   const isAtivo = project.projectStatus === "EM_ANDAMENTO";
-  const canEditProject = isAtivo && project.agesLevel === 4;
+  // Só AGES IV edita o projeto; o backend rejeita níveis inferiores, então
+  // escondemos o ícone para não oferecer uma ação que vai falhar (mesmo
+  // critério do mapa de projetos em ProjetosPage).
+  const canEditProject =
+    isAtivo && project.agesLevel === 4 && user?.level === toAgesLevel(4);
   const bannerUrl = project.groupPhotoUrl ?? "";
 
   const agesLevels = [1, 2, 3, 4];

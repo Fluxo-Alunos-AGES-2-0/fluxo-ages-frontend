@@ -180,7 +180,9 @@ function EventCard({
   return (
     <div
       className={[
-        "flex items-stretch rounded-2xl overflow-hidden shadow-sm",
+        // shrink-0: impede que os cards encolham para caber no container flex;
+        // sem isso, muitos eventos ficam espremidos em vez de habilitar o scroll.
+        "flex items-stretch rounded-2xl overflow-hidden shadow-sm shrink-0",
         highlight
           ? "bg-gradient-to-r from-[#F5853B] to-[#E26F12]"
           : "bg-[#33437A]",
