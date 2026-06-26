@@ -8,6 +8,7 @@ import {
     FolderOpen,
     Pencil,
     Camera,
+    Code2,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/app/components/ui/Button/Button";
@@ -377,13 +378,13 @@ const ProjectCard = ({ project, onProjectUpdated }: ProjectCardProps) => {
                             </button>
                         )}
                         {isEditing && (
-                          <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2">
                                 <Button
                                     variant="accent-secondary"
                                     onClick={handleCancelEdit}
                                     disabled={isSaving}
                                     className="!px-3 !py-1.5 !text-xs"
-                                    >
+                                >
                                     Cancelar
                                 </Button>
                                 <Button
@@ -391,15 +392,15 @@ const ProjectCard = ({ project, onProjectUpdated }: ProjectCardProps) => {
                                     onClick={handleSave}
                                     loading={isSaving}
                                     className="!px-3 !py-1.5 !text-xs"
-                                    >
+                                >
                                     Salvar
                                 </Button>
                             </div>
                         )}
                         <span
                             className={`px-3 py-2 rounded-full text-xs font-semibold border flex items-center gap-1 leading-none ${isAtivo
-                                    ? "bg-[#F47B2015] text-[#F47B20] border-[#F47B2040] dark:border-[#F47B20]/50"
-                                    : "bg-[#00A63E20] text-[#00A63E] border-[#00A63E40] dark:border-[#00A63E]/50"
+                                ? "bg-[#F47B2015] text-[#F47B20] border-[#F47B2040] dark:border-[#F47B20]/50"
+                                : "bg-[#00A63E20] text-[#00A63E] border-[#00A63E40] dark:border-[#00A63E]/50"
                                 }`}
                         >
                             {isAtivo ? (
@@ -461,14 +462,26 @@ const ProjectCard = ({ project, onProjectUpdated }: ProjectCardProps) => {
                 {/* Tags de tecnologias */}
                 <div className="flex flex-wrap gap-2 mt-auto pt-2">
                     {project.technologies.map((tech) => (
-                        <span
-                            key={tech.id} // <-- Use o id como key única
-                            className="inline px-2.5 py-1 bg-[#6B728010] dark:bg-[#334155] border border-[#6B728030] dark:border-[#334155] text-[#6B7280] dark:text-[#94A3B8] rounded-full text-xs font-semibold"
+                        <div
+                            key={tech.id}
+                            className="w-8 h-8 rounded-lg bg-[#f8fafc] dark:bg-[#334155] border border-[#6B728030] dark:border-[#334155] flex items-center justify-center shadow-sm"
+                            title={tech.name}
                         >
-                            {tech.name} {/* <-- Renderize apenas a string do nome */}
-                        </span>
+                            {tech.iconUrl ? (
+                                <img
+                                    src={tech.iconUrl}
+                                    alt={`Ícone ${tech.name}`}
+                                    className="w-5 h-5 object-contain drop-shadow-sm"
+                                />
+                            ) : (
+                                <Code2 size={14} className="text-[#94a3b8]" />
+                            )}
+                        </div>
                     ))}
                 </div>
+
+
+
 
                 {/* Divisor */}
                 <div className="border-t border-[#6B728030] dark:border-[#334155] mx-6" />
