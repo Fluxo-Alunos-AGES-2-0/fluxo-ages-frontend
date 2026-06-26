@@ -89,7 +89,7 @@ export function Modal({
     >
       <div
         ref={modalRef}
-        className={`relative bg-white dark:bg-[#1E293B] p-6 rounded-xl w-full max-w-md z-[10000] shadow-2xl overflow-hidden border border-transparent dark:border-[#334155] ${className}`}
+        className={`relative z-[10000] flex max-h-[calc(100vh-2rem)] w-full max-w-md flex-col overflow-hidden rounded-xl border border-transparent bg-white p-6 shadow-2xl dark:border-[#334155] dark:bg-[#1E293B] ${className}`}
       >
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#F47B20] to-[#f18a3c] z-10 rounded-t-xl" />
         <div className="flex justify-between items-center">
@@ -103,7 +103,7 @@ export function Modal({
           </div>
         </div>
 
-        <div className="mt-3">
+        <div className="mt-3 flex min-h-0 flex-1 flex-col">
           {data && horario && (
             <div className="flex gap-6 mt-2 mb-4">
               <div className="flex items-center gap-2">
@@ -120,10 +120,12 @@ export function Modal({
               </div>
             </div>
           )}
-          {children}
+          <div className="min-h-0 flex-1">
+            {children}
+          </div>
         </div>
 
-        {footer && <div className="flex justify-end mt-4">{footer}</div>}
+        {footer && <div className="mt-4 flex shrink-0 justify-end">{footer}</div>}
       </div>
     </div>
   );

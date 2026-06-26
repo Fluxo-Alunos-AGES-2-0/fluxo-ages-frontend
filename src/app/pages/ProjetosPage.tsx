@@ -138,11 +138,11 @@ export function ProjetosPage() {
 
                     {/* Badges de Contagem global */}
                     <div className="flex items-center gap-3">
-                        <span className="inline-flex leading-none items-center gap-1 bg-[#F47B2015] text-[#F47B20] border border-orange-100 px-3 py-2 rounded-xl text-sm font-semibold">
+                        <span className="inline-flex items-center gap-1 leading-none bg-[#F47B2015] text-[#F47B20] border border-[#F47B2040] px-3 py-2 rounded-full text-sm font-semibold">
                             <Zap fill="#F47B20" size={14} />
                             {activeCount} ativo
                         </span>
-                        <span className="inline-flex items-center gap-1 bg-[#00A63E20] leading-none text-[#00A63E] border border-[#00A63E40] px-3 py-2 rounded-xl text-sm font-semibold">
+                        <span className="inline-flex items-center gap-1 leading-none bg-[#00A63E20] text-[#00A63E] border border-[#00A63E40] px-3 py-2 rounded-full text-sm font-semibold">
                             <CircleCheckBig size={14} />
                             {completedCount} concluídos
                         </span>

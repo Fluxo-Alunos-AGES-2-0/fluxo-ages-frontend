@@ -30,9 +30,11 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           focus:outline-none focus:ring-2 focus:ring-[#3b5ccc]/30 focus:border-[#3b5ccc]
           cursor-pointer transition-colors
           disabled:bg-[#f4f5f6] disabled:border-[#e2e4e9] disabled:text-slate-400
+          dark:disabled:bg-[#334155] dark:disabled:border-[#334155] dark:disabled:text-[#94A3B8]
           disabled:cursor-not-allowed disabled:opacity-100
           ${className}
         `}
+          style={{ colorScheme: "light dark" }}
           {...props}
         >
           {placeholder && (
@@ -54,7 +56,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
 
         <ChevronDown
           size={15}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9ca3af] pointer-events-none"
+          className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#9ca3af] dark:text-[#94A3B8]"
         />
       </div>
     );
