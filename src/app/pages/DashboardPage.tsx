@@ -62,7 +62,10 @@ export default function DashboardPage() {
       .then((data) => {
         setProfile(data.profile);
         setHours(data.hours);
-        updateUser({ level: toAgesLevel(data.profile.agesLevel) });
+        updateUser({
+          level: toAgesLevel(data.profile.agesLevel),
+          avatarUrl: data.profile.avatarUrl ?? "",
+        });
       })
       .catch((err: Error) => {
         setError(err.message);

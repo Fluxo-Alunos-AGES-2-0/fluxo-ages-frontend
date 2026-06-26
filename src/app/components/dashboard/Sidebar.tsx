@@ -19,6 +19,7 @@ import {
   startOfToday,
   type ScheduleEventDto,
 } from "@/app/services/scheduleService";
+import { resolveFileUrl } from "@/app/services/api";
 import { DEFAULT_TURNO } from "@/app/data/turnoOptions";
 import { CronogramaPanel } from "@/app/components/CronogramaPanel/CronogramaPanel";
 import logoFluxoAges from "@/app/assets/images/login/logo_fluxo_ages.webp";
@@ -122,13 +123,30 @@ function ScheduleItem({
 
 function UserFooter() {
   const { user, logout } = useAuth();
+  const [avatarFailed, setAvatarFailed] = useState(false);
+
+  useEffect(() => {
+    setAvatarFailed(false);
+  }, [user?.avatarUrl]);
+
   if (!user) return null;
+
+  const avatarUrl = user.avatarUrl ? resolveFileUrl(user.avatarUrl) : null;
 
   return (
     <div className="border-t border-[#e5e7eb] dark:border-[#334155] px-5 py-5 flex flex-col gap-4">
       <div className="flex items-center gap-3">
-        <div className="w-[44px] h-[44px] rounded-full bg-[#3b5ccc] text-white flex items-center justify-center text-[15px] font-semibold shrink-0">
-          {user.initials}
+        <div className="w-[44px] h-[44px] rounded-full bg-[#3b5ccc] text-white flex items-center justify-center text-[15px] font-semibold shrink-0 overflow-hidden">
+          {avatarUrl && !avatarFailed ? (
+            <img
+              src={avatarUrl}
+              alt={user.name}
+              className="w-full h-full object-cover"
+              onError={() => setAvatarFailed(true)}
+            />
+          ) : (
+            user.initials
+          )}
         </div>
         <div>
           <p className="text-[15px] font-semibold text-[#1f2937] dark:text-[#F4F6F7] m-0 leading-tight">

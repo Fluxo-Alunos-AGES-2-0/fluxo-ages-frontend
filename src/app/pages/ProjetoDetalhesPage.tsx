@@ -535,7 +535,7 @@ export default function ProjetoDetalhesPage() {
                           <div key={member.id} className="flex items-center gap-3">
                             {member.avatarUrl && !imageErrors[member.id] ? (
                               <img
-                                src={member.avatarUrl}
+                                src={toDisplayImageUrl(member.avatarUrl)}
                                 alt={member.name}
                                 className="w-10 h-10 rounded-full object-cover shadow-sm border border-slate-100"
                                 onError={() => setImageErrors(prev => ({ ...prev, [member.id]: true }))}
