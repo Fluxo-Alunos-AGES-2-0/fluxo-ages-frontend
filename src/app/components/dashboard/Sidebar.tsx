@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useState } from "react";
 import {
   Clock,
   FileText,
@@ -8,7 +9,18 @@ import {
 } from "lucide-react";
 import { Link, useLocation } from "react-router";
 import { useAuth } from "@/app/context/AuthContext";
-import { mockSchedule, type ScheduleEvent } from "@/app/data/mockSchedule";
+import {
+  fetchSchedule,
+  weekdayAbbr,
+  startTimeOf,
+  isSameDay,
+  sortByDate,
+  parseEventDate,
+  startOfToday,
+  type ScheduleEventDto,
+} from "@/app/services/scheduleService";
+import { DEFAULT_TURNO } from "@/app/data/turnoOptions";
+import { CronogramaPanel } from "@/app/components/CronogramaPanel/CronogramaPanel";
 import logoFluxoAges from "@/app/assets/images/login/logo_fluxo_ages.webp";
 
 const menuItems = [
@@ -16,6 +28,8 @@ const menuItems = [
   { label: "Relatórios", icon: FileText, path: "/relatorios" },
   { label: "Mapa de Projetos", icon: LayoutGrid, path: "/projetos" },
 ];
+
+const MAX_SIDEBAR_EVENTS = 4;
 
 function NavItem({
   label,
@@ -50,45 +64,59 @@ function NavItem({
   );
 }
 
-function ScheduleItem({ event }: { event: ScheduleEvent }) {
+function ScheduleItem({
+  event,
+  isToday,
+  onClick,
+}: {
+  event: ScheduleEventDto;
+  isToday: boolean;
+  onClick: () => void;
+}) {
   return (
-    <div
+    <button
+      type="button"
+      onClick={onClick}
       className={[
-        "flex items-center gap-3 px-2 py-2 rounded-xl",
-        event.isToday ? "bg-[#eef1fb] dark:bg-[#253657]" : "",
+        "flex items-center gap-3 px-2 py-2 rounded-xl w-full text-left cursor-pointer transition-colors",
+        isToday
+          ? "bg-[#eef1fb] dark:bg-[#253657] hover:bg-[#e2e8fb] dark:hover:bg-[#2c4066]"
+          : "hover:bg-gray-50 dark:hover:bg-[#253657]",
       ].join(" ")}
     >
       <div
         className={[
           "w-[42px] h-[42px] rounded-lg flex flex-col items-center justify-center shrink-0",
-          event.isToday
+          isToday
             ? "bg-[#3b5ccc] text-white"
             : "bg-gray-100 dark:bg-[#334155] text-[#6b7280] dark:text-[#94A3B8]",
         ].join(" ")}
       >
         <span className="text-[11px] font-bold leading-none">
-          {event.dayAbbr}
+          {weekdayAbbr(event.date)}
         </span>
-        <span className="text-[9px] leading-none mt-0.5">{event.time}</span>
+        <span className="text-[9px] leading-none mt-0.5">
+          {startTimeOf(event.time)}
+        </span>
       </div>
 
       <div className="flex flex-col min-w-0">
         <span
           className={[
-            "text-[14px] truncate",
-            event.isToday
-              ? "font-semibold text-[#1f2937] dark:text-[#F4F6F7]"
+            "text-[14px] leading-snug line-clamp-2",
+            isToday
+              ? "font-semibold text-[#3b5ccc] dark:text-[#93c5fd]"
               : "font-normal text-[#1f2937] dark:text-[#94A3B8]",
           ].join(" ")}
         >
           {event.title}
         </span>
 
-        {event.isToday && (
+        {isToday && (
           <span className="text-[12px] font-semibold text-[#f47b20]">Hoje</span>
         )}
       </div>
-    </div>
+    </button>
   );
 }
 
@@ -124,6 +152,36 @@ function UserFooter() {
 
 export function Sidebar() {
   const { pathname } = useLocation();
+  const { user } = useAuth();
+  const [events, setEvents] = useState<ScheduleEventDto[]>([]);
+  const [cronogramaOpen, setCronogramaOpen] = useState(false);
+
+  // TODO: usar user.diaTurno quando o backend incluir o turno no JWT;
+  // por ora cai no turno padrão semeado.
+  const turno = user?.diaTurno || DEFAULT_TURNO;
+
+  useEffect(() => {
+    let active = true;
+    fetchSchedule(turno)
+      .then((data) => {
+        if (active) setEvents(data);
+      })
+      .catch(() => {
+        if (active) setEvents([]);
+      });
+    return () => {
+      active = false;
+    };
+  }, [turno]);
+
+  const upcoming = useMemo(() => {
+    const today = startOfToday().getTime();
+    return sortByDate(events)
+      .filter((event) => parseEventDate(event.date).getTime() >= today)
+      .slice(0, MAX_SIDEBAR_EVENTS);
+  }, [events]);
+
+  const today = startOfToday();
 
   return (
     <aside className="flex flex-col h-screen sticky top-0 bg-white dark:bg-[#1A2438] border-r border-[#e5e7eb] dark:border-[#334155]">
@@ -158,14 +216,31 @@ export function Sidebar() {
           Cronograma da Turma
         </p>
         <div className="flex flex-col gap-1">
-          {mockSchedule.map((event) => (
-            <ScheduleItem key={event.id} event={event} />
-          ))}
+          {upcoming.length === 0 ? (
+            <p className="text-[13px] text-[#9ca3af] dark:text-[#64748B] px-3 py-2 m-0">
+              Nenhum evento próximo.
+            </p>
+          ) : (
+            upcoming.map((event) => (
+              <ScheduleItem
+                key={event.id}
+                event={event}
+                isToday={isSameDay(event.date, today)}
+                onClick={() => setCronogramaOpen(true)}
+              />
+            ))
+          )}
         </div>
       </div>
 
       {/* Footer */}
       <UserFooter />
+
+      <CronogramaPanel
+        isOpen={cronogramaOpen}
+        onClose={() => setCronogramaOpen(false)}
+        initialTurno={turno}
+      />
     </aside>
   );
 }

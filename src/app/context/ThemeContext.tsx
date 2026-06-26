@@ -25,6 +25,16 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     localStorage.setItem("fluxoages_theme", theme);
   }, [theme]);
 
+  // Dark mode lives only inside the authenticated app. This provider is mounted
+  // by AppLayout, so when it unmounts (e.g. logout SPA-navigates to the public
+  // /login screen) we drop the dark class to keep public pages always in light
+  // mode. The persisted preference in localStorage is kept for the next login.
+  useEffect(() => {
+    return () => {
+      document.documentElement.classList.remove("dark");
+    };
+  }, []);
+
   const toggleTheme = () =>
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
 

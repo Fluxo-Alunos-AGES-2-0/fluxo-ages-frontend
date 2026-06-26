@@ -14,6 +14,7 @@ import { Button } from "@/app/components/ui/Button/Button";
 import { TextArea } from "@/app/components/ui/TextArea/TextArea";
 import { useNavigate } from "react-router";
 import { useToast } from "@/app/context/ToastContext";
+import { useAuth } from "@/app/context/AuthContext";
 import { api } from "../services/api";
 import { toAgesLevel } from "../utils/agesLevel";
 import { OnboardingTooltip } from "../components/Onboarding/OnboardingTooltip";
@@ -138,11 +139,11 @@ export function ProjetosPage() {
 
                     {/* Badges de Contagem global */}
                     <div className="flex items-center gap-3">
-                        <span className="inline-flex leading-none items-center gap-1 bg-[#F47B2015] text-[#F47B20] border border-orange-100 px-3 py-2 rounded-xl text-sm font-semibold">
+                        <span className="inline-flex items-center gap-1 leading-none bg-[#F47B2015] text-[#F47B20] border border-[#F47B2040] dark:border-[#F47B20]/50 px-3 py-2 rounded-full text-sm font-semibold">
                             <Zap fill="#F47B20" size={14} />
                             {activeCount} ativo
                         </span>
-                        <span className="inline-flex items-center gap-1 bg-[#00A63E20] leading-none text-[#00A63E] border border-[#00A63E40] px-3 py-2 rounded-xl text-sm font-semibold">
+                        <span className="inline-flex items-center gap-1 leading-none bg-[#00A63E20] text-[#00A63E] border border-[#00A63E40] dark:border-[#00A63E]/50 px-3 py-2 rounded-full text-sm font-semibold">
                             <CircleCheckBig size={14} />
                             {completedCount} concluídos
                         </span>
@@ -166,7 +167,7 @@ export function ProjetosPage() {
                 )}
 
                 {!loading && !error && projects.length > 0 && (
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-10 items-start" data-onboarding="projetos-grid">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-10 items-stretch" data-onboarding="projetos-grid">
                         {projects.map((project) => (
                             <ProjectCard
                                 key={project.id}
@@ -190,9 +191,13 @@ interface ProjectCardProps {
 const ProjectCard = ({ project, onProjectUpdated }: ProjectCardProps) => {
     const navigate = useNavigate();
     const { showToast } = useToast();
+    const { user } = useAuth();
     const isAtivo = project.projectStatus === "EM_ANDAMENTO";
     const isAgesIV = project.agesLevel === 4;
-    const canEdit = isAtivo && isAgesIV;
+    // Só AGES IV edita o card do projeto; o backend rejeita níveis inferiores,
+    // então escondemos o ícone para não oferecer uma ação que vai falhar.
+    const userIsAgesIV = user?.level === toAgesLevel(4);
+    const canEdit = isAtivo && isAgesIV && userIsAgesIV;
 
     const [isEditing, setIsEditing] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
@@ -318,7 +323,11 @@ const ProjectCard = ({ project, onProjectUpdated }: ProjectCardProps) => {
     return (
         <div
             onClick={handleDetailsClick}
-            className={`bg-white dark:bg-[#1E293B] rounded-2xl border border-[#6B728030] dark:border-[#334155] overflow-hidden shadow-sm flex flex-col justify-between h-fit relative transition-shadow ${isEditing ? "" : "cursor-pointer hover:shadow-md dark:hover:border-[#3B5CCC]"
+            className={`bg-white dark:bg-[#1E293B] rounded-2xl border border-[#6B728030] dark:border-[#334155] overflow-hidden shadow-sm flex flex-col justify-between h-full relative transition-shadow ${isEditing
+                ? ""
+                : isAtivo
+                    ? "cursor-pointer hover:shadow-md hover:border-[#F47B2060] dark:hover:border-[#F47B20]"
+                    : "cursor-pointer hover:shadow-md hover:border-[#3B5CCC60] dark:hover:border-[#3B5CCC]"
                 }`}
         >
             {/*Barra superior colorida baseada no status */}
@@ -389,8 +398,8 @@ const ProjectCard = ({ project, onProjectUpdated }: ProjectCardProps) => {
                         )}
                         <span
                             className={`px-3 py-2 rounded-full text-xs font-semibold border flex items-center gap-1 leading-none ${isAtivo
-                                    ? "bg-[#F47B2015] text-[#F47B20] border-[#F47B2040]"
-                                    : "bg-[#00A63E20] text-[#00A63E] border-[#00A63E40]"
+                                    ? "bg-[#F47B2015] text-[#F47B20] border-[#F47B2040] dark:border-[#F47B20]/50"
+                                    : "bg-[#00A63E20] text-[#00A63E] border-[#00A63E40] dark:border-[#00A63E]/50"
                                 }`}
                         >
                             {isAtivo ? (

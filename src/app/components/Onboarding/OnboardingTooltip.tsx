@@ -34,14 +34,15 @@ const TOOLTIP_H = 180;
 
 function getPlacement(
   rect: DOMRect,
-  preferred?: "top" | "bottom" | "left" | "right",
+  preferred: "top" | "bottom" | "left" | "right" | undefined,
+  tooltipH: number,
 ): "top" | "bottom" | "left" | "right" {
   const vw = window.innerWidth;
   const vh = window.innerHeight;
   const pref = preferred ?? "bottom";
   const fits = {
-    bottom: rect.bottom + TOOLTIP_H + PADDING * 2 < vh,
-    top: rect.top - TOOLTIP_H - PADDING * 2 > 0,
+    bottom: rect.bottom + tooltipH + PADDING * 2 < vh,
+    top: rect.top - tooltipH - PADDING * 2 > 0,
     right: rect.right + TOOLTIP_W + PADDING * 2 < vw,
     left: rect.left - TOOLTIP_W - PADDING * 2 > 0,
   };
@@ -58,37 +59,41 @@ function getPlacement(
 function calcTooltipPos(
   rect: DOMRect,
   placement: "top" | "bottom" | "left" | "right",
+  tooltipH: number,
 ): { top: number; left: number } {
   const centerX = rect.left + rect.width / 2;
   const centerY = rect.top + rect.height / 2;
   const vw = window.innerWidth;
+  const vh = window.innerHeight;
+
+  // Mantém o tooltip dentro da viewport nos dois eixos, usando a altura real do
+  // tooltip (tooltipH). Sem o clamp vertical, um alvo grande/baixo (ex.: a grade
+  // do mapa de projetos) empurra o tooltip para baixo da tela.
+  const clampX = (x: number) =>
+    Math.min(Math.max(x, PADDING), vw - TOOLTIP_W - PADDING);
+  const clampY = (y: number) =>
+    Math.min(Math.max(y, PADDING), vh - tooltipH - PADDING);
 
   switch (placement) {
     case "bottom":
       return {
-        top: rect.bottom + PADDING,
-        left: Math.min(
-          Math.max(centerX - TOOLTIP_W / 2, PADDING),
-          vw - TOOLTIP_W - PADDING,
-        ),
+        top: clampY(rect.bottom + PADDING),
+        left: clampX(centerX - TOOLTIP_W / 2),
       };
     case "top":
       return {
-        top: rect.top - TOOLTIP_H - PADDING,
-        left: Math.min(
-          Math.max(centerX - TOOLTIP_W / 2, PADDING),
-          vw - TOOLTIP_W - PADDING,
-        ),
+        top: clampY(rect.top - tooltipH - PADDING),
+        left: clampX(centerX - TOOLTIP_W / 2),
       };
     case "right":
       return {
-        top: centerY - TOOLTIP_H / 2,
-        left: rect.right + PADDING,
+        top: clampY(centerY - tooltipH / 2),
+        left: clampX(rect.right + PADDING),
       };
     case "left":
       return {
-        top: centerY - TOOLTIP_H / 2,
-        left: rect.left - TOOLTIP_W - PADDING,
+        top: clampY(centerY - tooltipH / 2),
+        left: clampX(rect.left - TOOLTIP_W - PADDING),
       };
   }
 }
@@ -116,8 +121,9 @@ export function OnboardingTooltip({ steps }: Props) {
     if (!el) return;
 
     const rect = el.getBoundingClientRect();
-    const placement = getPlacement(rect, step.placement);
-    const { top, left } = calcTooltipPos(rect, placement);
+    const tooltipH = tooltipRef.current?.offsetHeight || TOOLTIP_H;
+    const placement = getPlacement(rect, step.placement, tooltipH);
+    const { top, left } = calcTooltipPos(rect, placement, tooltipH);
 
     setTooltipPos({ top, left, placement });
     setSpotlight({
@@ -166,6 +172,12 @@ export function OnboardingTooltip({ steps }: Props) {
       cancelAnimationFrame(rafId);
     };
   }, [isActive, updatePosition]);
+
+  // Após ficar visível, reposiciona usando a altura real do tooltip já montado
+  // (a estimativa TOOLTIP_H pode subestimar o conteúdo e deixar a base fora da tela).
+  useLayoutEffect(() => {
+    if (visible) updatePosition();
+  }, [visible, updatePosition]);
 
   useEffect(() => {
     if (visible && tooltipRef.current) {

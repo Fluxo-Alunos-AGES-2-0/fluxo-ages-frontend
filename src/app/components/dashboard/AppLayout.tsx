@@ -3,6 +3,7 @@ import { AuthProvider } from "@/app/context/AuthContext";
 import { ThemeProvider } from "@/app/context/ThemeContext";
 import { TimerProvider } from "@/app/context/TimerContext";
 import { OnboardingProvider } from "@/app/components/Onboarding/OnboardingContext";
+import { FloatingTimerWidget } from "@/app/components/FloatingTimerWidget/FloatingTimerWidget";
 import { Sidebar } from "./Sidebar";
 import { TopBar } from "./TopBar";
 
@@ -37,6 +38,7 @@ export function AppLayout() {
                 </div>
               </div>
             </div>
+            <FloatingTimerWidget />
           </OnboardingProvider>
         </TimerProvider>
       </AuthProvider>

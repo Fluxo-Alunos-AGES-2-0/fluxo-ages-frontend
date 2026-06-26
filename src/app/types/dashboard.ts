@@ -13,6 +13,22 @@ export interface ProfileData {
   };
 }
 
+export type AttendanceStatus = "PRESENTE" | "AUSENTE" | "ABONADO";
+
+export interface AttendanceHistorySlot {
+  time: string;
+  status: AttendanceStatus;
+}
+
+export interface AttendanceHistoryDay {
+  date: string;
+  slots: AttendanceHistorySlot[];
+}
+
+export interface AttendanceHistoryResponse {
+  days: AttendanceHistoryDay[];
+}
+
 export interface HoursData {
   completedSeconds: number;
   remainingSeconds: number;
