@@ -232,7 +232,7 @@ function ProfileCard({ profile, loading, error }: ProfileCardProps) {
           {/* Container de Frequência */}
           <button
             onClick={() => setIsModalOpen(true)}
-            className="flex flex-col gap-3 p-4 mt-auto rounded-xl bg-slate-50 dark:bg-[#334155]/60 hover:bg-slate-100 dark:hover:bg-[#334155] transition-colors border border-slate-100 dark:border-[#334155] w-full cursor-pointer text-left"
+            className="flex flex-col gap-3 p-4 my-auto rounded-xl bg-slate-50 dark:bg-[#334155]/60 hover:bg-slate-100 dark:hover:bg-[#334155] transition-colors border border-slate-100 dark:border-[#334155] w-full cursor-pointer text-left"
           >
             <div className="flex items-center justify-between w-full">
               <div className="flex items-center gap-2">

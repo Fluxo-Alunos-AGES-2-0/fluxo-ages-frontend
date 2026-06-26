@@ -106,7 +106,7 @@ export function CronogramaPanel({
             <button
               type="button"
               onClick={() => setFilterOpen((open) => !open)}
-              className="flex items-center gap-1.5 bg-[#F47B20] hover:bg-[#E06F14] text-white text-[12px] font-semibold px-3 py-2 rounded-lg transition-colors shrink-0 whitespace-nowrap"
+              className="flex items-center gap-1.5 bg-[#F47B20] hover:bg-[#E06F14] text-white text-[12px] font-semibold px-3 py-2 rounded-lg transition-colors shrink-0 whitespace-nowrap cursor-pointer"
             >
               <span>{turnoLabel(turno)}</span>
               <ChevronDown
@@ -125,7 +125,7 @@ export function CronogramaPanel({
                       setFilterOpen(false);
                     }}
                     className={[
-                      "w-full text-left px-4 py-2.5 text-[14px] transition-colors",
+                      "w-full text-left px-4 py-2.5 text-[14px] transition-colors cursor-pointer",
                       option.value === turno
                         ? "bg-[#eef1fb] dark:bg-[#253657] text-[#3b5ccc] dark:text-[#93c5fd] font-semibold"
                         : "text-[#1f2937] dark:text-[#F4F6F7] hover:bg-gray-50 dark:hover:bg-[#253657]",

@@ -75,16 +75,16 @@ select {
 }
 
 .dark * {
-  scrollbar-color: #64748b transparent;
+  scrollbar-color: #475569 transparent;
 }
 
 .dark *::-webkit-scrollbar-thumb {
-  background: #64748b;
+  background: #475569;
   background-clip: padding-box;
 }
 
 .dark *::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #64748b;
   background-clip: padding-box;
 }
 
