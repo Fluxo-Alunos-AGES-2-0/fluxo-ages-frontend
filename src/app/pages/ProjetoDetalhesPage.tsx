@@ -599,7 +599,7 @@ export default function ProjetoDetalhesPage() {
                     <Users size={16} className="text-[#3B5CCC] dark:text-[#4E6CFF]" />
                     <span>
                       <span className="font-semibold text-slate-700 dark:text-[#F4F6F7]">Clientes AGES:</span>{" "}
-                      {project.teacher?.name}
+                      {"Willian Albeche e Marcelo Yamaguti"}
                     </span>
                   </p>
 
