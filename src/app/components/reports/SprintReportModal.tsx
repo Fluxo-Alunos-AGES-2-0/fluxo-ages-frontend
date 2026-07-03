@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTheme } from "@/app/context/ThemeContext";
 import { Modal } from "../ui/Modal/Modal";
 import { Button } from "../ui/Button/Button";
 import { TextArea } from "../ui/TextArea/TextArea";
@@ -37,6 +38,7 @@ export function SprintReportModal({
     initialData = null,
     projectName = DEFAULT_PROJECT,
 }: SprintReportModalProps) {
+    const { theme } = useTheme();
     const [sprint, setSprint] = useState("");
     const [plannedActivities, setPlannedActivities] = useState("");
     const [completedActivities, setCompletedActivities] = useState("");
@@ -58,7 +60,8 @@ export function SprintReportModal({
     }, [isOpen, initialData]);
 
     const usedSet = new Set(usedSprints);
-    const availableSprints = SPRINT_OPTIONS.filter((s) => !usedSet.has(s));
+    const availableSprints = SPRINT_OPTIONS.filter((option) => !usedSet.has(option));
+    const isDarkTheme = theme === "dark";
 
     const isFormValid = Boolean(
         sprint.trim() &&
@@ -87,9 +90,7 @@ export function SprintReportModal({
         <Modal
             isOpen={isOpen}
             onClose={onClose}
-            title={
-                isEditing ? "Atualizar Relatório de Sprint" : "Relatório de Sprint"
-            }
+            title={isEditing ? "Atualizar Relatorio de Sprint" : "Relatorio de Sprint"}
             className="!max-w-2xl dark:bg-[#1E293B] dark:text-[#F4F6F7] dark:border-[#31405A]"
         >
             <div className="mt-4 flex max-h-[70vh] w-[640px] max-w-full flex-col">
@@ -127,16 +128,34 @@ export function SprintReportModal({
                                 placeholder="Selecione"
                                 wrapperClassName="w-full"
                                 className="w-full h-[42px] rounded-2xl dark:bg-[#0F172A] dark:text-[#F4F6F7] dark:border-[#334155] dark:placeholder:text-[#94A3B8]"
-                                options={SPRINT_OPTIONS.map((s) => ({
-                                    value: s,
-                                    label: usedSet.has(s) ? `${s}` : s,
-                                    disabled: usedSet.has(s),
-                                }))}
+                                options={SPRINT_OPTIONS.map((option) => {
+                                    const isUsed = usedSet.has(option);
+
+                                        return {
+                                            value: option,
+                                            label: option,
+                                            disabled: isUsed,
+                                            title: isUsed
+                                                ? "Sprint com relatorio ja cadastrado"
+                                            : undefined,
+                                        style: isUsed
+                                            ? {
+                                                backgroundColor: isDarkTheme
+                                                    ? "#334155"
+                                                    : "#cbd5e1",
+                                                color: isDarkTheme
+                                                    ? "#f8fafc"
+                                                    : "#334155",
+                                                fontWeight: 700,
+                                            }
+                                            : undefined,
+                                    };
+                                })}
                             />
 
                             {!isEditing && availableSprints.length === 0 && (
                                 <span className="mt-1 block text-xs text-slate-500 dark:text-[#94A3B8]">
-                                    Todas as sprints já possuem relatório.
+                                    Todas as sprints ja possuem relatorio.
                                 </span>
                             )}
                         </div>
@@ -150,7 +169,7 @@ export function SprintReportModal({
                     />
 
                     <TextArea
-                        label="Atividades Concluídas"
+                        label="Atividades Concluidas"
                         value={completedActivities}
                         onChange={setCompletedActivities}
                         mandatory
@@ -164,14 +183,14 @@ export function SprintReportModal({
                     />
 
                     <TextArea
-                        label="Lições Aprendidas"
+                        label="Licoes Aprendidas"
                         value={lessonsLearned}
                         onChange={setLessonsLearned}
                         mandatory
                     />
 
                     <TextArea
-                        label="Próximos Passos"
+                        label="Proximos Passos"
                         value={nextSteps}
                         onChange={setNextSteps}
                         mandatory
@@ -198,7 +217,7 @@ export function SprintReportModal({
                         {isSubmitting
                             ? "Enviando..."
                             : isEditing
-                                ? "Atualizar Relatório"
+                                ? "Atualizar Relatorio"
                                 : "Cadastrar"}
                     </Button>
                 </div>

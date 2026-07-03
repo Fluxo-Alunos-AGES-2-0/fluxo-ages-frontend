@@ -122,11 +122,11 @@ export default function RelatoriosPage() {
   const handleDownloadTemplate = async () => {
     setIsDownloadingTemplate(true);
     try {
-      const blob = await api.blob("/report/template");
+      const { blob, filename } = await api.blob("/report/template");
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement("a");
       anchor.href = url;
-      anchor.download = "modelo-relatorio.docx";
+      anchor.download = filename ?? "modelo-relatorio.docx";
       document.body.appendChild(anchor);
       anchor.click();
       anchor.remove();

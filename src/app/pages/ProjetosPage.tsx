@@ -212,8 +212,8 @@ const ProjectCard = ({ project, onProjectUpdated }: ProjectCardProps) => {
 
     const [isEditing, setIsEditing] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
-    const [descriptionDraft, setDescriptionDraft] = useState(
-        getProjectCardText(project),
+    const [summaryDraft, setSummaryDraft] = useState(
+        project.summary ?? "",
     );
     const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
     const [thumbnailPreviewUrl, setThumbnailPreviewUrl] = useState<
@@ -230,7 +230,7 @@ const ProjectCard = ({ project, onProjectUpdated }: ProjectCardProps) => {
     const displayThumbnailUrl = thumbnailPreviewUrl ?? toDisplayImageUrl(project.thumbnailUrl);
 
     const resetEditState = () => {
-        setDescriptionDraft(getProjectCardText(project));
+        setSummaryDraft(project.summary ?? "");
         if (thumbnailPreviewUrl) URL.revokeObjectURL(thumbnailPreviewUrl);
         setThumbnailFile(null);
         setThumbnailPreviewUrl(null);
@@ -300,8 +300,8 @@ const ProjectCard = ({ project, onProjectUpdated }: ProjectCardProps) => {
 
         try {
             const formData = new FormData();
-            if (descriptionDraft !== getProjectCardText(project)) {
-                formData.append("description", descriptionDraft);
+            if (summaryDraft !== (project.summary ?? "")) {
+                formData.append("summary", summaryDraft);
             }
             if (thumbnailFile) {
                 formData.append("thumbnail", thumbnailFile);
@@ -313,7 +313,7 @@ const ProjectCard = ({ project, onProjectUpdated }: ProjectCardProps) => {
             );
 
             onProjectUpdated(project.id, {
-                description: descriptionDraft,
+                summary: summaryDraft,
                 ...updated,
             });
             showToast({
@@ -459,17 +459,17 @@ const ProjectCard = ({ project, onProjectUpdated }: ProjectCardProps) => {
                 {isEditing ? (
                     <div onClick={(e) => e.stopPropagation()}>
                         <TextArea
-                            label="Descrição do projeto"
-                            value={descriptionDraft}
-                            onChange={(value) => setDescriptionDraft(value)}
+                            label="Resumo do projeto"
+                            value={summaryDraft}
+                            onChange={(value) => setSummaryDraft(value)}
                             maxLength={300}
                             rows={3}
-                            placeholder="Descreva o projeto..."
+                            placeholder="Escreva um resumo curto do projeto..."
                         />
                     </div>
                 ) : (
                     <p className="text-sm text-[#6B7280] dark:text-[#94A3B8] leading-relaxed line-clamp-3">
-                        {getProjectCardText(project)}
+                        {project.summary}
                     </p>
                 )}
 

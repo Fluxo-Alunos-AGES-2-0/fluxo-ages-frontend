@@ -1,6 +1,11 @@
 export const BASE_URL =
   import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8081";
 
+export interface BlobResponse {
+  blob: Blob;
+  filename: string | null;
+}
+
 /** Resolve uma URL de arquivo retornada pela API (relativa /uploads/... ou absoluta). */
 export function resolveFileUrl(url: string): string {
   return /^https?:\/\//.test(url) ? url : `${BASE_URL}${url}`;
@@ -11,6 +16,18 @@ function handleUnauthorized() {
   if (window.location.pathname !== "/login") {
     window.location.replace("/login");
   }
+}
+
+function extractFilename(contentDisposition: string | null): string | null {
+  if (!contentDisposition) return null;
+
+  const utf8Match = contentDisposition.match(/filename\*=UTF-8''([^;]+)/i);
+  if (utf8Match?.[1]) {
+    return decodeURIComponent(utf8Match[1]);
+  }
+
+  const plainMatch = contentDisposition.match(/filename="?(.*?)"?(?:;|$)/i);
+  return plainMatch?.[1] ?? null;
 }
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
@@ -65,7 +82,7 @@ export const api = {
     });
   },
   delete: <T>(path: string) => request<T>(path, { method: "DELETE" }),
-  blob: async (path: string): Promise<Blob> => {
+  blob: async (path: string): Promise<BlobResponse> => {
     const token = localStorage.getItem("token");
     const headers: Record<string, string> = {};
     if (token) headers["Authorization"] = `Bearer ${token}`;
@@ -79,6 +96,9 @@ export const api = {
 
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-    return res.blob();
+    return {
+      blob: await res.blob(),
+      filename: extractFilename(res.headers.get("Content-Disposition")),
+    };
   },
 };

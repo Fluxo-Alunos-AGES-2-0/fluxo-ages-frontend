@@ -103,7 +103,7 @@ export default function ProjetoDetalhesPage() {
 
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [draftSummary, setDraftSummary] = useState("");
+  const [draftDescription, setDraftDescription] = useState("");
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [groupPhotoFile, setGroupPhotoFile] = useState<File | null>(null);
   const [thumbnailPreviewUrl, setThumbnailPreviewUrl] = useState<string | null>(
@@ -184,6 +184,9 @@ export default function ProjetoDetalhesPage() {
   const canEditProject =
     isAtivo && project.agesLevel === 4 && user?.level === toAgesLevel(4);
   const bannerUrl = project.groupPhotoUrl ?? "";
+  const headerThumbnailTone = isAtivo
+    ? "bg-[#F47B2015] text-[#F47B20]"
+    : "bg-[#3B5CCC15] text-[#3B5CCC]";
 
   const agesLevels = [1, 2, 3, 4];
 
@@ -202,14 +205,14 @@ export default function ProjetoDetalhesPage() {
   };
 
   const handleStartEditing = () => {
-    setDraftSummary(project.description ?? "");
+    setDraftDescription(project.description ?? "");
     clearDraftImages();
     setIsEditing(true);
   };
 
   const handleCancelEditing = () => {
     clearDraftImages();
-    setDraftSummary(project.description ?? "");
+    setDraftDescription(project.description ?? "");
     setIsEditing(false);
   };
 
@@ -263,7 +266,7 @@ export default function ProjetoDetalhesPage() {
     if (!project || isSaving) return;
 
     const formData = new FormData();
-    formData.append("description", draftSummary);
+    formData.append("description", draftDescription);
 
     if (thumbnailFile) {
       formData.append("thumbnail", thumbnailFile);
@@ -330,7 +333,7 @@ export default function ProjetoDetalhesPage() {
                 type="button"
                 onClick={() => thumbnailInputRef.current?.click()}
                 disabled={isSaving}
-                className="group relative w-14 h-14 rounded-xl overflow-hidden border border-slate-100 dark:border-[#334155] shadow-sm shrink-0 cursor-pointer disabled:cursor-not-allowed"
+                className={`group relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg p-2 ${headerThumbnailTone} cursor-pointer disabled:cursor-not-allowed`}
                 aria-label="Alterar thumbnail"
                 title="Alterar thumbnail"
               >
@@ -338,26 +341,30 @@ export default function ProjetoDetalhesPage() {
                   <img
                     src={toDisplayImageUrl(thumbnailPreviewUrl ?? project.thumbnailUrl)}
                     alt={`Logo ${project.name}`}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover rounded-lg"
                   />
                 ) : (
-                  <div className="w-full h-full bg-orange-50 text-[#F47B20] flex items-center justify-center">
-                    <FolderOpen size={24} />
-                  </div>
+                  <FolderOpen size={22} />
                 )}
                 <div className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-all group-hover:bg-black/45 group-hover:opacity-100">
                   <Camera size={18} className="text-white" />
                 </div>
               </button>
             ) : project.thumbnailUrl ? (
-              <img
-                src={toDisplayImageUrl(project.thumbnailUrl)}
-                alt={`Logo ${project.name}`}
-                className="w-14 h-14 rounded-xl border border-slate-100 object-contain p-1 shadow-sm"
-              />
+              <div
+                className={`flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg p-2 ${headerThumbnailTone}`}
+              >
+                <img
+                  src={toDisplayImageUrl(project.thumbnailUrl)}
+                  alt={`Logo ${project.name}`}
+                  className="w-full h-full object-cover rounded-lg"
+                />
+              </div>
             ) : (
-              <div className="w-14 h-14 rounded-xl bg-orange-50 text-[#F47B20] flex items-center justify-center shadow-sm">
-                <FolderOpen size={28} />
+              <div
+                className={`flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg p-2 ${headerThumbnailTone}`}
+              >
+                <FolderOpen size={22} />
               </div>
             )}
             
@@ -571,18 +578,18 @@ export default function ProjetoDetalhesPage() {
                 {isEditing ? (
                   <div className="relative">
                     <textarea
-                      value={draftSummary}
+                      value={draftDescription}
                       disabled={isSaving}
                       maxLength={1250}
                       onChange={(event) =>
-                        setDraftSummary(event.target.value)
+                        setDraftDescription(event.target.value)
                       }
                       className="min-h-[220px] w-full resize-none rounded-2xl border border-[#3B5CCC30] bg-white dark:bg-[#1E293B] p-4 text-sm leading-relaxed text-[#1F2937] dark:text-[#F4F6F7] outline-none transition-colors focus:border-[#3B5CCC] focus:ring-1 focus:ring-[#3B5CCC] disabled:opacity-60"
                       placeholder="Descreva o projeto..."
                     />
 
                     <div className="mt-1 text-right text-[11px] font-medium text-slate-400 dark:text-[#94A3B8]">
-                      {draftSummary.length} / 1250
+                      {draftDescription.length} / 1250
                     </div>
 
                     {isSaving && (
@@ -632,20 +639,20 @@ export default function ProjetoDetalhesPage() {
                 <h3 className="text-[16px] font-bold text-[#1F2937] dark:text-[#F4F6F7]">
                   Tecnologias
                 </h3>
-                <div className="flex flex-wrap gap-x-6 gap-y-5">
+                <div className="flex flex-wrap gap-x-5 gap-y-4">
                   {project.technologies.map((tech) => (
                     <div key={tech.id} className="flex flex-col items-center justify-start w-16 gap-2">
-                      {tech.iconUrl ? (
+                      <div className="w-8 h-8 rounded-lg bg-[#f8fafc] dark:bg-[#334155] border border-[#6B728030] dark:border-[#334155] flex items-center justify-center shadow-sm">
+                        {tech.iconUrl ? (
                         <img
-                          src={tech.iconUrl}
+                          src={toDisplayImageUrl(tech.iconUrl) ?? undefined}
                           alt={`Ícone ${tech.name}`}
-                          className="w-11 h-11 object-contain drop-shadow-sm"
+                          className="w-5 h-5 object-contain drop-shadow-sm"
                         />
                       ) : (
-                        <div className="w-11 h-11 rounded-xl bg-[#f8fafc] dark:bg-[#334155] border border-[#e2e8f0] dark:border-[#31405A] flex items-center justify-center text-[#94a3b8] dark:text-[#94A3B8] shadow-sm">
-                          <Code2 size={20} />
-                        </div>
-                      )}
+                          <Code2 size={14} className="text-[#94a3b8]" />
+                        )}
+                      </div>
                       <span className="text-[11px] text-center text-slate-600 dark:text-[#94A3B8] font-semibold leading-tight break-words w-full">
                         {tech.name}
                       </span>
