@@ -83,7 +83,7 @@ function toDisplayImageUrl(url: string | null) {
 
 function getProjectText(project: ProjectDetails | null) {
   if (!project) return "";
-  return project.summary ?? project.description ?? "";
+  return project.description ?? project.summary ?? "";
 }
 
 export default function ProjetoDetalhesPage() {
@@ -202,14 +202,14 @@ export default function ProjetoDetalhesPage() {
   };
 
   const handleStartEditing = () => {
-    setDraftSummary(getProjectText(project));
+    setDraftSummary(project.description ?? "");
     clearDraftImages();
     setIsEditing(true);
   };
 
   const handleCancelEditing = () => {
     clearDraftImages();
-    setDraftSummary(getProjectText(project));
+    setDraftSummary(project.description ?? "");
     setIsEditing(false);
   };
 
@@ -263,7 +263,7 @@ export default function ProjetoDetalhesPage() {
     if (!project || isSaving) return;
 
     const formData = new FormData();
-    formData.append("summary", draftSummary);
+    formData.append("description", draftSummary);
 
     if (thumbnailFile) {
       formData.append("thumbnail", thumbnailFile);
@@ -286,7 +286,6 @@ export default function ProjetoDetalhesPage() {
 
         return {
           ...currentProject,
-          summary: updatedProject.summary,
           description: updatedProject.description,
           thumbnailUrl: updatedProject.thumbnailUrl,
           groupPhotoUrl: updatedProject.groupPhotoUrl,
@@ -597,7 +596,7 @@ export default function ProjetoDetalhesPage() {
                   </div>
                 ) : (
                   <p className="text-[15px] text-[#6B7280] dark:text-[#94A3B8] leading-relaxed text-justify">
-                    {getProjectText(project)}
+                    {project.description}
                   </p>
                 )}
 
