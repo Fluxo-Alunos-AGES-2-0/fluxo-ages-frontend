@@ -16,13 +16,18 @@ import { TextArea } from "@/app/components/ui/TextArea/TextArea";
 import { useNavigate } from "react-router";
 import { useToast } from "@/app/context/ToastContext";
 import { useAuth } from "@/app/context/AuthContext";
-import { api } from "../services/api";
+import { api, resolveFileUrl } from "../services/api";
 import { toAgesLevel } from "../utils/agesLevel";
 import { OnboardingTooltip } from "../components/Onboarding/OnboardingTooltip";
 import { usePageOnboarding } from "../components/Onboarding/usePageOnboarding";
 
-const ALLOWED_THUMBNAIL_TYPES = ["image/webp", "image/png", "image/jpg"];
+const ALLOWED_THUMBNAIL_TYPES = ["image/webp", "image/png", "image/jpeg"];
 const MAX_THUMBNAIL_SIZE_BYTES = 10 * 1024 * 1024; //10MB
+
+function toDisplayImageUrl(url: string | null) {
+    if (!url) return null;
+    return url.startsWith("blob:") ? url : resolveFileUrl(url);
+}
 
 const PROJETOS_STEPS = [
     {
@@ -58,6 +63,7 @@ interface ProjectListItem {
     id: number;
     name: string;
     summary: string | null;
+    description: string | null;
     projectStatus: string;
     studentStatus: string;
     period: string | null;
@@ -202,7 +208,9 @@ const ProjectCard = ({ project, onProjectUpdated }: ProjectCardProps) => {
 
     const [isEditing, setIsEditing] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
-    const [summaryDraft, setSummaryDraft] = useState(project.summary ?? "");
+    const [descriptionDraft, setDescriptionDraft] = useState(
+        project.description ?? "",
+    );
     const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
     const [thumbnailPreviewUrl, setThumbnailPreviewUrl] = useState<
         string | null
@@ -215,10 +223,10 @@ const ProjectCard = ({ project, onProjectUpdated }: ProjectCardProps) => {
         };
     }, [thumbnailPreviewUrl]);
 
-    const displayThumbnailUrl = thumbnailPreviewUrl ?? project.thumbnailUrl;
+    const displayThumbnailUrl = thumbnailPreviewUrl ?? toDisplayImageUrl(project.thumbnailUrl);
 
     const resetEditState = () => {
-        setSummaryDraft(project.summary ?? "");
+        setDescriptionDraft(project.description ?? "");
         if (thumbnailPreviewUrl) URL.revokeObjectURL(thumbnailPreviewUrl);
         setThumbnailFile(null);
         setThumbnailPreviewUrl(null);
@@ -288,17 +296,20 @@ const ProjectCard = ({ project, onProjectUpdated }: ProjectCardProps) => {
 
         try {
             const formData = new FormData();
-            if (summaryDraft !== (project.summary ?? "")) {
-                formData.append("summary", summaryDraft);
+            if (descriptionDraft !== (project.description ?? "")) {
+                formData.append("description", descriptionDraft);
             }
             if (thumbnailFile) {
                 formData.append("thumbnail", thumbnailFile);
             }
 
-            const updated = await api.patch(`/projects/${project.id}`, formData);
+            const updated = await api.patch<Partial<ProjectListItem>>(
+                `/projects/${project.id}`,
+                formData,
+            );
 
             onProjectUpdated(project.id, {
-                summary: summaryDraft,
+                description: descriptionDraft,
                 ...updated,
             });
             showToast({
@@ -369,7 +380,6 @@ const ProjectCard = ({ project, onProjectUpdated }: ProjectCardProps) => {
                         {canEdit && !isEditing && (
                             <button
                                 type="button"
-                                variant="primary"
                                 onClick={handleStartEdit}
                                 aria-label="Editar projeto"
                                 className="p-2 rounded-lg text-[#3b5ccc] border border-[#6B728030] hover:bg-[#6B728010] hover:text-[#294294] cursor-pointer transition-colors"
@@ -422,7 +432,7 @@ const ProjectCard = ({ project, onProjectUpdated }: ProjectCardProps) => {
                 <input
                     ref={fileInputRef}
                     type="file"
-                    accept="image/webp,image/png,image/jpg"
+                    accept="image/webp,image/png,image/jpeg"
                     className="hidden"
                     onChange={handleThumbnailChange}
                 />
@@ -445,9 +455,9 @@ const ProjectCard = ({ project, onProjectUpdated }: ProjectCardProps) => {
                 {isEditing ? (
                     <div onClick={(e) => e.stopPropagation()}>
                         <TextArea
-                            label="Resumo do projeto"
-                            value={summaryDraft}
-                            onChange={(value) => setSummaryDraft(value)}
+                            label="Descrição do projeto"
+                            value={descriptionDraft}
+                            onChange={(value) => setDescriptionDraft(value)}
                             maxLength={300}
                             rows={3}
                             placeholder="Descreva o projeto..."
@@ -455,7 +465,7 @@ const ProjectCard = ({ project, onProjectUpdated }: ProjectCardProps) => {
                     </div>
                 ) : (
                     <p className="text-sm text-[#6B7280] dark:text-[#94A3B8] leading-relaxed line-clamp-3">
-                        {project.summary}
+                        {project.description}
                     </p>
                 )}
 
@@ -469,7 +479,7 @@ const ProjectCard = ({ project, onProjectUpdated }: ProjectCardProps) => {
                         >
                             {tech.iconUrl ? (
                                 <img
-                                    src={tech.iconUrl}
+                                    src={toDisplayImageUrl(tech.iconUrl) ?? undefined}
                                     alt={`Ícone ${tech.name}`}
                                     className="w-5 h-5 object-contain drop-shadow-sm"
                                 />

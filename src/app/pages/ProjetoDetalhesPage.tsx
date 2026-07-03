@@ -45,6 +45,7 @@ interface ProjectTechnology {
 interface ProjectDetails {
   id: number;
   name: string;
+  summary: string | null;
   description: string | null;
   projectStatus: string;
   period: string | null;
@@ -97,7 +98,7 @@ export default function ProjetoDetalhesPage() {
 
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [draftDescription, setDraftDescription] = useState("");
+  const [draftSummary, setDraftSummary] = useState("");
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [groupPhotoFile, setGroupPhotoFile] = useState<File | null>(null);
   const [thumbnailPreviewUrl, setThumbnailPreviewUrl] = useState<string | null>(
@@ -196,14 +197,14 @@ export default function ProjetoDetalhesPage() {
   };
 
   const handleStartEditing = () => {
-    setDraftDescription(project.description ?? "");
+    setDraftSummary(project.summary ?? "");
     clearDraftImages();
     setIsEditing(true);
   };
 
   const handleCancelEditing = () => {
     clearDraftImages();
-    setDraftDescription(project.description ?? "");
+    setDraftSummary(project.summary ?? "");
     setIsEditing(false);
   };
 
@@ -257,7 +258,7 @@ export default function ProjetoDetalhesPage() {
     if (!project || isSaving) return;
 
     const formData = new FormData();
-    formData.append("description", draftDescription);
+    formData.append("summary", draftSummary);
 
     if (thumbnailFile) {
       formData.append("thumbnail", thumbnailFile);
@@ -280,6 +281,7 @@ export default function ProjetoDetalhesPage() {
 
         return {
           ...currentProject,
+          summary: updatedProject.summary,
           description: updatedProject.description,
           thumbnailUrl: updatedProject.thumbnailUrl,
           groupPhotoUrl: updatedProject.groupPhotoUrl,
@@ -565,18 +567,18 @@ export default function ProjetoDetalhesPage() {
                 {isEditing ? (
                   <div className="relative">
                     <textarea
-                      value={draftDescription}
+                      value={draftSummary}
                       disabled={isSaving}
                       maxLength={1250}
                       onChange={(event) =>
-                        setDraftDescription(event.target.value)
+                        setDraftSummary(event.target.value)
                       }
                       className="min-h-[220px] w-full resize-none rounded-2xl border border-[#3B5CCC30] bg-white dark:bg-[#1E293B] p-4 text-sm leading-relaxed text-[#1F2937] dark:text-[#F4F6F7] outline-none transition-colors focus:border-[#3B5CCC] focus:ring-1 focus:ring-[#3B5CCC] disabled:opacity-60"
                       placeholder="Descreva o projeto..."
                     />
 
                     <div className="mt-1 text-right text-[11px] font-medium text-slate-400 dark:text-[#94A3B8]">
-                      {draftDescription.length} / 1250
+                      {draftSummary.length} / 1250
                     </div>
 
                     {isSaving && (
@@ -590,18 +592,11 @@ export default function ProjetoDetalhesPage() {
                   </div>
                 ) : (
                   <p className="text-[15px] text-[#6B7280] dark:text-[#94A3B8] leading-relaxed text-justify">
-                    {project.description}
+                    {project.summary}
                   </p>
                 )}
 
                 <div className="flex flex-col gap-3 text-sm text-[#6B7280] dark:text-[#94A3B8] mt-2">
-                  <p className="flex items-center gap-2 border-t border-[#3B5CCC20] dark:border-[#31405A] pt-4">
-                    <Users size={16} className="text-[#3B5CCC] dark:text-[#4E6CFF]" />
-                    <span>
-                      <span className="font-semibold text-slate-700 dark:text-[#F4F6F7]">Clientes AGES:</span>{" "}
-                      {project.teacher?.name}
-                    </span>
-                  </p>
 
                   {project.teacher && (
                     <p className="flex items-center gap-2">

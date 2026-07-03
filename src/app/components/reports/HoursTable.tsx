@@ -348,7 +348,7 @@ export function HoursTable({ data, onChanged }: HoursTableProps) {
 
             <div>
               <label className="block text-sm font-semibold text-[#64748B] dark:text-[#94A3B8] mb-2">
-                Data<span className="text-[#F47B20]">*</span>
+                Data de Início<span className="text-[#F47B20]">*</span>
               </label>
 
               <div className="relative">

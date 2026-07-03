@@ -1,4 +1,10 @@
-import { X, Code2 } from "lucide-react";
+import {
+  Atom,
+  Coffee,
+  Database,
+  Leaf,
+  X,
+} from "lucide-react";
 import { useNavigate } from "react-router";
 import groupPhoto from "../../assets/AGES.jpg";
 
@@ -16,12 +22,42 @@ const TEAM = {
   STAKEHOLDERS: ["Marcelo Yamaguti", "Willian Albeche"],
 };
 
-const TECNOLOGIES = [
-  "TypeScript",
-  "React",
-  "Java",
-  "Spring Boot",
-  "PostgreSQL",
+const TECNOLOGIES: Array<{
+  name: string;
+  logoUrl: string;
+  logoAlt: string;
+  iconBgClassName: string;
+}> = [
+  {
+    name: "TypeScript",
+    logoUrl: "https://cdn.simpleicons.org/typescript/3178C6",
+    logoAlt: "Logo do TypeScript",
+    iconBgClassName: "bg-[#3178C614] dark:bg-[#3178C624]",
+  },
+  {
+    name: "React",
+    logoUrl: "https://cdn.simpleicons.org/react/61DAFB",
+    logoAlt: "Logo do React",
+    iconBgClassName: "bg-[#61DAFB14] dark:bg-[#61DAFB24]",
+  },
+  {
+    name: "Java",
+    logoUrl: "https://cdn.simpleicons.org/openjdk/F47B20",
+    logoAlt: "Logo do Java",
+    iconBgClassName: "bg-[#F47B2014] dark:bg-[#F47B2024]",
+  },
+  {
+    name: "Spring Boot",
+    logoUrl: "https://cdn.simpleicons.org/springboot/6DB33F",
+    logoAlt: "Logo do Spring Boot",
+    iconBgClassName: "bg-[#6DB33F14] dark:bg-[#6DB33F24]",
+  },
+  {
+    name: "PostgreSQL",
+    logoUrl: "https://cdn.simpleicons.org/postgresql/336791",
+    logoAlt: "Logo do PostgreSQL",
+    iconBgClassName: "bg-[#33679114] dark:bg-[#33679124]",
+  },
 ];
 
 export default function SobrePage() {
@@ -98,17 +134,22 @@ export default function SobrePage() {
               <span className="w-[5px] h-[26px] bg-[#3b5ccc] dark:bg-[#3B5CCC] rounded-full block"></span>
               Tecnologias Utilizadas
             </h2>
-            <div className="flex flex-wrap gap-4">
-              {TECNOLOGIES.map((tech) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {TECNOLOGIES.map(({ name, logoUrl, logoAlt, iconBgClassName }) => (
                 <div
-                  key={tech}
-                  className="flex items-center gap-2.5 px-5 py-2.5 bg-[#f8fafc] dark:bg-[#334155] border border-[#e2e8f0] dark:border-[#334155] rounded-lg text-[#475569] dark:text-[#F4F6F7] font-medium text-[15px]"
+                  key={name}
+                  className="flex items-center gap-3 px-4 py-3 bg-[#f8fafc] dark:bg-[#334155] border border-[#e2e8f0] dark:border-[#334155] rounded-xl text-[#475569] dark:text-[#F4F6F7] font-medium text-[15px] shadow-sm"
                 >
-                  <Code2
-                    size={18}
-                    className="text-[#3b5ccc] dark:text-[#3B5CCC]"
-                  />
-                  {tech}
+                  <div
+                    className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${iconBgClassName}`}
+                  >
+                    <img
+                      src={logoUrl}
+                      alt={logoAlt}
+                      className="w-6 h-6 object-contain drop-shadow-sm"
+                    />
+                  </div>
+                  <span>{name}</span>
                 </div>
               ))}
             </div>
