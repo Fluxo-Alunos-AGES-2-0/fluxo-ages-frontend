@@ -29,6 +29,10 @@ function toDisplayImageUrl(url: string | null) {
     return url.startsWith("blob:") ? url : resolveFileUrl(url);
 }
 
+function getProjectCardText(project: ProjectListItem) {
+    return project.description ?? project.summary ?? "";
+}
+
 const PROJETOS_STEPS = [
     {
         target: "[data-onboarding='projetos-header']",

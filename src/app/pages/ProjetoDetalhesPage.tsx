@@ -81,6 +81,11 @@ function toDisplayImageUrl(url: string | null) {
   return url.startsWith("blob:") ? url : resolveFileUrl(url);
 }
 
+function getProjectText(project: ProjectDetails | null) {
+  if (!project) return "";
+  return project.description ?? project.summary ?? "";
+}
+
 export default function ProjetoDetalhesPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -284,7 +289,6 @@ export default function ProjetoDetalhesPage() {
 
         return {
           ...currentProject,
-          summary: updatedProject.summary,
           description: updatedProject.description,
           thumbnailUrl: updatedProject.thumbnailUrl,
           groupPhotoUrl: updatedProject.groupPhotoUrl,
