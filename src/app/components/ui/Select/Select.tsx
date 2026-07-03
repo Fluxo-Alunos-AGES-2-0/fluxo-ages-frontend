@@ -1,10 +1,16 @@
-import React, { SelectHTMLAttributes, forwardRef } from "react";
+import React, {
+  CSSProperties,
+  SelectHTMLAttributes,
+  forwardRef,
+} from "react";
 import { ChevronDown } from "lucide-react";
 
 export interface SelectOption {
   value: string | number;
   label: string;
   disabled?: boolean;
+  style?: CSSProperties;
+  title?: string;
 }
 
 interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
@@ -48,6 +54,8 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
               key={option.value}
               value={option.value}
               disabled={option.disabled}
+              style={option.style}
+              title={option.title}
             >
               {option.label}
             </option>
