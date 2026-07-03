@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Clock,
   FileText,
@@ -122,16 +122,42 @@ function ScheduleItem({
 }
 
 function UserFooter() {
-  const { user, logout } = useAuth();
+  const { user, logout, refreshUserProfile } = useAuth();
   const [avatarFailed, setAvatarFailed] = useState(false);
+  const [isRefreshingAvatar, setIsRefreshingAvatar] = useState(false);
+  const retriedAvatarUrlRef = useRef<string | null>(null);
 
   useEffect(() => {
     setAvatarFailed(false);
+    retriedAvatarUrlRef.current = null;
   }, [user?.avatarUrl]);
 
   if (!user) return null;
 
   const avatarUrl = user.avatarUrl ? resolveFileUrl(user.avatarUrl) : null;
+
+  const handleAvatarError = async () => {
+    if (!avatarUrl) {
+      setAvatarFailed(true);
+      return;
+    }
+
+    if (retriedAvatarUrlRef.current === avatarUrl || isRefreshingAvatar) {
+      setAvatarFailed(true);
+      return;
+    }
+
+    retriedAvatarUrlRef.current = avatarUrl;
+    setIsRefreshingAvatar(true);
+
+    try {
+      await refreshUserProfile();
+    } catch {
+      setAvatarFailed(true);
+    } finally {
+      setIsRefreshingAvatar(false);
+    }
+  };
 
   return (
     <div className="border-t border-[#e5e7eb] dark:border-[#334155] px-5 py-5 flex flex-col gap-4">
@@ -142,7 +168,7 @@ function UserFooter() {
               src={avatarUrl}
               alt={user.name}
               className="w-full h-full object-cover"
-              onError={() => setAvatarFailed(true)}
+              onError={() => void handleAvatarError()}
             />
           ) : (
             user.initials
