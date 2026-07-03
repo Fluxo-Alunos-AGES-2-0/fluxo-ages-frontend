@@ -469,7 +469,7 @@ const ProjectCard = ({ project, onProjectUpdated }: ProjectCardProps) => {
                     </div>
                 ) : (
                     <p className="text-sm text-[#6B7280] dark:text-[#94A3B8] leading-relaxed line-clamp-3">
-                        {project.description}
+                        {getProjectCardText(project)}
                     </p>
                 )}
 
