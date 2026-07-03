@@ -29,6 +29,10 @@ function toDisplayImageUrl(url: string | null) {
     return url.startsWith("blob:") ? url : resolveFileUrl(url);
 }
 
+function getProjectCardText(project: ProjectListItem) {
+    return project.description ?? project.summary ?? "";
+}
+
 const PROJETOS_STEPS = [
     {
         target: "[data-onboarding='projetos-header']",
@@ -209,7 +213,7 @@ const ProjectCard = ({ project, onProjectUpdated }: ProjectCardProps) => {
     const [isEditing, setIsEditing] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [descriptionDraft, setDescriptionDraft] = useState(
-        project.description ?? "",
+        getProjectCardText(project),
     );
     const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
     const [thumbnailPreviewUrl, setThumbnailPreviewUrl] = useState<
@@ -226,7 +230,7 @@ const ProjectCard = ({ project, onProjectUpdated }: ProjectCardProps) => {
     const displayThumbnailUrl = thumbnailPreviewUrl ?? toDisplayImageUrl(project.thumbnailUrl);
 
     const resetEditState = () => {
-        setDescriptionDraft(project.description ?? "");
+        setDescriptionDraft(getProjectCardText(project));
         if (thumbnailPreviewUrl) URL.revokeObjectURL(thumbnailPreviewUrl);
         setThumbnailFile(null);
         setThumbnailPreviewUrl(null);
@@ -296,7 +300,7 @@ const ProjectCard = ({ project, onProjectUpdated }: ProjectCardProps) => {
 
         try {
             const formData = new FormData();
-            if (descriptionDraft !== (project.description ?? "")) {
+            if (descriptionDraft !== getProjectCardText(project)) {
                 formData.append("description", descriptionDraft);
             }
             if (thumbnailFile) {

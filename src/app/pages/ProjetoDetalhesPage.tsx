@@ -81,6 +81,11 @@ function toDisplayImageUrl(url: string | null) {
   return url.startsWith("blob:") ? url : resolveFileUrl(url);
 }
 
+function getProjectText(project: ProjectDetails | null) {
+  if (!project) return "";
+  return project.summary ?? project.description ?? "";
+}
+
 export default function ProjetoDetalhesPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -197,14 +202,14 @@ export default function ProjetoDetalhesPage() {
   };
 
   const handleStartEditing = () => {
-    setDraftSummary(project.summary ?? "");
+    setDraftSummary(getProjectText(project));
     clearDraftImages();
     setIsEditing(true);
   };
 
   const handleCancelEditing = () => {
     clearDraftImages();
-    setDraftSummary(project.summary ?? "");
+    setDraftSummary(getProjectText(project));
     setIsEditing(false);
   };
 
@@ -592,7 +597,7 @@ export default function ProjetoDetalhesPage() {
                   </div>
                 ) : (
                   <p className="text-[15px] text-[#6B7280] dark:text-[#94A3B8] leading-relaxed text-justify">
-                    {project.summary}
+                    {getProjectText(project)}
                   </p>
                 )}
 
