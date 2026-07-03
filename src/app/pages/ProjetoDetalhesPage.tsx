@@ -1,6 +1,7 @@
 import {
   Camera,
   CircleCheckBig,
+  Code2,
   ExternalLink,
   FolderOpen,
   GitBranch,
@@ -11,7 +12,6 @@ import {
   Zap,
   ChevronRight,
   ChevronDown,
-  Code2
 } from "lucide-react";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router";
@@ -81,11 +81,6 @@ function toDisplayImageUrl(url: string | null) {
   return url.startsWith("blob:") ? url : resolveFileUrl(url);
 }
 
-function getProjectText(project: ProjectDetails | null) {
-  if (!project) return "";
-  return project.description ?? project.summary ?? "";
-}
-
 export default function ProjetoDetalhesPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -94,12 +89,14 @@ export default function ProjetoDetalhesPage() {
 
   const thumbnailInputRef = useRef<HTMLInputElement>(null);
   const groupPhotoInputRef = useRef<HTMLInputElement>(null);
+  const hasRetriedImageLoadRef = useRef(false);
 
   const [project, setProject] = useState<ProjectDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [imageErrors, setImageErrors] = useState<Record<number, boolean>>({});
   const [expandedLevel, setExpandedLevel] = useState<number | null>(null);
+  const [isRefreshingImageUrls, setIsRefreshingImageUrls] = useState(false);
 
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -113,8 +110,18 @@ export default function ProjetoDetalhesPage() {
     string | null
   >(null);
 
+  const refreshProjectDetails = async () => {
+    if (!id) return;
+
+    const data = await api.get<ProjectDetails>(`/projects/${id}`);
+    setProject(data);
+    setImageErrors({});
+  };
+
   useEffect(() => {
     let cancelled = false;
+    hasRetriedImageLoadRef.current = false;
+    setImageErrors({});
     setLoading(true);
     setError(null);
 
@@ -126,7 +133,7 @@ export default function ProjetoDetalhesPage() {
       .catch((err) => {
         if (cancelled) return;
         console.error("Erro ao buscar detalhes do projeto:", err);
-        setError("Não foi possível carregar os detalhes do projeto.");
+        setError("Nao foi possivel carregar os detalhes do projeto.");
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -159,10 +166,10 @@ export default function ProjetoDetalhesPage() {
       <div className="w-full flex flex-col gap-6 font-sans">
         <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-[#6B728030] dark:border-[#334155] p-6 shadow-sm">
           <h2 className="text-lg font-bold text-[#1F2937] dark:text-[#F4F6F7]">
-            Projeto não encontrado
+            Projeto nao encontrado
           </h2>
           <p className="text-sm text-[#6B7280] dark:text-[#94A3B8] mt-1">
-            {error ?? "O projeto solicitado não existe ou não está disponível."}
+            {error ?? "O projeto solicitado nao existe ou nao esta disponivel."}
           </p>
 
           <Button
@@ -178,9 +185,6 @@ export default function ProjetoDetalhesPage() {
   }
 
   const isAtivo = project.projectStatus === "EM_ANDAMENTO";
-  // Só AGES IV edita o projeto; o backend rejeita níveis inferiores, então
-  // escondemos o ícone para não oferecer uma ação que vai falhar (mesmo
-  // critério do mapa de projetos em ProjetosPage).
   const canEditProject =
     isAtivo && project.agesLevel === 4 && user?.level === toAgesLevel(4);
   const bannerUrl = project.groupPhotoUrl ?? "";
@@ -220,7 +224,7 @@ export default function ProjetoDetalhesPage() {
     if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
       showToast({
         variant: "error",
-        title: "Formato inválido",
+        title: "Formato invalido",
         message: "Envie uma imagem JPG, PNG ou WEBP.",
       });
       return false;
@@ -230,7 +234,7 @@ export default function ProjetoDetalhesPage() {
       showToast({
         variant: "error",
         title: "Arquivo muito grande",
-        message: "A imagem deve ter no máximo 10MB.",
+        message: "A imagem deve ter no maximo 10MB.",
       });
       return false;
     }
@@ -289,6 +293,7 @@ export default function ProjetoDetalhesPage() {
 
         return {
           ...currentProject,
+          summary: updatedProject.summary,
           description: updatedProject.description,
           thumbnailUrl: updatedProject.thumbnailUrl,
           groupPhotoUrl: updatedProject.groupPhotoUrl,
@@ -301,7 +306,7 @@ export default function ProjetoDetalhesPage() {
       showToast({
         variant: "success",
         title: "Projeto atualizado",
-        message: "As alterações foram salvas com sucesso.",
+        message: "As alteracoes foram salvas com sucesso.",
       });
     } catch (err) {
       console.error("Erro ao atualizar projeto:", err);
@@ -312,22 +317,41 @@ export default function ProjetoDetalhesPage() {
         message:
           err instanceof Error
             ? err.message
-            : "Não foi possível salvar as alterações do projeto.",
+            : "Nao foi possivel salvar as alteracoes do projeto.",
       });
     } finally {
       setIsSaving(false);
     }
   };
 
+  const handleMemberAvatarError = async (memberId: number) => {
+    if (isRefreshingImageUrls) return;
+
+    if (!hasRetriedImageLoadRef.current) {
+      hasRetriedImageLoadRef.current = true;
+      setIsRefreshingImageUrls(true);
+
+      try {
+        await refreshProjectDetails();
+        return;
+      } catch {
+        // Fall back to initials below if the refresh also fails.
+      } finally {
+        setIsRefreshingImageUrls(false);
+      }
+    }
+
+    setImageErrors((prev) => ({
+      ...prev,
+      [memberId]: true,
+    }));
+  };
+
   return (
     <div className="w-full flex flex-col gap-6 font-sans">
       <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-[#6B728030] dark:border-[#334155] shadow-sm overflow-hidden relative">
-
-        {/* Cabeçalho */}
         <div className="p-6 pb-4 flex items-center justify-between gap-4 border-b border-[#6B728030] dark:border-[#334155]">
-
           <div className="flex items-center gap-4">
-            {/* Ícone/Thumbnail do Projeto (editável no modo de edição) */}
             {isEditing ? (
               <button
                 type="button"
@@ -339,7 +363,9 @@ export default function ProjetoDetalhesPage() {
               >
                 {thumbnailPreviewUrl ?? project.thumbnailUrl ? (
                   <img
-                    src={toDisplayImageUrl(thumbnailPreviewUrl ?? project.thumbnailUrl)}
+                    src={toDisplayImageUrl(
+                      thumbnailPreviewUrl ?? project.thumbnailUrl,
+                    )}
                     alt={`Logo ${project.name}`}
                     className="w-full h-full object-cover rounded-lg"
                   />
@@ -367,7 +393,7 @@ export default function ProjetoDetalhesPage() {
                 <FolderOpen size={22} />
               </div>
             )}
-            
+
             <div className="flex flex-col justify-center">
               <div className="flex items-center gap-3">
                 <h2 className="text-3xl font-bold text-[#F47B20] leading-none">
@@ -398,7 +424,7 @@ export default function ProjetoDetalhesPage() {
               ) : (
                 <>
                   <CircleCheckBig size={14} />
-                  Concluído
+                  Concluido
                 </>
               )}
             </span>
@@ -450,12 +476,8 @@ export default function ProjetoDetalhesPage() {
           </div>
         </div>
 
-        {/* Corpo (Grid) */}
         <div className="p-6 grid grid-cols-1 lg:grid-cols-5 gap-10">
-          
-          {/* Lado Esquerdo: Banner e Equipe */}
           <div className="lg:col-span-3 flex flex-col gap-8">
-            {/* Banner = Foto do grupo (editável por hover no modo de edição) */}
             <div className="rounded-xl overflow-hidden border-b-4 border-[#F47B20] shadow-sm">
               {isEditing ? (
                 <button
@@ -466,7 +488,9 @@ export default function ProjetoDetalhesPage() {
                 >
                   {groupPhotoPreviewUrl ?? project.groupPhotoUrl ? (
                     <img
-                      src={toDisplayImageUrl(groupPhotoPreviewUrl ?? project.groupPhotoUrl)}
+                      src={toDisplayImageUrl(
+                        groupPhotoPreviewUrl ?? project.groupPhotoUrl,
+                      )}
                       alt={`Foto do grupo do projeto ${project.name}`}
                       className="h-full w-full object-cover"
                     />
@@ -502,7 +526,6 @@ export default function ProjetoDetalhesPage() {
               )}
             </div>
 
-            {/* Inputs de arquivo (thumbnail no cabeçalho, foto do grupo no banner) */}
             {isEditing && (
               <>
                 <input
@@ -525,10 +548,11 @@ export default function ProjetoDetalhesPage() {
               </>
             )}
 
-            {/* Acordeão de Membros */}
             <div className="flex flex-col gap-4">
               {agesLevels.map((level) => {
-                const levelMembers = project.team.filter(m => m.agesLevel === level);
+                const levelMembers = project.team.filter(
+                  (member) => member.agesLevel === level,
+                );
                 if (levelMembers.length === 0) return null;
 
                 const isExpanded = expandedLevel === level;
@@ -539,9 +563,14 @@ export default function ProjetoDetalhesPage() {
                       onClick={() => setExpandedLevel(isExpanded ? null : level)}
                       className="flex items-center gap-1.5 text-[#3B5CCC] dark:text-[#4E6CFF] font-bold hover:text-[#2f4fb8] transition-colors w-fit cursor-pointer"
                     >
-                      {isExpanded ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
+                      {isExpanded ? (
+                        <ChevronDown size={18} />
+                      ) : (
+                        <ChevronRight size={18} />
+                      )}
                       {toAgesLevel(level)}
                     </button>
+
                     {isExpanded && (
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pl-6 animate-in fade-in slide-in-from-top-2 duration-200 mt-2 mb-2">
                         {levelMembers.map((member) => (
@@ -551,13 +580,14 @@ export default function ProjetoDetalhesPage() {
                                 src={toDisplayImageUrl(member.avatarUrl)}
                                 alt={member.name}
                                 className="w-10 h-10 rounded-full object-cover shadow-sm border border-slate-100"
-                                onError={() => setImageErrors(prev => ({ ...prev, [member.id]: true }))}
+                                onError={() => void handleMemberAvatarError(member.id)}
                               />
                             ) : (
                               <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-[#334155] border border-slate-200 dark:border-[#31405A] flex items-center justify-center text-slate-500 dark:text-[#94A3B8] font-bold text-sm shadow-sm">
                                 {member.name.charAt(0).toUpperCase()}
                               </div>
                             )}
+
                             <span className="text-sm font-medium text-slate-700 dark:text-[#F4F6F7] break-words line-clamp-2">
                               {member.name}
                             </span>
@@ -571,7 +601,6 @@ export default function ProjetoDetalhesPage() {
             </div>
           </div>
 
-          {/* Lado Direito: Descrição e Tecnologias */}
           <div className="lg:col-span-2 flex flex-col gap-6">
             <div className="bg-[#EEF3FF] dark:bg-[#1E293B] rounded-xl p-6 flex flex-col gap-6 shadow-sm">
               <div className="flex flex-col gap-5">
@@ -581,9 +610,7 @@ export default function ProjetoDetalhesPage() {
                       value={draftDescription}
                       disabled={isSaving}
                       maxLength={1250}
-                      onChange={(event) =>
-                        setDraftDescription(event.target.value)
-                      }
+                      onChange={(event) => setDraftDescription(event.target.value)}
                       className="min-h-[220px] w-full resize-none rounded-2xl border border-[#3B5CCC30] bg-white dark:bg-[#1E293B] p-4 text-sm leading-relaxed text-[#1F2937] dark:text-[#F4F6F7] outline-none transition-colors focus:border-[#3B5CCC] focus:ring-1 focus:ring-[#3B5CCC] disabled:opacity-60"
                       placeholder="Descreva o projeto..."
                     />
@@ -608,12 +635,13 @@ export default function ProjetoDetalhesPage() {
                 )}
 
                 <div className="flex flex-col gap-3 text-sm text-[#6B7280] dark:text-[#94A3B8] mt-2">
-
                   {project.teacher && (
                     <p className="flex items-center gap-2">
-                      <Users size={16} className="text-[#3B5CCC] opacity-0" /> {/* Ícone invisível para alinhamento */}
+                      <Users size={16} className="text-[#3B5CCC] opacity-0" />
                       <span>
-                        <span className="font-semibold text-slate-700 dark:text-[#F4F6F7]">Orientador(a):</span>{" "}
+                        <span className="font-semibold text-slate-700 dark:text-[#F4F6F7]">
+                          Orientador(a):
+                        </span>{" "}
                         {project.teacher.name}
                       </span>
                     </p>
@@ -628,31 +656,33 @@ export default function ProjetoDetalhesPage() {
                 className="mt-4 !bg-[#3B5CCC] hover:!bg-[#2f4fb8] flex items-center justify-center gap-2 font-bold w-full"
               >
                 <GitBranch size={16} />
-                Repositório
+                Repositorio
                 <ExternalLink size={14} />
               </Button>
             </div>
 
-            {/* Bloco de Tecnologias */}
             {project.technologies && project.technologies.length > 0 && (
               <div className="mt-2 flex flex-col gap-4">
                 <h3 className="text-[16px] font-bold text-[#1F2937] dark:text-[#F4F6F7]">
                   Tecnologias
                 </h3>
-                <div className="flex flex-wrap gap-x-5 gap-y-4">
+                <div className="flex flex-wrap gap-x-6 gap-y-5">
                   {project.technologies.map((tech) => (
-                    <div key={tech.id} className="flex flex-col items-center justify-start w-16 gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-[#f8fafc] dark:bg-[#334155] border border-[#6B728030] dark:border-[#334155] flex items-center justify-center shadow-sm">
-                        {tech.iconUrl ? (
+                    <div
+                      key={tech.id}
+                      className="flex flex-col items-center justify-start w-16 gap-2"
+                    >
+                      {tech.iconUrl ? (
                         <img
                           src={toDisplayImageUrl(tech.iconUrl) ?? undefined}
-                          alt={`Ícone ${tech.name}`}
-                          className="w-5 h-5 object-contain drop-shadow-sm"
+                          alt={`Icone ${tech.name}`}
+                          className="w-11 h-11 object-contain drop-shadow-sm dark:[filter:brightness(1.08)_contrast(1.18)_drop-shadow(0_0_1px_rgba(248,250,252,0.72))_drop-shadow(0_1px_2px_rgba(15,23,42,0.55))]"
                         />
                       ) : (
-                          <Code2 size={14} className="text-[#94a3b8]" />
-                        )}
-                      </div>
+                        <div className="w-11 h-11 rounded-xl bg-[#f8fafc] dark:bg-[#334155] border border-[#e2e8f0] dark:border-[#31405A] flex items-center justify-center text-[#94a3b8] dark:text-[#94A3B8] shadow-sm">
+                          <Code2 size={20} />
+                        </div>
+                      )}
                       <span className="text-[11px] text-center text-slate-600 dark:text-[#94A3B8] font-semibold leading-tight break-words w-full">
                         {tech.name}
                       </span>
@@ -661,7 +691,6 @@ export default function ProjetoDetalhesPage() {
                 </div>
               </div>
             )}
-            
           </div>
         </div>
       </div>
