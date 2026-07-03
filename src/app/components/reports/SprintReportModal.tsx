@@ -21,11 +21,11 @@ interface SprintReportModalProps {
 
 const DEFAULT_PROJECT = "Fluxo AGES 2.0 - Alunos";
 const SPRINT_OPTIONS = [
+    "Sprint 0",
     "Sprint 1",
     "Sprint 2",
     "Sprint 3",
     "Sprint 4",
-    "Sprint 5",
 ];
 
 export function SprintReportModal({
